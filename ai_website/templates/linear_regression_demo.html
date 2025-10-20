@@ -1,0 +1,678 @@
+{% extends "base.html" %}
+
+{% block title %}Linear Regression Demo - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="demo-header">
+    <div class="container">
+        <h1>Interactive Linear Regression Demo</h1>
+        <p class="demo-description">
+            Click on the graph to add data points and watch the line of best fit update in real-time! 
+            This demo shows how linear regression finds the optimal line through your data using least squares optimization.
+        </p>
+    </div>
+</section>
+
+<section class="demo-content">
+    <div class="container">
+        <div class="demo-grid">
+            <!-- Main Canvas Area -->
+            <div class="demo-canvas-container">
+                <h3>Interactive Graph</h3>
+                <p class="canvas-instructions">
+                    <i class="fas fa-mouse-pointer"></i> Click anywhere on the graph to add data points
+                </p>
+                <canvas id="regressionCanvas" width="600" height="400"></canvas>
+                
+                <div class="demo-controls">
+                    <button id="clearPoints" class="btn btn-secondary">
+                        <i class="fas fa-trash"></i> Clear All Points
+                    </button>
+                    <button id="addRandomPoints" class="btn btn-info">
+                        <i class="fas fa-random"></i> Add Random Points
+                    </button>
+                    <button id="showPrediction" class="btn btn-success">
+                        <i class="fas fa-crosshairs"></i> Show Prediction Point
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Panel -->
+            <div class="demo-stats">
+                <h3>Linear Regression Statistics</h3>
+                
+                <div class="stat-card">
+                    <h4>Equation</h4>
+                    <div class="equation-display" id="equationDisplay">
+                        y = mx + b
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h4>Parameters</h4>
+                    <div class="parameter-grid">
+                        <div class="parameter">
+                            <span class="param-label">Slope (m):</span>
+                            <span class="param-value" id="slopeValue">--</span>
+                        </div>
+                        <div class="parameter">
+                            <span class="param-label">Intercept (b):</span>
+                            <span class="param-value" id="interceptValue">--</span>
+                        </div>
+                        <div class="parameter">
+                            <span class="param-label">R² Score:</span>
+                            <span class="param-value" id="r2Value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h4>Data Points</h4>
+                    <div class="data-info">
+                        <p>Total Points: <span id="pointCount">0</span></p>
+                        <p>Mean X: <span id="meanX">--</span></p>
+                        <p>Mean Y: <span id="meanY">--</span></p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h4>Prediction Tool</h4>
+                    <div class="prediction-input">
+                        <label for="predictionX">Enter X value:</label>
+                        <input type="number" id="predictionX" placeholder="e.g., 5.5" step="0.1">
+                        <div class="prediction-result">
+                            <span>Predicted Y: <span id="predictionY">--</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Educational Information -->
+        <div class="demo-education">
+            <h3>How Linear Regression Works</h3>
+            <div class="education-grid">
+                <div class="education-card">
+                    <h4><i class="fas fa-calculator"></i> Least Squares Method</h4>
+                    <p>
+                        Linear regression finds the line that minimizes the sum of squared differences 
+                        between actual and predicted values. The optimal slope and intercept are calculated using:
+                    </p>
+                    <div class="math-formula">
+                        <strong>m = Σ[(xᵢ - x̄)(yᵢ - ȳ)] / Σ[(xᵢ - x̄)²]</strong><br>
+                        <strong>b = ȳ - m·x̄</strong>
+                    </div>
+                </div>
+
+                <div class="education-card">
+                    <h4><i class="fas fa-chart-line"></i> R² Coefficient</h4>
+                    <p>
+                        R² (coefficient of determination) measures how well the line fits the data. 
+                        It ranges from 0 to 1, where 1 indicates a perfect fit.
+                    </p>
+                    <div class="math-formula">
+                        <strong>R² = 1 - (SS_res / SS_tot)</strong>
+                    </div>
+                </div>
+
+                <div class="education-card">
+                    <h4><i class="fas fa-lightbulb"></i> Applications</h4>
+                    <p>
+                        Linear regression is used in finance (predicting stock prices), 
+                        marketing (sales forecasting), science (trend analysis), and many other fields 
+                        where relationships between variables need to be modeled.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.demo-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.demo-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.demo-description {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    color: white;
+    opacity: 1;
+}
+
+.demo-content {
+    padding: 4rem 0;
+}
+
+.demo-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    margin-bottom: 4rem;
+}
+
+.demo-canvas-container {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.canvas-instructions {
+    color: #666;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+#regressionCanvas {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: crosshair;
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+}
+
+.demo-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.demo-stats {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.stat-card {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.stat-card h4 {
+    margin: 0 0 1rem 0;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.equation-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    color: var(--primary-color);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.parameter-grid {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.parameter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.param-label {
+    font-weight: 500;
+    color: #374151;
+}
+
+.param-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.data-info p {
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.prediction-input {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.prediction-input input {
+    padding: 0.8rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.prediction-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.prediction-result {
+    background: white;
+    padding: 0.8rem;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.demo-education {
+    background: #f8fafc;
+    padding: 3rem;
+    border-radius: 12px;
+}
+
+.demo-education h3 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+}
+
+.education-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.education-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.education-card h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.education-card h4 i {
+    margin-right: 0.5rem;
+}
+
+.math-formula {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .demo-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    #regressionCanvas {
+        width: 100%;
+        height: auto;
+    }
+    
+    .demo-controls {
+        flex-direction: column;
+    }
+    
+    .education-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+class LinearRegressionDemo {
+    constructor() {
+        this.canvas = document.getElementById('regressionCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.points = [];
+        this.slope = 0;
+        this.intercept = 0;
+        this.r2 = 0;
+        this.predictionPoint = null;
+        
+        this.setupCanvas();
+        this.bindEvents();
+        this.drawCanvas();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            this.drawCanvas();
+        });
+    }
+    
+    setupCanvas() {
+        this.canvas.addEventListener('click', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+            
+            const canvasX = (e.clientX - rect.left) * scaleX;
+            const canvasY = (e.clientY - rect.top) * scaleY;
+            
+            // Convert canvas coordinates to data coordinates
+            const x = (canvasX / this.canvas.width) * 20; // Scale to 0-20
+            const y = (1 - (canvasY / this.canvas.height)) * 15; // Scale to 0-15, flip Y
+            
+            // Ensure points are within bounds
+            if (x >= 0 && x <= 20 && y >= 0 && y <= 15) {
+                this.addPoint(x, y);
+            }
+        });
+    }
+    
+    bindEvents() {
+        document.getElementById('clearPoints').addEventListener('click', () => {
+            this.clearPoints();
+        });
+        
+        document.getElementById('addRandomPoints').addEventListener('click', () => {
+            this.addRandomPoints();
+        });
+        
+        document.getElementById('showPrediction').addEventListener('click', () => {
+            this.showPredictionOnGraph();
+        });
+        
+        document.getElementById('predictionX').addEventListener('input', () => {
+            this.makePrediction();
+        });
+    }
+    
+    addPoint(x, y) {
+        this.points.push({ x, y });
+        this.calculateRegression();
+        this.updateStats();
+        this.drawCanvas();
+    }
+    
+    clearPoints() {
+        this.points = [];
+        this.slope = 0;
+        this.intercept = 0;
+        this.r2 = 0;
+        this.updateStats();
+        this.drawCanvas();
+    }
+    
+    addRandomPoints() {
+        // Add 8-12 random points with some correlation
+        const numPoints = Math.floor(Math.random() * 5) + 8;
+        const baseSlope = (Math.random() - 0.5) * 2; // Random slope between -1 and 1
+        const baseIntercept = Math.random() * 10 + 2;
+        
+        for (let i = 0; i < numPoints; i++) {
+            const x = Math.random() * 18 + 1; // 1-19
+            const noise = (Math.random() - 0.5) * 4; // Add noise
+            const y = Math.max(0.5, Math.min(14.5, baseSlope * x + baseIntercept + noise));
+            this.points.push({ x, y });
+        }
+        
+        this.calculateRegression();
+        this.updateStats();
+        this.drawCanvas();
+    }
+    
+    calculateRegression() {
+        if (this.points.length < 2) return;
+        
+        const n = this.points.length;
+        const sumX = this.points.reduce((sum, p) => sum + p.x, 0);
+        const sumY = this.points.reduce((sum, p) => sum + p.y, 0);
+        const sumXY = this.points.reduce((sum, p) => sum + p.x * p.y, 0);
+        const sumX2 = this.points.reduce((sum, p) => sum + p.x * p.x, 0);
+        const sumY2 = this.points.reduce((sum, p) => sum + p.y * p.y, 0);
+        
+        const meanX = sumX / n;
+        const meanY = sumY / n;
+        
+        // Calculate slope and intercept
+        const numerator = sumXY - n * meanX * meanY;
+        const denominator = sumX2 - n * meanX * meanX;
+        
+        if (Math.abs(denominator) > 0.0001) {
+            this.slope = numerator / denominator;
+            this.intercept = meanY - this.slope * meanX;
+            
+            // Calculate R²
+            const ssRes = this.points.reduce((sum, p) => {
+                const predicted = this.slope * p.x + this.intercept;
+                return sum + Math.pow(p.y - predicted, 2);
+            }, 0);
+            
+            const ssTot = this.points.reduce((sum, p) => {
+                return sum + Math.pow(p.y - meanY, 2);
+            }, 0);
+            
+            this.r2 = ssTot > 0 ? 1 - (ssRes / ssTot) : 0;
+        }
+    }
+    
+    updateStats() {
+        document.getElementById('pointCount').textContent = this.points.length;
+        
+        if (this.points.length > 0) {
+            const meanX = this.points.reduce((sum, p) => sum + p.x, 0) / this.points.length;
+            const meanY = this.points.reduce((sum, p) => sum + p.y, 0) / this.points.length;
+            
+            document.getElementById('meanX').textContent = meanX.toFixed(2);
+            document.getElementById('meanY').textContent = meanY.toFixed(2);
+        } else {
+            document.getElementById('meanX').textContent = '--';
+            document.getElementById('meanY').textContent = '--';
+        }
+        
+        if (this.points.length >= 2) {
+            document.getElementById('slopeValue').textContent = this.slope.toFixed(4);
+            document.getElementById('interceptValue').textContent = this.intercept.toFixed(4);
+            document.getElementById('r2Value').textContent = this.r2.toFixed(4);
+            document.getElementById('equationDisplay').textContent = 
+                `y = ${this.slope.toFixed(2)}x + ${this.intercept.toFixed(2)}`;
+        } else {
+            document.getElementById('slopeValue').textContent = '--';
+            document.getElementById('interceptValue').textContent = '--';
+            document.getElementById('r2Value').textContent = '--';
+            document.getElementById('equationDisplay').textContent = 'y = mx + b';
+        }
+    }
+    
+    makePrediction() {
+        const xInput = document.getElementById('predictionX');
+        const xValue = parseFloat(xInput.value);
+        
+        if (!isNaN(xValue) && this.points.length >= 2) {
+            const prediction = this.slope * xValue + this.intercept;
+            document.getElementById('predictionY').textContent = prediction.toFixed(2);
+        } else {
+            document.getElementById('predictionY').textContent = '--';
+        }
+    }
+    
+    showPredictionOnGraph() {
+        const xInput = document.getElementById('predictionX');
+        let xValue = parseFloat(xInput.value);
+        
+        // If no value entered, generate a random one
+        if (isNaN(xValue)) {
+            xValue = Math.random() * 18 + 1; // Random value between 1 and 19
+            xInput.value = xValue.toFixed(1);
+        }
+        
+        if (this.points.length >= 2) {
+            const prediction = this.slope * xValue + this.intercept;
+            document.getElementById('predictionY').textContent = prediction.toFixed(2);
+            
+            // Highlight the prediction point
+            this.predictionPoint = { x: xValue, y: prediction };
+            this.drawCanvas();
+            
+            // Remove highlight after 3 seconds
+            setTimeout(() => {
+                this.predictionPoint = null;
+                this.drawCanvas();
+            }, 3000);
+        } else {
+            alert('Add at least 2 data points to make predictions!');
+        }
+    }
+    
+    drawCanvas() {
+        const ctx = this.ctx;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+        
+        // Draw grid
+        ctx.strokeStyle = '#e5e7eb';
+        ctx.lineWidth = 1;
+        
+        // Vertical lines
+        for (let i = 0; i <= 20; i++) {
+            const x = (i / 20) * width;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+            ctx.stroke();
+        }
+        
+        // Horizontal lines
+        for (let i = 0; i <= 15; i++) {
+            const y = (i / 15) * height;
+            ctx.beginPath();
+            ctx.moveTo(0, height - y);
+            ctx.lineTo(width, height - y);
+            ctx.stroke();
+        }
+        
+        // Draw axes
+        ctx.strokeStyle = '#6b7280';
+        ctx.lineWidth = 2;
+        
+        // X-axis
+        ctx.beginPath();
+        ctx.moveTo(0, height);
+        ctx.lineTo(width, height);
+        ctx.stroke();
+        
+        // Y-axis
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, height);
+        ctx.stroke();
+        
+        // Draw axis labels
+        ctx.fillStyle = '#374151';
+        ctx.font = '12px Inter';
+        ctx.textAlign = 'center';
+        
+        // X-axis labels
+        for (let i = 0; i <= 20; i += 5) {
+            const x = (i / 20) * width;
+            ctx.fillText(i.toString(), x, height - 5);
+        }
+        
+        // Y-axis labels
+        ctx.textAlign = 'right';
+        for (let i = 0; i <= 15; i += 5) {
+            const y = height - (i / 15) * height;
+            ctx.fillText(i.toString(), -5, y + 4);
+        }
+        
+        // Draw regression line
+        if (this.points.length >= 2) {
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const y1 = this.slope * 0 + this.intercept;
+            const y2 = this.slope * 20 + this.intercept;
+            
+            const x1Canvas = 0;
+            const y1Canvas = height - (y1 / 15) * height;
+            const x2Canvas = width;
+            const y2Canvas = height - (y2 / 15) * height;
+            
+            ctx.moveTo(x1Canvas, y1Canvas);
+            ctx.lineTo(x2Canvas, y2Canvas);
+            ctx.stroke();
+        }
+        
+        // Draw points
+        this.points.forEach((point, index) => {
+            const x = (point.x / 20) * width;
+            const y = height - (point.y / 15) * height;
+            
+            // Point circle
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Point border
+            ctx.strokeStyle = '#dc2626';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Point coordinates
+            ctx.fillStyle = '#374151';
+            ctx.font = '10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(`(${point.x.toFixed(1)}, ${point.y.toFixed(1)})`, x, y - 12);
+        });
+        
+        // Draw prediction point if it exists
+        if (this.predictionPoint) {
+            const x = (this.predictionPoint.x / 20) * width;
+            const y = height - (this.predictionPoint.y / 15) * height;
+            
+            // Prediction point - larger and different color
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Prediction point border
+            ctx.strokeStyle = '#059669';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Prediction label
+            ctx.fillStyle = '#059669';
+            ctx.font = 'bold 12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Prediction: (${this.predictionPoint.x.toFixed(1)}, ${this.predictionPoint.y.toFixed(1)})`, x, y - 20);
+        }
+    }
+}
+
+// Initialize the demo when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    new LinearRegressionDemo();
+});
+</script>
+{% endblock %}

@@ -13,24 +13,24 @@
 <section class="references-content">
     <div class="container">
         <div class="references-grid">
-            
+
             <!-- Machine Learning Fundamentals -->
             <article class="reference-card">
-                <div class="reference-header">
+                <div class="reference-header collapsed" onclick="toggleReferenceContent(this)">
                     <h2>Linear Regression</h2>
                     <span class="reference-category">Supervised Learning</span>
                 </div>
-                <div class="reference-body">
+                <div class="reference-body collapsed">
                     <p>
-                        Linear regression is one of the fundamental algorithms in machine learning and statistics. It models 
-                        the relationship between a dependent variable (target) and one or more independent variables (features) 
-                        by fitting a linear equation to observed data. This technique is widely used for prediction, forecasting, 
+                        Linear regression is one of the fundamental algorithms in machine learning and statistics. It models
+                        the relationship between a dependent variable (target) and one or more independent variables (features)
+                        by fitting a linear equation to observed data. This technique is widely used for prediction, forecasting,
                         and understanding relationships between variables.
                     </p>
-                    
+
                     <h3>Mathematical Foundation</h3>
                     <p>
-                        For simple linear regression with one feature, we want to find the best line that fits our data points. 
+                        For simple linear regression with one feature, we want to find the best line that fits our data points.
                         The linear equation is:
                     </p>
                     <div class="math-equation">
@@ -46,7 +46,7 @@
 
                     <h3>Cost Function (Loss Function)</h3>
                     <p>
-                        To find the best line, we need to minimize the difference between our predictions and actual values. 
+                        To find the best line, we need to minimize the difference between our predictions and actual values.
                         We use Mean Squared Error (MSE) as our cost function:
                     </p>
                     <div class="math-equation">
@@ -62,7 +62,7 @@
 
                     <h3>Gradient Descent Optimization</h3>
                     <p>
-                        To minimize the cost function, we use gradient descent. We calculate partial derivatives and 
+                        To minimize the cost function, we use gradient descent. We calculate partial derivatives and
                         update our parameters iteratively:
                     </p>
                     <div class="math-equation">
@@ -86,7 +86,7 @@
 
                     <h3>Worked Mathematical Examples</h3>
                     <p>Let's work through some concrete examples to see how the math works in practice:</p>
-                    
+
                     <h4>Example 1: Simple Dataset</h4>
                     <p>Consider predicting house prices based on size with this small dataset:</p>
                     <div class="math-equation">
@@ -177,7 +177,7 @@
                         <div class="graph-container">
                             <canvas id="dataFitCanvas" width="500" height="300"></canvas>
                         </div>
-                        
+
                         <h4>📉 Cost Function Over Iterations</h4>
                         <div class="graph-container">
                             <canvas id="costCanvas" width="500" height="300"></canvas>
@@ -192,10 +192,10 @@
                             <div class="parameter-controls">
                                 <label>Slope (m): <span id="slopeValue">150</span></label>
                                 <input type="range" id="slopeSlider" min="50" max="250" value="150" oninput="updateLine()">
-                                
+
                                 <label>Intercept (b): <span id="interceptValue">0</span></label>
                                 <input type="range" id="interceptSlider" min="-50000" max="50000" value="0" oninput="updateLine()">
-                                
+
                                 <div class="cost-display">Cost (MSE): <span id="currentCost">0</span></div>
                             </div>
                             <canvas id="interactiveCanvas" width="500" height="300"></canvas>
@@ -204,7 +204,7 @@
 
                     <h3>Complete Implementation from Scratch</h3>
                     <p>
-                        Below is a complete implementation of linear regression using gradient descent, built without 
+                        Below is a complete implementation of linear regression using gradient descent, built without
                         any machine learning libraries. This shows exactly how the mathematical concepts translate to code:
                     </p>
                     <pre class="code-block"><code><span class="keyword">import</span> <span class="builtin">numpy</span> <span class="keyword">as</span> <span class="builtin">np</span>
@@ -218,7 +218,7 @@
         <span class="variable">self</span><span class="punctuation">.</span><span class="variable">slope</span> <span class="operator">=</span> <span class="constant">None</span>  <span class="comment"># m in y = mx + b</span>
         <span class="variable">self</span><span class="punctuation">.</span><span class="variable">intercept</span> <span class="operator">=</span> <span class="constant">None</span>  <span class="comment"># b in y = mx + b</span>
         <span class="variable">self</span><span class="punctuation">.</span><span class="variable">cost_history</span> <span class="operator">=</span> <span class="punctuation">[]</span>
-    
+
     <span class="keyword">def</span> <span class="function">fit</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">):</span>
         <span class="string">"""Train the linear regression model."""</span>
         <span class="comment"># Initialize parameters</span>
@@ -238,11 +238,11 @@
             <span class="comment"># Update parameters: m = m - α*∂J/∂m, b = b - α*∂J/∂b</span>
             <span class="variable">self</span><span class="punctuation">.</span><span class="variable">slope</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">dm</span>
             <span class="variable">self</span><span class="punctuation">.</span><span class="variable">intercept</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">db</span>
-    
+
     <span class="keyword">def</span> <span class="function">predict</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">):</span>
         <span class="string">"""Make predictions using y = mx + b."""</span>
         <span class="keyword">return</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">,</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">slope</span><span class="punctuation">)</span> <span class="operator">+</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">intercept</span>
-    
+
     <span class="keyword">def</span> <span class="function">_calculate_cost</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">y_true</span><span class="punctuation">,</span> <span class="variable">y_pred</span><span class="punctuation">):</span>
         <span class="string">"""Calculate Mean Squared Error."""</span>
         <span class="keyword">return</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">mean</span><span class="punctuation">((</span><span class="variable">y_true</span> <span class="operator">-</span> <span class="variable">y_pred</span><span class="punctuation">)</span> <span class="operator">**</span> <span class="number">2</span><span class="punctuation">)</span>
@@ -277,7 +277,537 @@
     <span class="comment"># R-squared: 0.926</span></code></pre>
                 </div>
             </article>
-<!--  -->
+
+            <!-- Neural Networks -->
+            <article class="reference-card">
+                <div class="reference-header collapsed" onclick="toggleReferenceContent(this)">
+                    <h2>Neural Networks</h2>
+                    <span class="reference-category">Deep Learning</span>
+                </div>
+                <div class="reference-body collapsed">
+                    <p>
+                        Neural networks are computing systems inspired by biological neural networks. They consist of
+                        interconnected nodes (neurons) that process information through weighted connections. These networks
+                        can learn complex patterns and relationships in data, making them powerful tools for tasks like
+                        image recognition, natural language processing, and prediction.
+                    </p>
+
+                    <h3>Network Architecture</h3>
+                    <p>
+                        A neural network consists of layers of interconnected neurons. The basic structure includes:
+                    </p>
+                    <div class="math-equation">
+                        <strong>Input Layer → Hidden Layer(s) → Output Layer</strong>
+                    </div>
+                    <p>Key components:</p>
+                    <ul>
+                        <li><strong>Input Layer:</strong> Receives the input features (x₁, x₂, ..., xₙ)</li>
+                        <li><strong>Hidden Layers:</strong> Process information through weighted connections</li>
+                        <li><strong>Output Layer:</strong> Produces the final prediction or classification</li>
+                        <li><strong>Weights (W):</strong> Parameters that determine connection strength</li>
+                        <li><strong>Biases (b):</strong> Threshold values for neuron activation</li>
+                    </ul>
+
+                    <h3>Forward Propagation</h3>
+                    <p>
+                        Information flows forward through the network from input to output. For each neuron:
+                    </p>
+                    <div class="math-equation">
+                        <strong>z = W·x + b</strong><br>
+                        <strong>a = σ(z)</strong>
+                    </div>
+                    <p>Where:</p>
+                    <ul>
+                        <li><strong>z</strong> = weighted sum of inputs plus bias</li>
+                        <li><strong>W</strong> = weight matrix</li>
+                        <li><strong>x</strong> = input vector</li>
+                        <li><strong>b</strong> = bias vector</li>
+                        <li><strong>σ</strong> = activation function</li>
+                        <li><strong>a</strong> = activated output</li>
+                    </ul>
+
+                    <h3>Activation Functions</h3>
+                    <p>
+                        Activation functions introduce non-linearity, allowing networks to learn complex patterns:
+                    </p>
+
+                    <h4>Common Activation Functions</h4>
+                    <div class="math-equation">
+                        <strong>Sigmoid: σ(z) = 1 / (1 + e⁻ᶻ)</strong><br>
+                        <strong>ReLU: f(z) = max(0, z)</strong><br>
+                        <strong>Tanh: f(z) = (eᶻ - e⁻ᶻ) / (eᶻ + e⁻ᶻ)</strong>
+                    </div>
+                    <ul>
+                        <li><strong>Sigmoid:</strong> Outputs between 0 and 1, good for binary classification</li>
+                        <li><strong>ReLU:</strong> Most popular, computationally efficient, helps with vanishing gradients</li>
+                        <li><strong>Tanh:</strong> Outputs between -1 and 1, zero-centered</li>
+                    </ul>
+
+                    <h3>Backpropagation Algorithm</h3>
+                    <p>
+                        Backpropagation is the learning algorithm that adjusts weights based on prediction errors:
+                    </p>
+
+                    <h4>Step 1: Calculate Loss</h4>
+                    <div class="math-equation">
+                        <strong>Loss = (1/2) × (ŷ - y)²</strong> (for regression)<br>
+                        <strong>Loss = -y×log(ŷ) - (1-y)×log(1-ŷ)</strong> (for classification)
+                    </div>
+
+                    <h4>Step 2: Calculate Gradients (Chain Rule)</h4>
+                    <div class="math-equation">
+                        <strong>∂Loss/∂W = ∂Loss/∂a × ∂a/∂z × ∂z/∂W</strong><br>
+                        <strong>∂Loss/∂b = ∂Loss/∂a × ∂a/∂z × ∂z/∂b</strong>
+                    </div>
+
+                    <h4>Step 3: Update Parameters</h4>
+                    <div class="math-equation">
+                        <strong>W := W - α × ∂Loss/∂W</strong><br>
+                        <strong>b := b - α × ∂Loss/∂b</strong>
+                    </div>
+
+                    <h3>Worked Example: XOR Problem</h3>
+                    <p>A classic example showing why we need hidden layers to solve non-linear problems:</p>
+
+                    <h4>Problem Setup</h4>
+                    <div class="math-equation">
+                        <strong>XOR Truth Table:</strong><br>
+                        (0,0) → 0 | (0,1) → 1 | (1,0) → 1 | (1,1) → 0
+                    </div>
+
+                    <h4>Network Architecture</h4>
+                    <p>Simple 2-2-1 network (2 inputs, 2 hidden neurons, 1 output):</p>
+                    <div class="math-equation">
+                        <strong>Hidden Layer:</strong><br>
+                        h₁ = σ(w₁₁x₁ + w₁₂x₂ + b₁)<br>
+                        h₂ = σ(w₂₁x₁ + w₂₂x₂ + b₂)<br><br>
+                        <strong>Output Layer:</strong><br>
+                        ŷ = σ(w₃₁h₁ + w₃₂h₂ + b₃)
+                    </div>
+
+                    <h4>Example Forward Pass</h4>
+                    <p>For input (1,0) with learned weights:</p>
+                    <div class="math-equation">
+                        <strong>w₁₁=6, w₁₂=6, b₁=-3 → h₁ = σ(6×1 + 6×0 - 3) = σ(3) ≈ 0.95</strong><br>
+                        <strong>w₂₁=-6, w₂₂=-6, b₂=9 → h₂ = σ(-6×1 - 6×0 + 9) = σ(3) ≈ 0.95</strong><br>
+                        <strong>w₃₁=7, w₃₂=-7, b₃=-3 → ŷ = σ(7×0.95 - 7×0.95 - 3) ≈ σ(-3) ≈ 0.05</strong>
+                    </div>
+                    <p>But XOR(1,0) should be 1, so we adjust weights through backpropagation!</p>
+
+                    <h3>Key Concepts</h3>
+                    <ul>
+                        <li><strong>Universal Approximation:</strong> Neural networks can approximate any continuous function</li>
+                        <li><strong>Depth vs Width:</strong> Deeper networks can learn more complex features</li>
+                        <li><strong>Overfitting:</strong> When the model memorizes training data but fails on new data</li>
+                        <li><strong>Regularization:</strong> Techniques like dropout to prevent overfitting</li>
+                        <li><strong>Gradient Descent Variants:</strong> SGD, Adam, RMSprop for optimization</li>
+                    </ul>
+
+                    <h3>Applications</h3>
+                    <ul>
+                        <li><strong>Image Classification:</strong> CNNs for recognizing objects in photos</li>
+                        <li><strong>Natural Language Processing:</strong> RNNs and Transformers for text analysis</li>
+                        <li><strong>Speech Recognition:</strong> Converting audio to text</li>
+                        <li><strong>Game Playing:</strong> AI systems that master complex games</li>
+                        <li><strong>Medical Diagnosis:</strong> Analyzing medical images and data</li>
+                    </ul>
+
+                    <h3>Simple Neural Network Implementation</h3>
+                    <p>
+                        Here's a basic implementation of a neural network for binary classification:
+                    </p>
+                    <pre class="code-block"><code><span class="keyword">import</span> <span class="builtin">numpy</span> <span class="keyword">as</span> <span class="builtin">np</span>
+
+<span class="keyword">class</span> <span class="class-name">SimpleNeuralNetwork</span><span class="punctuation">:</span>
+    <span class="string">"""A simple 2-layer neural network for binary classification."""</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">input_size</span><span class="punctuation">,</span> <span class="variable">hidden_size</span><span class="punctuation">,</span> <span class="variable">learning_rate</span><span class="operator">=</span><span class="number">0.1</span><span class="punctuation">):</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">=</span> <span class="variable">learning_rate</span>
+
+        <span class="comment"># Initialize weights randomly</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">W1</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="builtin">random</span><span class="punctuation">.</span><span class="method">randn</span><span class="punctuation">(</span><span class="variable">input_size</span><span class="punctuation">,</span> <span class="variable">hidden_size</span><span class="punctuation">)</span> <span class="operator">*</span> <span class="number">0.5</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">b1</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">zeros</span><span class="punctuation">((</span><span class="number">1</span><span class="punctuation">,</span> <span class="variable">hidden_size</span><span class="punctuation">))</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">W2</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="builtin">random</span><span class="punctuation">.</span><span class="method">randn</span><span class="punctuation">(</span><span class="variable">hidden_size</span><span class="punctuation">,</span> <span class="number">1</span><span class="punctuation">)</span> <span class="operator">*</span> <span class="number">0.5</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">b2</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">zeros</span><span class="punctuation">((</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">1</span><span class="punctuation">))</span>
+
+    <span class="keyword">def</span> <span class="function">sigmoid</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">z</span><span class="punctuation">):</span>
+        <span class="string">"""Sigmoid activation function."""</span>
+        <span class="keyword">return</span> <span class="number">1</span> <span class="operator">/</span> <span class="punctuation">(</span><span class="number">1</span> <span class="operator">+</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">exp</span><span class="punctuation">(-</span><span class="builtin">np</span><span class="punctuation">.</span><span class="method">clip</span><span class="punctuation">(</span><span class="variable">z</span><span class="punctuation">,</span> <span class="operator">-</span><span class="number">250</span><span class="punctuation">,</span> <span class="number">250</span><span class="punctuation">)))</span>
+
+    <span class="keyword">def</span> <span class="function">sigmoid_derivative</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">z</span><span class="punctuation">):</span>
+        <span class="string">"""Derivative of sigmoid function."""</span>
+        <span class="keyword">return</span> <span class="variable">z</span> <span class="operator">*</span> <span class="punctuation">(</span><span class="number">1</span> <span class="operator">-</span> <span class="variable">z</span><span class="punctuation">)</span>
+
+    <span class="keyword">def</span> <span class="function">forward</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">):</span>
+        <span class="string">"""Forward propagation through the network."""</span>
+        <span class="comment"># Hidden layer</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">z1</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">,</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">W1</span><span class="punctuation">)</span> <span class="operator">+</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">b1</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">a1</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">sigmoid</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">z1</span><span class="punctuation">)</span>
+
+        <span class="comment"># Output layer</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">z2</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">a1</span><span class="punctuation">,</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">W2</span><span class="punctuation">)</span> <span class="operator">+</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">b2</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">a2</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">sigmoid</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">z2</span><span class="punctuation">)</span>
+
+        <span class="keyword">return</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">a2</span>
+
+    <span class="keyword">def</span> <span class="function">backward</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">,</span> <span class="variable">output</span><span class="punctuation">):</span>
+        <span class="string">"""Backpropagation to calculate gradients."""</span>
+        <span class="variable">m</span> <span class="operator">=</span> <span class="variable">X</span><span class="punctuation">.</span><span class="variable">shape</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">]</span>
+
+        <span class="comment"># Output layer gradients</span>
+        <span class="variable">dZ2</span> <span class="operator">=</span> <span class="variable">output</span> <span class="operator">-</span> <span class="variable">y</span>
+        <span class="variable">dW2</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">a1</span><span class="punctuation">.</span><span class="variable">T</span><span class="punctuation">,</span> <span class="variable">dZ2</span><span class="punctuation">)</span> <span class="operator">/</span> <span class="variable">m</span>
+        <span class="variable">db2</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">sum</span><span class="punctuation">(</span><span class="variable">dZ2</span><span class="punctuation">,</span> <span class="variable">axis</span><span class="operator">=</span><span class="number">0</span><span class="punctuation">,</span> <span class="variable">keepdims</span><span class="operator">=</span><span class="constant">True</span><span class="punctuation">)</span> <span class="operator">/</span> <span class="variable">m</span>
+
+        <span class="comment"># Hidden layer gradients</span>
+        <span class="variable">dA1</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">dZ2</span><span class="punctuation">,</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">W2</span><span class="punctuation">.</span><span class="variable">T</span><span class="punctuation">)</span>
+        <span class="variable">dZ1</span> <span class="operator">=</span> <span class="variable">dA1</span> <span class="operator">*</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">sigmoid_derivative</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">a1</span><span class="punctuation">)</span>
+        <span class="variable">dW1</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">.</span><span class="variable">T</span><span class="punctuation">,</span> <span class="variable">dZ1</span><span class="punctuation">)</span> <span class="operator">/</span> <span class="variable">m</span>
+        <span class="variable">db1</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">sum</span><span class="punctuation">(</span><span class="variable">dZ1</span><span class="punctuation">,</span> <span class="variable">axis</span><span class="operator">=</span><span class="number">0</span><span class="punctuation">,</span> <span class="variable">keepdims</span><span class="operator">=</span><span class="constant">True</span><span class="punctuation">)</span> <span class="operator">/</span> <span class="variable">m</span>
+
+        <span class="comment"># Update parameters</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">W2</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">dW2</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">b2</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">db2</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">W1</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">dW1</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">b1</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">db1</span>
+
+    <span class="keyword">def</span> <span class="function">train</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">,</span> <span class="variable">epochs</span><span class="operator">=</span><span class="number">1000</span><span class="punctuation">):</span>
+        <span class="string">"""Train the neural network."""</span>
+        <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="builtin">range</span><span class="punctuation">(</span><span class="variable">epochs</span><span class="punctuation">):</span>
+            <span class="comment"># Forward propagation</span>
+            <span class="variable">output</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">forward</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)</span>
+
+            <span class="comment"># Backpropagation</span>
+            <span class="variable">self</span><span class="punctuation">.</span><span class="method">backward</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">,</span> <span class="variable">output</span><span class="punctuation">)</span>
+
+            <span class="comment"># Print loss every 100 epochs</span>
+            <span class="keyword">if</span> <span class="variable">i</span> <span class="operator">%</span> <span class="number">100</span> <span class="operator">==</span> <span class="number">0</span><span class="punctuation">:</span>
+                <span class="variable">loss</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">mean</span><span class="punctuation">(</span><span class="builtin">np</span><span class="punctuation">.</span><span class="method">square</span><span class="punctuation">(</span><span class="variable">output</span> <span class="operator">-</span> <span class="variable">y</span><span class="punctuation">))</span>
+                <span class="builtin">print</span><span class="punctuation">(</span><span class="string">f"Epoch </span><span class="punctuation">{</span><span class="variable">i</span><span class="punctuation">}</span><span class="string">, Loss: </span><span class="punctuation">{</span><span class="variable">loss</span><span class="punctuation">:</span><span class="string">.4f</span><span class="punctuation">}</span><span class="string">"</span><span class="punctuation">)</span>
+
+    <span class="keyword">def</span> <span class="function">predict</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">):</span>
+        <span class="string">"""Make predictions on new data."""</span>
+        <span class="keyword">return</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">forward</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)</span>
+
+<span class="comment"># Example: Solving XOR problem</span>
+<span class="keyword">if</span> <span class="variable">__name__</span> <span class="operator">==</span> <span class="string">"__main__"</span><span class="punctuation">:</span>
+    <span class="comment"># XOR dataset</span>
+    <span class="variable">X</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([[</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">],</span>
+                        <span class="punctuation">[</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">1</span><span class="punctuation">],</span>
+                        <span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">],</span>
+                        <span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">1</span><span class="punctuation">]])</span>
+    <span class="variable">y</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([[</span><span class="number">0</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">1</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">1</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">0</span><span class="punctuation">]])</span>
+
+    <span class="comment"># Create and train network</span>
+    <span class="variable">nn</span> <span class="operator">=</span> <span class="class-name">SimpleNeuralNetwork</span><span class="punctuation">(</span><span class="variable">input_size</span><span class="operator">=</span><span class="number">2</span><span class="punctuation">,</span> <span class="variable">hidden_size</span><span class="operator">=</span><span class="number">4</span><span class="punctuation">,</span> <span class="variable">learning_rate</span><span class="operator">=</span><span class="number">1.0</span><span class="punctuation">)</span>
+    <span class="variable">nn</span><span class="punctuation">.</span><span class="method">train</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">,</span> <span class="variable">epochs</span><span class="operator">=</span><span class="number">2000</span><span class="punctuation">)</span>
+
+    <span class="comment"># Test predictions</span>
+    <span class="variable">predictions</span> <span class="operator">=</span> <span class="variable">nn</span><span class="punctuation">.</span><span class="method">predict</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">"\\nPredictions:"</span><span class="punctuation">)</span>
+    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="builtin">range</span><span class="punctuation">(</span><span class="builtin">len</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)):</span>
+        <span class="builtin">print</span><span class="punctuation">(</span><span class="string">f"Input: </span><span class="punctuation">{</span><span class="variable">X</span><span class="punctuation">[</span><span class="variable">i</span><span class="punctuation">]}</span><span class="string">, Target: </span><span class="punctuation">{</span><span class="variable">y</span><span class="punctuation">[</span><span class="variable">i</span><span class="punctuation">][</span><span class="number">0</span><span class="punctuation">]}</span><span class="string">, Prediction: </span><span class="punctuation">{</span><span class="variable">predictions</span><span class="punctuation">[</span><span class="variable">i</span><span class="punctuation">][</span><span class="number">0</span><span class="punctuation">]:</span><span class="string">.3f</span><span class="punctuation">}</span><span class="string">"</span><span class="punctuation">)</span>
+    <span class="comment"># Expected output:</span>
+    <span class="comment"># Input: [0 0], Target: 0, Prediction: ~0.05</span>
+    <span class="comment"># Input: [0 1], Target: 1, Prediction: ~0.95</span>
+    <span class="comment"># Input: [1 0], Target: 1, Prediction: ~0.95</span>
+    <span class="comment"># Input: [1 1], Target: 0, Prediction: ~0.05</span></code></pre>
+                </div>
+            </article>
+
+            <!-- K-Nearest Neighbors -->
+            <article class="reference-card">
+                <div class="reference-header collapsed" onclick="toggleReferenceContent(this)">
+                    <h2>K-Nearest Neighbors (KNN)</h2>
+                    <span class="reference-category">Instance-Based Learning</span>
+                </div>
+                <div class="reference-body collapsed">
+                    <p>
+                        K-Nearest Neighbors (KNN) is one of the simplest and most intuitive machine learning algorithms.
+                        It's a non-parametric method that makes predictions based on the 'k' closest training examples
+                        in the feature space. KNN is called "lazy learning" because it doesn't build an explicit model
+                        during training - instead, it stores all training data and makes predictions at query time.
+                    </p>
+
+                    <h3>Core Algorithm</h3>
+                    <p>
+                        The KNN algorithm follows a simple 3-step process:
+                    </p>
+                    <div class="math-equation">
+                        <strong>1. Calculate distances to all training points</strong><br>
+                        <strong>2. Find the k nearest neighbors</strong><br>
+                        <strong>3. Make prediction based on neighbors</strong>
+                    </div>
+                    <ul>
+                        <li><strong>Classification:</strong> Majority vote among k neighbors</li>
+                        <li><strong>Regression:</strong> Average of k neighbor values</li>
+                        <li><strong>Distance Metric:</strong> Usually Euclidean, Manhattan, or Minkowski</li>
+                    </ul>
+
+                    <h3>Distance Metrics</h3>
+                    <p>
+                        The choice of distance metric significantly affects KNN performance:
+                    </p>
+
+                    <h4>Euclidean Distance</h4>
+                    <div class="math-equation">
+                        <strong>d(p,q) = √[(p₁-q₁)² + (p₂-q₂)² + ... + (pₙ-qₙ)²]</strong>
+                    </div>
+                    <p>Most common choice, works well for continuous features</p>
+
+                    <h4>Manhattan Distance</h4>
+                    <div class="math-equation">
+                        <strong>d(p,q) = |p₁-q₁| + |p₂-q₂| + ... + |pₙ-qₙ|</strong>
+                    </div>
+                    <p>Good for high-dimensional data, less sensitive to outliers</p>
+
+                    <h4>Minkowski Distance (Generalized)</h4>
+                    <div class="math-equation">
+                        <strong>d(p,q) = (Σᵢ|pᵢ-qᵢ|ʳ)^(1/r)</strong><br>
+                        <strong>r=1: Manhattan | r=2: Euclidean</strong>
+                    </div>
+
+                    <h3>Choosing the Right K</h3>
+                    <p>
+                        The value of k is crucial for good performance:
+                    </p>
+                    <ul>
+                        <li><strong>k=1:</strong> Sensitive to noise, overfitting risk</li>
+                        <li><strong>k too large:</strong> Over-smoothing, underfitting risk</li>
+                        <li><strong>Odd k:</strong> Preferred for binary classification (avoids ties)</li>
+                        <li><strong>Rule of thumb:</strong> k = √n where n is number of training samples</li>
+                        <li><strong>Cross-validation:</strong> Best method to find optimal k</li>
+                    </ul>
+
+                    <h3>Worked Example: Iris Classification</h3>
+                    <p>Let's classify iris flowers using KNN with k=3:</p>
+
+                    <h4>Dataset Sample</h4>
+                    <div class="math-equation">
+                        <strong>Training Data (Sepal Length, Sepal Width, Species):</strong><br>
+                        (5.1, 3.5, Setosa) | (7.0, 3.2, Versicolor) | (6.3, 3.3, Virginica)<br>
+                        (4.9, 3.0, Setosa) | (6.4, 3.2, Versicolor) | (5.8, 2.7, Virginica)
+                    </div>
+
+                    <h4>New Sample to Classify</h4>
+                    <div class="math-equation">
+                        <strong>Query Point: (5.5, 3.1, ?)</strong>
+                    </div>
+
+                    <h4>Step 1: Calculate Distances</h4>
+                    <p>Using Euclidean distance:</p>
+                    <div class="math-equation">
+                        <strong>d₁ = √[(5.5-5.1)² + (3.1-3.5)²] = √[0.16 + 0.16] = 0.57</strong><br>
+                        <strong>d₂ = √[(5.5-7.0)² + (3.1-3.2)²] = √[2.25 + 0.01] = 1.50</strong><br>
+                        <strong>d₃ = √[(5.5-6.3)² + (3.1-3.3)²] = √[0.64 + 0.04] = 0.82</strong><br>
+                        <strong>d₄ = √[(5.5-4.9)² + (3.1-3.0)²] = √[0.36 + 0.01] = 0.61</strong><br>
+                        <strong>d₅ = √[(5.5-6.4)² + (3.1-3.2)²] = √[0.81 + 0.01] = 0.91</strong><br>
+                        <strong>d₆ = √[(5.5-5.8)² + (3.1-2.7)²] = √[0.09 + 0.16] = 0.50</strong>
+                    </div>
+
+                    <h4>Step 2: Find 3 Nearest Neighbors</h4>
+                    <div class="math-equation">
+                        <strong>Nearest neighbors (sorted by distance):</strong><br>
+                        <strong>1st: d₆ = 0.50 → Virginica</strong><br>
+                        <strong>2nd: d₁ = 0.57 → Setosa</strong><br>
+                        <strong>3rd: d₄ = 0.61 → Setosa</strong>
+                    </div>
+
+                    <h4>Step 3: Majority Vote</h4>
+                    <div class="math-equation">
+                        <strong>Votes: Setosa(2), Virginica(1)</strong><br>
+                        <strong>Prediction: Setosa</strong>
+                    </div>
+
+                    <h3>KNN for Regression Example</h3>
+                    <p>Predicting house prices using k=3:</p>
+
+                    <h4>Query: House with 1800 sq ft</h4>
+                    <div class="math-equation">
+                        <strong>Nearest neighbors:</strong><br>
+                        <strong>1750 sq ft → $280,000 (distance: 50)</strong><br>
+                        <strong>1820 sq ft → $295,000 (distance: 20)</strong><br>
+                        <strong>1780 sq ft → $285,000 (distance: 20)</strong><br><br>
+                        <strong>Prediction = (280,000 + 295,000 + 285,000) ÷ 3 = $286,667</strong>
+                    </div>
+
+                    <h3>Weighted KNN</h3>
+                    <p>
+                        Give closer neighbors more influence on the prediction:
+                    </p>
+                    <div class="math-equation">
+                        <strong>Weight = 1 / distance</strong><br>
+                        <strong>Prediction = Σ(weight × value) / Σ(weights)</strong>
+                    </div>
+                    <p>Using the house price example:</p>
+                    <div class="math-equation">
+                        <strong>w₁ = 1/50 = 0.02, w₂ = 1/20 = 0.05, w₃ = 1/20 = 0.05</strong><br>
+                        <strong>Weighted Price = (0.02×280,000 + 0.05×295,000 + 0.05×285,000) / 0.12</strong><br>
+                        <strong>= (5,600 + 14,750 + 14,250) / 0.12 = $287,500</strong>
+                    </div>
+
+                    <h3>Advantages and Disadvantages</h3>
+
+                    <h4>Advantages</h4>
+                    <ul>
+                        <li><strong>Simple and Intuitive:</strong> Easy to understand and implement</li>
+                        <li><strong>No Training Period:</strong> Lazy learning approach</li>
+                        <li><strong>Versatile:</strong> Works for both classification and regression</li>
+                        <li><strong>Non-parametric:</strong> Makes no assumptions about data distribution</li>
+                        <li><strong>Adapts to New Data:</strong> Simply add new points to training set</li>
+                    </ul>
+
+                    <h4>Disadvantages</h4>
+                    <ul>
+                        <li><strong>Computationally Expensive:</strong> O(n) time complexity for each prediction</li>
+                        <li><strong>Storage Requirements:</strong> Must store entire training dataset</li>
+                        <li><strong>Curse of Dimensionality:</strong> Performance degrades in high dimensions</li>
+                        <li><strong>Sensitive to Irrelevant Features:</strong> All features treated equally</li>
+                        <li><strong>Sensitive to Scale:</strong> Requires feature normalization</li>
+                    </ul>
+
+                    <h3>Optimization Techniques</h3>
+                    <ul>
+                        <li><strong>Feature Scaling:</strong> Normalize features to same scale</li>
+                        <li><strong>Dimensionality Reduction:</strong> Use PCA to reduce feature space</li>
+                        <li><strong>Distance Weighting:</strong> Give closer neighbors more influence</li>
+                        <li><strong>Data Structures:</strong> Use KD-trees or Ball trees for faster search</li>
+                        <li><strong>Feature Selection:</strong> Remove irrelevant or noisy features</li>
+                    </ul>
+
+                    <h3>Complete KNN Implementation</h3>
+                    <p>
+                        Here's a full implementation of KNN for both classification and regression:
+                    </p>
+                    <pre class="code-block"><code><span class="keyword">import</span> <span class="builtin">numpy</span> <span class="keyword">as</span> <span class="builtin">np</span>
+<span class="keyword">from</span> <span class="builtin">collections</span> <span class="keyword">import</span> <span class="builtin">Counter</span>
+<span class="keyword">import</span> <span class="builtin">matplotlib.pyplot</span> <span class="keyword">as</span> <span class="builtin">plt</span>
+
+<span class="keyword">class</span> <span class="class-name">KNearestNeighbors</span><span class="punctuation">:</span>
+    <span class="string">"""K-Nearest Neighbors implementation for classification and regression."""</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">k</span><span class="operator">=</span><span class="number">3</span><span class="punctuation">,</span> <span class="variable">distance_metric</span><span class="operator">=</span><span class="string">'euclidean'</span><span class="punctuation">,</span> <span class="variable">weighted</span><span class="operator">=</span><span class="constant">False</span><span class="punctuation">):</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">k</span> <span class="operator">=</span> <span class="variable">k</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">distance_metric</span> <span class="operator">=</span> <span class="variable">distance_metric</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">weighted</span> <span class="operator">=</span> <span class="variable">weighted</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">X_train</span> <span class="operator">=</span> <span class="constant">None</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">y_train</span> <span class="operator">=</span> <span class="constant">None</span>
+
+    <span class="keyword">def</span> <span class="function">euclidean_distance</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">p1</span><span class="punctuation">,</span> <span class="variable">p2</span><span class="punctuation">):</span>
+        <span class="string">"""Calculate Euclidean distance between two points."""</span>
+        <span class="keyword">return</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">sqrt</span><span class="punctuation">(</span><span class="builtin">np</span><span class="punctuation">.</span><span class="method">sum</span><span class="punctuation">((</span><span class="variable">p1</span> <span class="operator">-</span> <span class="variable">p2</span><span class="punctuation">)</span> <span class="operator">**</span> <span class="number">2</span><span class="punctuation">))</span>
+
+    <span class="keyword">def</span> <span class="function">manhattan_distance</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">p1</span><span class="punctuation">,</span> <span class="variable">p2</span><span class="punctuation">):</span>
+        <span class="string">"""Calculate Manhattan distance between two points."""</span>
+        <span class="keyword">return</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">sum</span><span class="punctuation">(</span><span class="builtin">np</span><span class="punctuation">.</span><span class="method">abs</span><span class="punctuation">(</span><span class="variable">p1</span> <span class="operator">-</span> <span class="variable">p2</span><span class="punctuation">))</span>
+
+    <span class="keyword">def</span> <span class="function">calculate_distance</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">p1</span><span class="punctuation">,</span> <span class="variable">p2</span><span class="punctuation">):</span>
+        <span class="string">"""Calculate distance based on selected metric."""</span>
+        <span class="keyword">if</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">distance_metric</span> <span class="operator">==</span> <span class="string">'euclidean'</span><span class="punctuation">:</span>
+            <span class="keyword">return</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">euclidean_distance</span><span class="punctuation">(</span><span class="variable">p1</span><span class="punctuation">,</span> <span class="variable">p2</span><span class="punctuation">)</span>
+        <span class="keyword">elif</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">distance_metric</span> <span class="operator">==</span> <span class="string">'manhattan'</span><span class="punctuation">:</span>
+            <span class="keyword">return</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">manhattan_distance</span><span class="punctuation">(</span><span class="variable">p1</span><span class="punctuation">,</span> <span class="variable">p2</span><span class="punctuation">)</span>
+        <span class="keyword">else</span><span class="punctuation">:</span>
+            <span class="keyword">raise</span> <span class="builtin">ValueError</span><span class="punctuation">(</span><span class="string">f"Unsupported distance metric: </span><span class="punctuation">{</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">distance_metric</span><span class="punctuation">}</span><span class="string">"</span><span class="punctuation">)</span>
+
+    <span class="keyword">def</span> <span class="function">fit</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">):</span>
+        <span class="string">"""Store training data (lazy learning)."""</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">X_train</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">y_train</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">(</span><span class="variable">y</span><span class="punctuation">)</span>
+
+    <span class="keyword">def</span> <span class="function">get_neighbors</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">x_query</span><span class="punctuation">):</span>
+        <span class="string">"""Find k nearest neighbors to query point."""</span>
+        <span class="variable">distances</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+        <span class="keyword">for</span> <span class="variable">i</span><span class="punctuation">,</span> <span class="variable">x_train</span> <span class="keyword">in</span> <span class="builtin">enumerate</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">X_train</span><span class="punctuation">):</span>
+            <span class="variable">dist</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">calculate_distance</span><span class="punctuation">(</span><span class="variable">x_query</span><span class="punctuation">,</span> <span class="variable">x_train</span><span class="punctuation">)</span>
+            <span class="variable">distances</span><span class="punctuation">.</span><span class="method">append</span><span class="punctuation">((</span><span class="variable">dist</span><span class="punctuation">,</span> <span class="variable">i</span><span class="punctuation">))</span>
+        <span class="comment"># Sort by distance and get k nearest</span>
+        <span class="variable">distances</span><span class="punctuation">.</span><span class="method">sort</span><span class="punctuation">(</span><span class="variable">key</span><span class="operator">=</span><span class="keyword">lambda</span> <span class="variable">x</span><span class="punctuation">:</span> <span class="variable">x</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">])</span>
+        <span class="variable">k_nearest</span> <span class="operator">=</span> <span class="variable">distances</span><span class="punctuation">[:</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">k</span><span class="punctuation">]</span>
+        <span class="keyword">return</span> <span class="variable">k_nearest</span>
+
+    <span class="keyword">def</span> <span class="function">predict_classification</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">):</span>
+        <span class="string">"""Make classification predictions."""</span>
+        <span class="variable">predictions</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+        <span class="keyword">for</span> <span class="variable">x_query</span> <span class="keyword">in</span> <span class="variable">X</span><span class="punctuation">:</span>
+            <span class="variable">neighbors</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">get_neighbors</span><span class="punctuation">(</span><span class="variable">x_query</span><span class="punctuation">)</span>
+            <span class="keyword">if</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">weighted</span><span class="punctuation">:</span>
+                <span class="comment"># Weighted voting</span>
+                <span class="variable">weighted_votes</span> <span class="operator">=</span> <span class="punctuation">{}</span>
+                <span class="keyword">for</span> <span class="variable">dist</span><span class="punctuation">,</span> <span class="variable">idx</span> <span class="keyword">in</span> <span class="variable">neighbors</span><span class="punctuation">:</span>
+                    <span class="variable">label</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">y_train</span><span class="punctuation">[</span><span class="variable">idx</span><span class="punctuation">]</span>
+                    <span class="variable">weight</span> <span class="operator">=</span> <span class="number">1</span> <span class="operator">/</span> <span class="punctuation">(</span><span class="variable">dist</span> <span class="operator">+</span> <span class="number">1e-5</span><span class="punctuation">)</span>  <span class="comment"># Add small value to avoid division by zero</span>
+                    <span class="variable">weighted_votes</span><span class="punctuation">[</span><span class="variable">label</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="variable">weighted_votes</span><span class="punctuation">.</span><span class="method">get</span><span class="punctuation">(</span><span class="variable">label</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">)</span> <span class="operator">+</span> <span class="variable">weight</span>
+                <span class="variable">prediction</span> <span class="operator">=</span> <span class="builtin">max</span><span class="punctuation">(</span><span class="variable">weighted_votes</span><span class="punctuation">,</span> <span class="variable">key</span><span class="operator">=</span><span class="variable">weighted_votes</span><span class="punctuation">.</span><span class="variable">get</span><span class="punctuation">)</span>
+            <span class="keyword">else</span><span class="punctuation">:</span>
+                <span class="comment"># Simple majority voting</span>
+                <span class="variable">neighbor_labels</span> <span class="operator">=</span> <span class="punctuation">[</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">y_train</span><span class="punctuation">[</span><span class="variable">idx</span><span class="punctuation">]</span> <span class="keyword">for</span> <span class="variable">_</span><span class="punctuation">,</span> <span class="variable">idx</span> <span class="keyword">in</span> <span class="variable">neighbors</span><span class="punctuation">]</span>
+                <span class="variable">prediction</span> <span class="operator">=</span> <span class="class-name">Counter</span><span class="punctuation">(</span><span class="variable">neighbor_labels</span><span class="punctuation">).</span><span class="method">most_common</span><span class="punctuation">(</span><span class="number">1</span><span class="punctuation">)[</span><span class="number">0</span><span class="punctuation">][</span><span class="number">0</span><span class="punctuation">]</span>
+            <span class="variable">predictions</span><span class="punctuation">.</span><span class="method">append</span><span class="punctuation">(</span><span class="variable">prediction</span><span class="punctuation">)</span>
+        <span class="keyword">return</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">(</span><span class="variable">predictions</span><span class="punctuation">)</span>
+
+    <span class="keyword">def</span> <span class="function">predict_regression</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">):</span>
+        <span class="string">"""Make regression predictions."""</span>
+        <span class="variable">predictions</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+        <span class="keyword">for</span> <span class="variable">x_query</span> <span class="keyword">in</span> <span class="variable">X</span><span class="punctuation">:</span>
+            <span class="variable">neighbors</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">get_neighbors</span><span class="punctuation">(</span><span class="variable">x_query</span><span class="punctuation">)</span>
+            <span class="keyword">if</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">weighted</span><span class="punctuation">:</span>
+                <span class="comment"># Weighted average</span>
+                <span class="variable">total_weight</span> <span class="operator">=</span> <span class="number">0</span>
+                <span class="variable">weighted_sum</span> <span class="operator">=</span> <span class="number">0</span>
+                <span class="keyword">for</span> <span class="variable">dist</span><span class="punctuation">,</span> <span class="variable">idx</span> <span class="keyword">in</span> <span class="variable">neighbors</span><span class="punctuation">:</span>
+                    <span class="variable">weight</span> <span class="operator">=</span> <span class="number">1</span> <span class="operator">/</span> <span class="punctuation">(</span><span class="variable">dist</span> <span class="operator">+</span> <span class="number">1e-5</span><span class="punctuation">)</span>
+                    <span class="variable">weighted_sum</span> <span class="operator">+=</span> <span class="variable">weight</span> <span class="operator">*</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">y_train</span><span class="punctuation">[</span><span class="variable">idx</span><span class="punctuation">]</span>
+                    <span class="variable">total_weight</span> <span class="operator">+=</span> <span class="variable">weight</span>
+                <span class="variable">prediction</span> <span class="operator">=</span> <span class="variable">weighted_sum</span> <span class="operator">/</span> <span class="variable">total_weight</span>
+            <span class="keyword">else</span><span class="punctuation">:</span>
+                <span class="comment"># Simple average</span>
+                <span class="variable">neighbor_values</span> <span class="operator">=</span> <span class="punctuation">[</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">y_train</span><span class="punctuation">[</span><span class="variable">idx</span><span class="punctuation">]</span> <span class="keyword">for</span> <span class="variable">_</span><span class="punctuation">,</span> <span class="variable">idx</span> <span class="keyword">in</span> <span class="variable">neighbors</span><span class="punctuation">]</span>
+                <span class="variable">prediction</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">mean</span><span class="punctuation">(</span><span class="variable">neighbor_values</span><span class="punctuation">)</span>
+            <span class="variable">predictions</span><span class="punctuation">.</span><span class="method">append</span><span class="punctuation">(</span><span class="variable">prediction</span><span class="punctuation">)</span>
+        <span class="keyword">return</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">(</span><span class="variable">predictions</span><span class="punctuation">)</span>
+
+<span class="comment"># Example usage</span>
+<span class="keyword">if</span> <span class="variable">__name__</span> <span class="operator">==</span> <span class="string">"__main__"</span><span class="punctuation">:</span>
+    <span class="comment"># Classification Example: Iris dataset</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">"=== KNN Classification Example ==="</span><span class="punctuation">)</span>
+
+    <span class="comment"># Sample iris data (sepal_length, sepal_width)</span>
+    <span class="variable">X_iris</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([</span>
+        <span class="punctuation">[</span><span class="number">5.1</span><span class="punctuation">,</span> <span class="number">3.5</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">4.9</span><span class="punctuation">,</span> <span class="number">3.0</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">7.0</span><span class="punctuation">,</span> <span class="number">3.2</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">6.4</span><span class="punctuation">,</span> <span class="number">3.2</span><span class="punctuation">],</span>
+        <span class="punctuation">[</span><span class="number">6.3</span><span class="punctuation">,</span> <span class="number">3.3</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">5.8</span><span class="punctuation">,</span> <span class="number">2.7</span><span class="punctuation">]</span>
+    <span class="punctuation">])</span>
+    <span class="variable">y_iris</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([</span><span class="string">'Setosa'</span><span class="punctuation">,</span> <span class="string">'Setosa'</span><span class="punctuation">,</span> <span class="string">'Versicolor'</span><span class="punctuation">,</span> <span class="string">'Versicolor'</span><span class="punctuation">,</span> <span class="string">'Virginica'</span><span class="punctuation">,</span> <span class="string">'Virginica'</span><span class="punctuation">])</span>
+    <span class="comment"># Train KNN classifier</span>
+    <span class="variable">knn_clf</span> <span class="operator">=</span> <span class="class-name">KNearestNeighbors</span><span class="punctuation">(</span><span class="variable">k</span><span class="operator">=</span><span class="number">3</span><span class="punctuation">,</span> <span class="variable">weighted</span><span class="operator">=</span><span class="constant">True</span><span class="punctuation">)</span>
+    <span class="variable">knn_clf</span><span class="punctuation">.</span><span class="method">fit</span><span class="punctuation">(</span><span class="variable">X_iris</span><span class="punctuation">,</span> <span class="variable">y_iris</span><span class="punctuation">)</span>
+
+    <span class="comment"># Test prediction</span>
+    <span class="variable">test_point</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([[</span><span class="number">5.5</span><span class="punctuation">,</span> <span class="number">3.1</span><span class="punctuation">]])</span>
+    <span class="variable">prediction</span> <span class="operator">=</span> <span class="variable">knn_clf</span><span class="punctuation">.</span><span class="method">predict_classification</span><span class="punctuation">(</span><span class="variable">test_point</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">f"Test point: </span><span class="punctuation">{</span><span class="variable">test_point</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">]}</span><span class="string">"</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">f"Predicted class: </span><span class="punctuation">{</span><span class="variable">prediction</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">]}</span><span class="string">"</span><span class="punctuation">)</span>
+
+    <span class="comment"># Regression Example: House prices</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">"\\n=== KNN Regression Example ==="</span><span class="punctuation">)</span>
+    <span class="comment"># Sample house data (square feet)</span>
+    <span class="variable">X_houses</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([[</span><span class="number">1750</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">1820</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">1780</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">2100</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">1650</span><span class="punctuation">]])</span>
+    <span class="variable">y_houses</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([</span><span class="number">280000</span><span class="punctuation">,</span> <span class="number">295000</span><span class="punctuation">,</span> <span class="number">285000</span><span class="punctuation">,</span> <span class="number">340000</span><span class="punctuation">,</span> <span class="number">260000</span><span class="punctuation">])</span>
+    <span class="comment"># Train KNN regressor</span>
+    <span class="variable">knn_reg</span> <span class="operator">=</span> <span class="class-name">KNearestNeighbors</span><span class="punctuation">(</span><span class="variable">k</span><span class="operator">=</span><span class="number">3</span><span class="punctuation">,</span> <span class="variable">weighted</span><span class="operator">=</span><span class="constant">True</span><span class="punctuation">)</span>
+    <span class="variable">knn_reg</span><span class="punctuation">.</span><span class="method">fit</span><span class="punctuation">(</span><span class="variable">X_houses</span><span class="punctuation">,</span> <span class="variable">y_houses</span><span class="punctuation">)</span>
+    <span class="comment"># Test prediction</span>
+    <span class="variable">test_house</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([[</span><span class="number">1800</span><span class="punctuation">]])</span>
+    <span class="variable">price_prediction</span> <span class="operator">=</span> <span class="variable">knn_reg</span><span class="punctuation">.</span><span class="method">predict_regression</span><span class="punctuation">(</span><span class="variable">test_house</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">f"House size: </span><span class="punctuation">{</span><span class="variable">test_house</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">][</span><span class="number">0</span><span class="punctuation">]}</span><span class="string"> sq ft"</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">f"Predicted price: $</span><span class="punctuation">{</span><span class="variable">price_prediction</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">]:</span><span class="string">,.0f</span><span class="punctuation">}</span><span class="string">"</span><span class="punctuation">)</span>
+    <span class="comment"># Output:</span>
+    <span class="comment"># Test point: [5.5 3.1]</span>
+    <span class="comment"># Predicted class: Setosa</span>
+    <span class="comment"># House size: 1800 sq ft</span>
+    <span class="comment"># Predicted price: $287,500</span></code></pre>
+                </div>
+            </article>
 
 <section class="references-footer">
     <div class="container">
@@ -318,7 +848,7 @@
 // Sample house data
 const houseData = [
     {size: 1000, price: 150000},
-    {size: 1500, price: 225000}, 
+    {size: 1500, price: 225000},
     {size: 2000, price: 300000}
 ];
 
@@ -332,24 +862,24 @@ function drawAxes(ctx, canvas) {
     const margin = 50;
     ctx.strokeStyle = '#374151';
     ctx.lineWidth = 2;
-    
+
     // X-axis
     ctx.beginPath();
     ctx.moveTo(margin, canvas.height - margin);
     ctx.lineTo(canvas.width - margin, canvas.height - margin);
     ctx.stroke();
-    
-    // Y-axis  
+
+    // Y-axis
     ctx.beginPath();
     ctx.moveTo(margin, margin);
     ctx.lineTo(margin, canvas.height - margin);
     ctx.stroke();
-    
+
     // Labels
     ctx.fillStyle = '#374151';
     ctx.font = '12px Inter';
     ctx.fillText('House Size (sq ft)', canvas.width/2 - 50, canvas.height - 10);
-    
+
     ctx.save();
     ctx.translate(15, canvas.height/2 + 30);
     ctx.rotate(-Math.PI/2);
@@ -366,44 +896,44 @@ function showDataFit() {
     const canvas = document.getElementById('dataFitCanvas');
     const ctx = canvas.getContext('2d');
     clearCanvas(canvas);
-    
+
     const margin = 50;
     const minSize = 800, maxSize = 2200;
     const minPrice = 100000, maxPrice = 350000;
-    
+
     drawAxes(ctx, canvas);
-    
+
     // Draw data points
     ctx.fillStyle = '#3b82f6';
     houseData.forEach(point => {
         const x = scalePoint(point.size, minSize, maxSize, margin, canvas.width - margin);
         const y = scalePoint(point.price, minPrice, maxPrice, canvas.height - margin, margin);
-        
+
         ctx.beginPath();
         ctx.arc(x, y, 8, 0, 2 * Math.PI);
         ctx.fill();
-        
+
         // Label
         ctx.fillStyle = '#1f2937';
         ctx.font = '10px Inter';
         ctx.fillText(`(${point.size}, $${point.price/1000}k)`, x + 10, y - 10);
         ctx.fillStyle = '#3b82f6';
     });
-    
+
     // Draw fitted line y = 150x + 0
     ctx.strokeStyle = '#ef4444';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    
+
     const x1 = scalePoint(minSize, minSize, maxSize, margin, canvas.width - margin);
     const y1 = scalePoint(150 * minSize, minPrice, maxPrice, canvas.height - margin, margin);
     const x2 = scalePoint(maxSize, minSize, maxSize, margin, canvas.width - margin);
     const y2 = scalePoint(150 * maxSize, minPrice, maxPrice, canvas.height - margin, margin);
-    
+
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
-    
+
     // Line equation label
     ctx.fillStyle = '#ef4444';
     ctx.font = '14px Inter';
@@ -415,41 +945,41 @@ function showCostReduction() {
     const canvas = document.getElementById('costCanvas');
     const ctx = canvas.getContext('2d');
     clearCanvas(canvas);
-    
+
     const margin = 50;
-    
+
     // Simulated cost history (exponential decay)
     const iterations = Array.from({length: 50}, (_, i) => i);
     const costs = iterations.map(i => Math.exp(-i/10) * 27180000000 + Math.random() * 1000000000);
-    
+
     drawAxes(ctx, canvas);
-    
+
     // Draw cost curve
     ctx.strokeStyle = '#8b5cf6';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    
+
     const maxCost = Math.max(...costs);
     costs.forEach((cost, i) => {
         const x = scalePoint(i, 0, iterations.length - 1, margin, canvas.width - margin);
         const y = scalePoint(cost, 0, maxCost, canvas.height - margin, margin);
-        
+
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     });
     ctx.stroke();
-    
+
     // Labels
     ctx.fillStyle = '#374151';
     ctx.font = '12px Inter';
     ctx.fillText('Iterations', canvas.width/2 - 30, canvas.height - 10);
-    
+
     ctx.save();
     ctx.translate(15, canvas.height/2 + 20);
     ctx.rotate(-Math.PI/2);
     ctx.fillText('Cost (MSE)', 0, 0);
     ctx.restore();
-    
+
     // Title
     ctx.fillStyle = '#8b5cf6';
     ctx.font = '14px Inter';
@@ -461,55 +991,55 @@ function animateGradientDescent() {
     const canvas = document.getElementById('costCanvas');
     const ctx = canvas.getContext('2d');
     let frame = 0;
-    
+
     function animate() {
         clearCanvas(canvas);
         drawAxes(ctx, canvas);
-        
+
         const margin = 50;
         const iterations = Math.min(frame, 50);
-        const costs = Array.from({length: iterations + 1}, (_, i) => 
+        const costs = Array.from({length: iterations + 1}, (_, i) =>
             Math.exp(-i/10) * 27180000000 + Math.random() * 500000000
         );
-        
+
         // Draw cost curve up to current frame
         ctx.strokeStyle = '#8b5cf6';
         ctx.lineWidth = 3;
         ctx.beginPath();
-        
+
         const maxCost = 30000000000;
         costs.forEach((cost, i) => {
             const x = scalePoint(i, 0, 50, margin, canvas.width - margin);
             const y = scalePoint(cost, 0, maxCost, canvas.height - margin, margin);
-            
+
             if (i === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
         });
         ctx.stroke();
-        
+
         // Draw current point
         if (costs.length > 0) {
             const currentCost = costs[costs.length - 1];
             const x = scalePoint(iterations, 0, 50, margin, canvas.width - margin);
             const y = scalePoint(currentCost, 0, maxCost, canvas.height - margin, margin);
-            
+
             ctx.fillStyle = '#ef4444';
             ctx.beginPath();
             ctx.arc(x, y, 6, 0, 2 * Math.PI);
             ctx.fill();
         }
-        
+
         // Labels
         ctx.fillStyle = '#374151';
         ctx.font = '12px Inter';
         ctx.fillText(`Iteration: ${iterations}`, margin, margin - 10);
-        
+
         frame++;
         if (frame <= 50) {
             setTimeout(() => requestAnimationFrame(animate), 100);
         }
     }
-    
+
     animate();
 }
 
@@ -518,36 +1048,36 @@ function updateLine() {
     const canvas = document.getElementById('interactiveCanvas');
     const ctx = canvas.getContext('2d');
     clearCanvas(canvas);
-    
+
     const margin = 50;
     const minSize = 800, maxSize = 2200;
     const minPrice = 50000, maxPrice = 400000;
-    
+
     drawAxes(ctx, canvas);
-    
+
     // Get current parameter values
     const slope = parseFloat(document.getElementById('slopeSlider').value);
     const intercept = parseFloat(document.getElementById('interceptSlider').value);
-    
+
     document.getElementById('slopeValue').textContent = slope;
     document.getElementById('interceptValue').textContent = intercept.toLocaleString();
-    
+
     // Draw data points
     ctx.fillStyle = '#3b82f6';
     let totalCost = 0;
     houseData.forEach(point => {
         const x = scalePoint(point.size, minSize, maxSize, margin, canvas.width - margin);
         const y = scalePoint(point.price, minPrice, maxPrice, canvas.height - margin, margin);
-        
+
         ctx.beginPath();
         ctx.arc(x, y, 8, 0, 2 * Math.PI);
         ctx.fill();
-        
+
         // Calculate prediction and cost
         const prediction = slope * point.size + intercept;
         const error = point.price - prediction;
         totalCost += error * error;
-        
+
         // Draw prediction line to point
         const predY = scalePoint(prediction, minPrice, maxPrice, canvas.height - margin, margin);
         ctx.strokeStyle = '#fbbf24';
@@ -559,29 +1089,45 @@ function updateLine() {
         ctx.stroke();
         ctx.setLineDash([]);
     });
-    
+
     // Draw current line
     ctx.strokeStyle = '#ef4444';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    
+
     const x1 = scalePoint(minSize, minSize, maxSize, margin, canvas.width - margin);
     const y1 = scalePoint(slope * minSize + intercept, minPrice, maxPrice, canvas.height - margin, margin);
     const x2 = scalePoint(maxSize, minSize, maxSize, margin, canvas.width - margin);
     const y2 = scalePoint(slope * maxSize + intercept, minPrice, maxPrice, canvas.height - margin, margin);
-    
+
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
-    
+
     // Update cost display
     const mse = totalCost / houseData.length;
     document.getElementById('currentCost').textContent = mse.toLocaleString(undefined, {maximumFractionDigits: 0});
-    
+
     // Line equation
     ctx.fillStyle = '#ef4444';
     ctx.font = '14px Inter';
     ctx.fillText(`ŷ = ${slope}x + ${intercept}`, canvas.width - 150, margin + 20);
+}
+
+// Toggle reference content visibility
+function toggleReferenceContent(header) {
+    const referenceBody = header.nextElementSibling;
+    const isCollapsed = referenceBody.classList.contains('collapsed');
+
+    if (isCollapsed) {
+        // Expand
+        header.classList.remove('collapsed');
+        referenceBody.classList.remove('collapsed');
+    } else {
+        // Collapse
+        header.classList.add('collapsed');
+        referenceBody.classList.add('collapsed');
+    }
 }
 
 // Initialize graphs when page loads

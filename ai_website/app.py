@@ -180,6 +180,15 @@ def handwriting_demo():
     """
     return render_template('handwriting.html')
 
+@app.route('/demos/linear-regression')
+def linear_regression_demo():
+    """Render the interactive linear regression demo page.
+    
+    Returns:
+        str: Rendered HTML template for the linear regression demo.
+    """
+    return render_template('linear_regression_demo.html')
+
 @app.route('/predict', methods=['POST'])
 def predict():
     """Predict digit from canvas drawing using the trained model.
