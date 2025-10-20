@@ -1,0 +1,15 @@
+# Ryan Thompson's AI Portfolio Website - Python Dependencies
+#
+# This file specifies the Python packages required to run the Flask application.
+# Install with: pip install -r requirements.txt
+#
+# Production deployment should use virtual environments and pin exact versions.
+
+# Core web framework.
+Flask
+
+# Production WSGI server for deployment.
+gunicorn
+
+# Security enhancement for production.
+Werkzeug

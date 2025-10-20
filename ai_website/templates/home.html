@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                Welcome to 
+                <span class="gradient-text">Ryan Thompson's</span>
+                AI Portfolio
+            </h1>
+            <p class="hero-description">
+                Exploring cutting-edge AI technologies, building interactive demos, and showcasing how artificial intelligence 
+                can transform our world.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('demos') }}" class="btn btn-primary">
+                    Explore Demos
+                </a>
+                <a href="{{ url_for('about') }}" class="btn btn-secondary">
+                    Learn More
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="ai-animation">
+                <div class="neural-network">
+                    <div class="node"></div>
+                    <div class="node"></div>
+                    <div class="node"></div>
+                    <div class="node"></div>
+                    <div class="node"></div>
+                    <div class="node"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">My AI Expertise</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Machine Learning</h3>
+                <p>Advanced algorithms that learn from data to make predictions and decisions without explicit programming.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3>Computer Vision</h3>
+                <p>AI systems that can interpret and understand visual information from the world around us.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3>Natural Language</h3>
+                <p>Processing and understanding human language to enable seamless communication with AI systems.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>Deep Learning</h3>
+                <p>Neural networks with multiple layers that can learn complex patterns and representations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- <section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3 class="stat-number">100+</h3>
+                <p class="stat-label">AI Models</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number">50K+</h3>
+                <p class="stat-label">Users</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number">99.9%</h3>
+                <p class="stat-label">Uptime</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-number">24/7</h3>
+                <p class="stat-label">Support</p>
+            </div>
+        </div>
+    </div>
+</section> -->
+{% endblock %}
