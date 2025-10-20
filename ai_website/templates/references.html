@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+{% block title %}References - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">AI/ML References</h1>
+        <p class="page-subtitle">Comprehensive guides, explanations, and code examples</p>
+    </div>
+</section>
+
+<section class="references-content">
+    <div class="container">
+        <div class="references-grid">
+            
+            <!-- Machine Learning Fundamentals -->
+            <article class="reference-card">
+                <div class="reference-header">
+                    <h2>Linear Regression</h2>
+                    <span class="reference-category">Supervised Learning</span>
+                </div>
+                <div class="reference-body">
+                    <p>
+                        Linear regression is one of the fundamental algorithms in machine learning and statistics. It models 
+                        the relationship between a dependent variable (target) and one or more independent variables (features) 
+                        by fitting a linear equation to observed data. This technique is widely used for prediction, forecasting, 
+                        and understanding relationships between variables.
+                    </p>
+                    
+                    <h3>Mathematical Foundation</h3>
+                    <p>
+                        For simple linear regression with one feature, we want to find the best line that fits our data points. 
+                        The linear equation is:
+                    </p>
+                    <div class="math-equation">
+                        <strong>ŷ = mx + b</strong>
+                    </div>
+                    <p>Where:</p>
+                    <ul>
+                        <li><strong>ŷ</strong> = predicted output (dependent variable)</li>
+                        <li><strong>x</strong> = input feature (independent variable)</li>
+                        <li><strong>m</strong> = slope of the line</li>
+                        <li><strong>b</strong> = y-intercept</li>
+                    </ul>
+
+                    <h3>Cost Function (Loss Function)</h3>
+                    <p>
+                        To find the best line, we need to minimize the difference between our predictions and actual values. 
+                        We use Mean Squared Error (MSE) as our cost function:
+                    </p>
+                    <div class="math-equation">
+                        <strong>J(m,b) = (1/2n) Σᵢ₌₁ⁿ (ŷᵢ - yᵢ)²</strong>
+                    </div>
+                    <p>Where:</p>
+                    <ul>
+                        <li><strong>J(m,b)</strong> = cost function</li>
+                        <li><strong>n</strong> = number of training examples</li>
+                        <li><strong>ŷᵢ</strong> = predicted value for example i</li>
+                        <li><strong>yᵢ</strong> = actual value for example i</li>
+                    </ul>
+
+                    <h3>Gradient Descent Optimization</h3>
+                    <p>
+                        To minimize the cost function, we use gradient descent. We calculate partial derivatives and 
+                        update our parameters iteratively:
+                    </p>
+                    <div class="math-equation">
+                        <strong>∂J/∂m = (1/n) Σᵢ₌₁ⁿ (ŷᵢ - yᵢ) × xᵢ</strong><br>
+                        <strong>∂J/∂b = (1/n) Σᵢ₌₁ⁿ (ŷᵢ - yᵢ)</strong>
+                    </div>
+                    <p>Parameter updates:</p>
+                    <div class="math-equation">
+                        <strong>m := m - α × ∂J/∂m</strong><br>
+                        <strong>b := b - α × ∂J/∂b</strong>
+                    </div>
+                    <p>Where <strong>α</strong> (alpha) is the learning rate that controls the step size.</p>
+
+                    <h3>Key Concepts</h3>
+                    <ul>
+                        <li><strong>Learning Rate (α):</strong> Controls how big steps we take toward the minimum</li>
+                        <li><strong>Convergence:</strong> When the algorithm finds the optimal parameters</li>
+                        <li><strong>Feature Scaling:</strong> Normalizing inputs for better performance</li>
+                        <li><strong>R-squared:</strong> Measure of how well the model explains variance in data</li>
+                    </ul>
+
+                    <h3>Worked Mathematical Examples</h3>
+                    <p>Let's work through some concrete examples to see how the math works in practice:</p>
+                    
+                    <h4>Example 1: Simple Dataset</h4>
+                    <p>Consider predicting house prices based on size with this small dataset:</p>
+                    <div class="math-equation">
+                        <strong>Data Points:</strong><br>
+                        (1000 sq ft, $150,000), (1500 sq ft, $225,000), (2000 sq ft, $300,000)
+                    </div>
+
+                    <h4>Step 1: Initialize Parameters</h4>
+                    <p>Start with random values (or zeros):</p>
+                    <div class="math-equation">
+                        <strong>m = 0, b = 0</strong><br>
+                        <strong>α = 0.00001 (learning rate)</strong>
+                    </div>
+
+                    <h4>Step 2: Make Initial Predictions</h4>
+                    <p>Using ŷ = mx + b with m=0, b=0:</p>
+                    <div class="math-equation">
+                        <strong>ŷ₁ = 0×1000 + 0 = 0</strong><br>
+                        <strong>ŷ₂ = 0×1500 + 0 = 0</strong><br>
+                        <strong>ŷ₃ = 0×2000 + 0 = 0</strong>
+                    </div>
+
+                    <h4>Step 3: Calculate Cost (MSE)</h4>
+                    <p>Using J = (1/2n) Σ(ŷᵢ - yᵢ)² with n=3:</p>
+                    <div class="math-equation">
+                        <strong>J = (1/6)[(0-150000)² + (0-225000)² + (0-300000)²]</strong><br>
+                        <strong>J = (1/6)[22.5×10⁹ + 50.6×10⁹ + 90×10⁹] = 27.18×10⁹</strong>
+                    </div>
+
+                    <h4>Step 4: Calculate Gradients</h4>
+                    <p>Calculate partial derivatives:</p>
+                    <div class="math-equation">
+                        <strong>∂J/∂m = (1/3)[(0-150000)×1000 + (0-225000)×1500 + (0-300000)×2000]</strong><br>
+                        <strong>∂J/∂m = (1/3)[-150×10⁶ - 337.5×10⁶ - 600×10⁶] = -362.5×10⁶</strong><br><br>
+                        <strong>∂J/∂b = (1/3)[(0-150000) + (0-225000) + (0-300000)]</strong><br>
+                        <strong>∂J/∂b = (1/3)[-675000] = -225000</strong>
+                    </div>
+
+                    <h4>Step 5: Update Parameters</h4>
+                    <p>Apply gradient descent updates:</p>
+                    <div class="math-equation">
+                        <strong>m = 0 - 0.00001×(-362.5×10⁶) = 3625</strong><br>
+                        <strong>b = 0 - 0.00001×(-225000) = 2.25</strong>
+                    </div>
+
+                    <h4>Step 6: New Predictions</h4>
+                    <p>After one iteration with updated parameters:</p>
+                    <div class="math-equation">
+                        <strong>ŷ₁ = 3625×1000 + 2.25 = 3,627,002.25</strong><br>
+                        <strong>ŷ₂ = 3625×1500 + 2.25 = 5,437,502.25</strong><br>
+                        <strong>ŷ₃ = 3625×2000 + 2.25 = 7,250,002.25</strong>
+                    </div>
+
+                    <p><em>Note: These predictions are way off! This shows why we need many iterations and proper learning rate tuning.</em></p>
+
+                    <h4>Example 2: Convergence After Many Iterations</h4>
+                    <p>After 1000 iterations with proper learning rate (α = 0.0000001):</p>
+                    <div class="math-equation">
+                        <strong>m ≈ 150 (slope: $150 per sq ft)</strong><br>
+                        <strong>b ≈ 0 (y-intercept close to zero)</strong><br>
+                        <strong>Final equation: ŷ = 150x + 0</strong>
+                    </div>
+
+                    <p>Perfect predictions:</p>
+                    <div class="math-equation">
+                        <strong>ŷ₁ = 150×1000 = $150,000 ✓</strong><br>
+                        <strong>ŷ₂ = 150×1500 = $225,000 ✓</strong><br>
+                        <strong>ŷ₃ = 150×2000 = $300,000 ✓</strong><br>
+                        <strong>Final Cost J ≈ 0</strong>
+                    </div>
+
+                    <h4>Example 3: R-squared Calculation</h4>
+                    <p>For our final model, calculate how well it explains the data:</p>
+                    <div class="math-equation">
+                        <strong>ȳ = (150000 + 225000 + 300000)/3 = 225,000</strong><br><br>
+                        <strong>SS_res = (150000-150000)² + (225000-225000)² + (300000-300000)² = 0</strong><br>
+                        <strong>SS_tot = (150000-225000)² + (225000-225000)² + (300000-225000)²</strong><br>
+                        <strong>SS_tot = 75000² + 0² + 75000² = 11.25×10⁹</strong><br><br>
+                        <strong>R² = 1 - (0/11.25×10⁹) = 1.0</strong>
+                    </div>
+                    <p>Perfect fit! R² = 1.0 means our model explains 100% of the variance.</p>
+
+                    <h3>Visual Understanding</h3>
+                    <p>Let's visualize how linear regression works with our house price example:</p>
+
+                    <div class="visualization-container">
+                        <h4>📊 Data Points and Fitted Line</h4>
+                        <div class="graph-container">
+                            <canvas id="dataFitCanvas" width="500" height="300"></canvas>
+                        </div>
+                        
+                        <h4>📉 Cost Function Over Iterations</h4>
+                        <div class="graph-container">
+                            <canvas id="costCanvas" width="500" height="300"></canvas>
+                            <div class="graph-controls">
+                                <button onclick="showCostReduction()" class="graph-btn">Show Cost Reduction</button>
+                                <button onclick="animateGradientDescent()" class="graph-btn">Animate Gradient Descent</button>
+                            </div>
+                        </div>
+
+                        <h4>🎯 Interactive Parameter Explorer</h4>
+                        <div class="interactive-demo">
+                            <div class="parameter-controls">
+                                <label>Slope (m): <span id="slopeValue">150</span></label>
+                                <input type="range" id="slopeSlider" min="50" max="250" value="150" oninput="updateLine()">
+                                
+                                <label>Intercept (b): <span id="interceptValue">0</span></label>
+                                <input type="range" id="interceptSlider" min="-50000" max="50000" value="0" oninput="updateLine()">
+                                
+                                <div class="cost-display">Cost (MSE): <span id="currentCost">0</span></div>
+                            </div>
+                            <canvas id="interactiveCanvas" width="500" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <h3>Complete Implementation from Scratch</h3>
+                    <p>
+                        Below is a complete implementation of linear regression using gradient descent, built without 
+                        any machine learning libraries. This shows exactly how the mathematical concepts translate to code:
+                    </p>
+                    <pre class="code-block"><code><span class="keyword">import</span> <span class="builtin">numpy</span> <span class="keyword">as</span> <span class="builtin">np</span>
+<span class="keyword">import</span> <span class="builtin">matplotlib.pyplot</span> <span class="keyword">as</span> <span class="builtin">plt</span>
+
+<span class="keyword">class</span> <span class="class-name">LinearRegression</span><span class="punctuation">:</span>
+    <span class="string">"""Linear Regression implemented from scratch using gradient descent."""</span>
+    <span class="keyword">def</span> <span class="function">__init__</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">learning_rate</span><span class="operator">=</span><span class="number">0.01</span><span class="punctuation">,</span> <span class="variable">max_iterations</span><span class="operator">=</span><span class="number">1000</span><span class="punctuation">):</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">=</span> <span class="variable">learning_rate</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">max_iterations</span> <span class="operator">=</span> <span class="variable">max_iterations</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">slope</span> <span class="operator">=</span> <span class="constant">None</span>  <span class="comment"># m in y = mx + b</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">intercept</span> <span class="operator">=</span> <span class="constant">None</span>  <span class="comment"># b in y = mx + b</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">cost_history</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+    
+    <span class="keyword">def</span> <span class="function">fit</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">):</span>
+        <span class="string">"""Train the linear regression model."""</span>
+        <span class="comment"># Initialize parameters</span>
+        <span class="variable">n_samples</span><span class="punctuation">,</span> <span class="variable">n_features</span> <span class="operator">=</span> <span class="variable">X</span><span class="punctuation">.</span><span class="variable">shape</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">slope</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">zeros</span><span class="punctuation">(</span><span class="variable">n_features</span><span class="punctuation">)</span>  <span class="comment"># m parameter</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">intercept</span> <span class="operator">=</span> <span class="number">0</span>  <span class="comment"># b parameter</span>
+        <span class="comment"># Gradient descent</span>
+        <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="builtin">range</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">max_iterations</span><span class="punctuation">):</span>
+            <span class="comment"># Forward pass: make predictions using y = mx + b</span>
+            <span class="variable">y_predicted</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">predict</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)</span>
+            <span class="comment"># Calculate cost (Mean Squared Error)</span>
+            <span class="variable">cost</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">_calculate_cost</span><span class="punctuation">(</span><span class="variable">y</span><span class="punctuation">,</span> <span class="variable">y_predicted</span><span class="punctuation">)</span>
+            <span class="variable">self</span><span class="punctuation">.</span><span class="variable">cost_history</span><span class="punctuation">.</span><span class="method">append</span><span class="punctuation">(</span><span class="variable">cost</span><span class="punctuation">)</span>
+            <span class="comment"># Calculate gradients: ∂J/∂m and ∂J/∂b</span>
+            <span class="variable">dm</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="number">1</span><span class="operator">/</span><span class="variable">n_samples</span><span class="punctuation">)</span> <span class="operator">*</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">.</span><span class="variable">T</span><span class="punctuation">,</span> <span class="punctuation">(</span><span class="variable">y_predicted</span> <span class="operator">-</span> <span class="variable">y</span><span class="punctuation">))</span>
+            <span class="variable">db</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="number">1</span><span class="operator">/</span><span class="variable">n_samples</span><span class="punctuation">)</span> <span class="operator">*</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">sum</span><span class="punctuation">(</span><span class="variable">y_predicted</span> <span class="operator">-</span> <span class="variable">y</span><span class="punctuation">)</span>
+            <span class="comment"># Update parameters: m = m - α*∂J/∂m, b = b - α*∂J/∂b</span>
+            <span class="variable">self</span><span class="punctuation">.</span><span class="variable">slope</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">dm</span>
+            <span class="variable">self</span><span class="punctuation">.</span><span class="variable">intercept</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">db</span>
+    
+    <span class="keyword">def</span> <span class="function">predict</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">):</span>
+        <span class="string">"""Make predictions using y = mx + b."""</span>
+        <span class="keyword">return</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">,</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">slope</span><span class="punctuation">)</span> <span class="operator">+</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">intercept</span>
+    
+    <span class="keyword">def</span> <span class="function">_calculate_cost</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">y_true</span><span class="punctuation">,</span> <span class="variable">y_pred</span><span class="punctuation">):</span>
+        <span class="string">"""Calculate Mean Squared Error."""</span>
+        <span class="keyword">return</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">mean</span><span class="punctuation">((</span><span class="variable">y_true</span> <span class="operator">-</span> <span class="variable">y_pred</span><span class="punctuation">)</span> <span class="operator">**</span> <span class="number">2</span><span class="punctuation">)</span>
+
+<span class="comment"># Example usage with real data</span>
+<span class="keyword">if</span> <span class="variable">__name__</span> <span class="operator">==</span> <span class="string">"__main__"</span><span class="punctuation">:</span>
+    <span class="comment"># Generate sample data: house sizes vs prices</span>
+    <span class="builtin">np</span><span class="punctuation">.</span><span class="builtin">random</span><span class="punctuation">.</span><span class="method">seed</span><span class="punctuation">(</span><span class="number">42</span><span class="punctuation">)</span>
+    <span class="variable">house_sizes</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="builtin">random</span><span class="punctuation">.</span><span class="method">uniform</span><span class="punctuation">(</span><span class="number">1000</span><span class="punctuation">,</span> <span class="number">3000</span><span class="punctuation">,</span> <span class="number">100</span><span class="punctuation">).</span><span class="method">reshape</span><span class="punctuation">(-</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">1</span><span class="punctuation">)</span>
+    <span class="comment"># Price = 150 * size + noise</span>
+    <span class="variable">house_prices</span> <span class="operator">=</span> <span class="number">150</span> <span class="operator">*</span> <span class="variable">house_sizes</span><span class="punctuation">.</span><span class="method">flatten</span><span class="punctuation">()</span> <span class="operator">+</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="builtin">random</span><span class="punctuation">.</span><span class="method">normal</span><span class="punctuation">(</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">20000</span><span class="punctuation">,</span> <span class="number">100</span><span class="punctuation">)</span>
+    <span class="comment"># Create and train model</span>
+    <span class="variable">model</span> <span class="operator">=</span> <span class="class-name">LinearRegression</span><span class="punctuation">(</span><span class="variable">learning_rate</span><span class="operator">=</span><span class="number">0.0000001</span><span class="punctuation">,</span> <span class="variable">max_iterations</span><span class="operator">=</span><span class="number">1000</span><span class="punctuation">)</span>
+    <span class="variable">model</span><span class="punctuation">.</span><span class="method">fit</span><span class="punctuation">(</span><span class="variable">house_sizes</span><span class="punctuation">,</span> <span class="variable">house_prices</span><span class="punctuation">)</span>
+    <span class="comment"># Make predictions</span>
+    <span class="variable">test_sizes</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([[</span><span class="number">1500</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">2000</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">2500</span><span class="punctuation">]])</span>
+    <span class="variable">predictions</span> <span class="operator">=</span> <span class="variable">model</span><span class="punctuation">.</span><span class="method">predict</span><span class="punctuation">(</span><span class="variable">test_sizes</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">"House Size -> Predicted Price"</span><span class="punctuation">)</span>
+    <span class="keyword">for</span> <span class="variable">size</span><span class="punctuation">,</span> <span class="variable">price</span> <span class="keyword">in</span> <span class="builtin">zip</span><span class="punctuation">(</span><span class="variable">test_sizes</span><span class="punctuation">.</span><span class="method">flatten</span><span class="punctuation">(),</span> <span class="variable">predictions</span><span class="punctuation">):</span>
+        <span class="builtin">print</span><span class="punctuation">(</span><span class="string">f"</span><span class="punctuation">{</span><span class="variable">size</span><span class="punctuation">}</span><span class="string"> sq ft -> $</span><span class="punctuation">{</span><span class="variable">price</span><span class="punctuation">:</span><span class="string">,.0f</span><span class="punctuation">}</span><span class="string">"</span><span class="punctuation">)</span>
+    <span class="comment"># Calculate R-squared score</span>
+    <span class="variable">y_pred_all</span> <span class="operator">=</span> <span class="variable">model</span><span class="punctuation">.</span><span class="method">predict</span><span class="punctuation">(</span><span class="variable">house_sizes</span><span class="punctuation">)</span>
+    <span class="variable">ss_res</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">sum</span><span class="punctuation">((</span><span class="variable">house_prices</span> <span class="operator">-</span> <span class="variable">y_pred_all</span><span class="punctuation">)</span> <span class="operator">**</span> <span class="number">2</span><span class="punctuation">)</span>
+    <span class="variable">ss_tot</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">sum</span><span class="punctuation">((</span><span class="variable">house_prices</span> <span class="operator">-</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">mean</span><span class="punctuation">(</span><span class="variable">house_prices</span><span class="punctuation">))</span> <span class="operator">**</span> <span class="number">2</span><span class="punctuation">)</span>
+    <span class="variable">r_squared</span> <span class="operator">=</span> <span class="number">1</span> <span class="operator">-</span> <span class="punctuation">(</span><span class="variable">ss_res</span> <span class="operator">/</span> <span class="variable">ss_tot</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">f"R-squared: </span><span class="punctuation">{</span><span class="variable">r_squared</span><span class="punctuation">:</span><span class="string">.3f</span><span class="punctuation">}</span><span class="string">"</span><span class="punctuation">)</span>
+    <span class="comment"># Output:</span>
+    <span class="comment"># House Size -> Predicted Price</span>
+    <span class="comment"># 1500 sq ft -> $225,180</span>
+    <span class="comment"># 2000 sq ft -> $300,240</span>
+    <span class="comment"># 2500 sq ft -> $375,300</span>
+    <span class="comment"># R-squared: 0.926</span></code></pre>
+                </div>
+            </article>
+<!--  -->
+
+<section class="references-footer">
+    <div class="container">
+        <div class="footer-content">
+            <h2>Additional Resources</h2>
+            <div class="resources-grid">
+                <div class="resource-item">
+                    <h3>📚 Recommended Books</h3>
+                    <ul>
+                        <li>"Hands-On Machine Learning" by Aurélien Géron</li>
+                        <li>"The Elements of Statistical Learning" by Hastie, Tibshirani, and Friedman</li>
+                        <li>"Deep Learning" by Ian Goodfellow, Yoshua Bengio, and Aaron Courville</li>
+                    </ul>
+                </div>
+                <div class="resource-item">
+                    <h3>🔧 Essential Libraries</h3>
+                    <ul>
+                        <li><strong>Scikit-learn:</strong> General-purpose ML library</li>
+                        <li><strong>TensorFlow/PyTorch:</strong> Deep learning frameworks</li>
+                        <li><strong>Pandas:</strong> Data manipulation and analysis</li>
+                        <li><strong>NumPy:</strong> Numerical computing</li>
+                    </ul>
+                </div>
+                <div class="resource-item">
+                    <h3>🌐 Online Courses</h3>
+                    <ul>
+                        <li>Andrew Ng's Machine Learning Course (Coursera)</li>
+                        <li>Fast.ai Practical Deep Learning</li>
+                        <li>CS231n: Convolutional Neural Networks (Stanford)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Sample house data
+const houseData = [
+    {size: 1000, price: 150000},
+    {size: 1500, price: 225000}, 
+    {size: 2000, price: 300000}
+];
+
+// Utility functions for drawing
+function clearCanvas(canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawAxes(ctx, canvas) {
+    const margin = 50;
+    ctx.strokeStyle = '#374151';
+    ctx.lineWidth = 2;
+    
+    // X-axis
+    ctx.beginPath();
+    ctx.moveTo(margin, canvas.height - margin);
+    ctx.lineTo(canvas.width - margin, canvas.height - margin);
+    ctx.stroke();
+    
+    // Y-axis  
+    ctx.beginPath();
+    ctx.moveTo(margin, margin);
+    ctx.lineTo(margin, canvas.height - margin);
+    ctx.stroke();
+    
+    // Labels
+    ctx.fillStyle = '#374151';
+    ctx.font = '12px Inter';
+    ctx.fillText('House Size (sq ft)', canvas.width/2 - 50, canvas.height - 10);
+    
+    ctx.save();
+    ctx.translate(15, canvas.height/2 + 30);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillText('Price ($)', 0, 0);
+    ctx.restore();
+}
+
+function scalePoint(value, min, max, pixelMin, pixelMax) {
+    return pixelMin + (value - min) * (pixelMax - pixelMin) / (max - min);
+}
+
+// Show data points and fitted line
+function showDataFit() {
+    const canvas = document.getElementById('dataFitCanvas');
+    const ctx = canvas.getContext('2d');
+    clearCanvas(canvas);
+    
+    const margin = 50;
+    const minSize = 800, maxSize = 2200;
+    const minPrice = 100000, maxPrice = 350000;
+    
+    drawAxes(ctx, canvas);
+    
+    // Draw data points
+    ctx.fillStyle = '#3b82f6';
+    houseData.forEach(point => {
+        const x = scalePoint(point.size, minSize, maxSize, margin, canvas.width - margin);
+        const y = scalePoint(point.price, minPrice, maxPrice, canvas.height - margin, margin);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Label
+        ctx.fillStyle = '#1f2937';
+        ctx.font = '10px Inter';
+        ctx.fillText(`(${point.size}, $${point.price/1000}k)`, x + 10, y - 10);
+        ctx.fillStyle = '#3b82f6';
+    });
+    
+    // Draw fitted line y = 150x + 0
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    
+    const x1 = scalePoint(minSize, minSize, maxSize, margin, canvas.width - margin);
+    const y1 = scalePoint(150 * minSize, minPrice, maxPrice, canvas.height - margin, margin);
+    const x2 = scalePoint(maxSize, minSize, maxSize, margin, canvas.width - margin);
+    const y2 = scalePoint(150 * maxSize, minPrice, maxPrice, canvas.height - margin, margin);
+    
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    
+    // Line equation label
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '14px Inter';
+    ctx.fillText('ŷ = 150x + 0', canvas.width - 120, margin + 20);
+}
+
+// Show cost reduction over iterations
+function showCostReduction() {
+    const canvas = document.getElementById('costCanvas');
+    const ctx = canvas.getContext('2d');
+    clearCanvas(canvas);
+    
+    const margin = 50;
+    
+    // Simulated cost history (exponential decay)
+    const iterations = Array.from({length: 50}, (_, i) => i);
+    const costs = iterations.map(i => Math.exp(-i/10) * 27180000000 + Math.random() * 1000000000);
+    
+    drawAxes(ctx, canvas);
+    
+    // Draw cost curve
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    
+    const maxCost = Math.max(...costs);
+    costs.forEach((cost, i) => {
+        const x = scalePoint(i, 0, iterations.length - 1, margin, canvas.width - margin);
+        const y = scalePoint(cost, 0, maxCost, canvas.height - margin, margin);
+        
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    
+    // Labels
+    ctx.fillStyle = '#374151';
+    ctx.font = '12px Inter';
+    ctx.fillText('Iterations', canvas.width/2 - 30, canvas.height - 10);
+    
+    ctx.save();
+    ctx.translate(15, canvas.height/2 + 20);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillText('Cost (MSE)', 0, 0);
+    ctx.restore();
+    
+    // Title
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = '14px Inter';
+    ctx.fillText('Cost decreases as model learns', margin, margin - 10);
+}
+
+// Animate gradient descent
+function animateGradientDescent() {
+    const canvas = document.getElementById('costCanvas');
+    const ctx = canvas.getContext('2d');
+    let frame = 0;
+    
+    function animate() {
+        clearCanvas(canvas);
+        drawAxes(ctx, canvas);
+        
+        const margin = 50;
+        const iterations = Math.min(frame, 50);
+        const costs = Array.from({length: iterations + 1}, (_, i) => 
+            Math.exp(-i/10) * 27180000000 + Math.random() * 500000000
+        );
+        
+        // Draw cost curve up to current frame
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        
+        const maxCost = 30000000000;
+        costs.forEach((cost, i) => {
+            const x = scalePoint(i, 0, 50, margin, canvas.width - margin);
+            const y = scalePoint(cost, 0, maxCost, canvas.height - margin, margin);
+            
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        
+        // Draw current point
+        if (costs.length > 0) {
+            const currentCost = costs[costs.length - 1];
+            const x = scalePoint(iterations, 0, 50, margin, canvas.width - margin);
+            const y = scalePoint(currentCost, 0, maxCost, canvas.height - margin, margin);
+            
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        
+        // Labels
+        ctx.fillStyle = '#374151';
+        ctx.font = '12px Inter';
+        ctx.fillText(`Iteration: ${iterations}`, margin, margin - 10);
+        
+        frame++;
+        if (frame <= 50) {
+            setTimeout(() => requestAnimationFrame(animate), 100);
+        }
+    }
+    
+    animate();
+}
+
+// Interactive parameter explorer
+function updateLine() {
+    const canvas = document.getElementById('interactiveCanvas');
+    const ctx = canvas.getContext('2d');
+    clearCanvas(canvas);
+    
+    const margin = 50;
+    const minSize = 800, maxSize = 2200;
+    const minPrice = 50000, maxPrice = 400000;
+    
+    drawAxes(ctx, canvas);
+    
+    // Get current parameter values
+    const slope = parseFloat(document.getElementById('slopeSlider').value);
+    const intercept = parseFloat(document.getElementById('interceptSlider').value);
+    
+    document.getElementById('slopeValue').textContent = slope;
+    document.getElementById('interceptValue').textContent = intercept.toLocaleString();
+    
+    // Draw data points
+    ctx.fillStyle = '#3b82f6';
+    let totalCost = 0;
+    houseData.forEach(point => {
+        const x = scalePoint(point.size, minSize, maxSize, margin, canvas.width - margin);
+        const y = scalePoint(point.price, minPrice, maxPrice, canvas.height - margin, margin);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Calculate prediction and cost
+        const prediction = slope * point.size + intercept;
+        const error = point.price - prediction;
+        totalCost += error * error;
+        
+        // Draw prediction line to point
+        const predY = scalePoint(prediction, minPrice, maxPrice, canvas.height - margin, margin);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x, predY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    });
+    
+    // Draw current line
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    
+    const x1 = scalePoint(minSize, minSize, maxSize, margin, canvas.width - margin);
+    const y1 = scalePoint(slope * minSize + intercept, minPrice, maxPrice, canvas.height - margin, margin);
+    const x2 = scalePoint(maxSize, minSize, maxSize, margin, canvas.width - margin);
+    const y2 = scalePoint(slope * maxSize + intercept, minPrice, maxPrice, canvas.height - margin, margin);
+    
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    
+    // Update cost display
+    const mse = totalCost / houseData.length;
+    document.getElementById('currentCost').textContent = mse.toLocaleString(undefined, {maximumFractionDigits: 0});
+    
+    // Line equation
+    ctx.fillStyle = '#ef4444';
+    ctx.font = '14px Inter';
+    ctx.fillText(`ŷ = ${slope}x + ${intercept}`, canvas.width - 150, margin + 20);
+}
+
+// Initialize graphs when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Show the data fit graph automatically
+    setTimeout(showDataFit, 100);
+    // Initialize the interactive canvas
+    setTimeout(updateLine, 200);
+});
+</script>
+
+{% endblock %}

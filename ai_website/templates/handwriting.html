@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+{% block title %}Handwriting Recognition Demo - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Handwriting Recognition Demo</h1>
+        <p class="page-subtitle">Draw a digit (0-9) and watch AI predict what you wrote</p>
+    </div>
+</section>
+
+<section class="handwriting-demo">
+    <div class="container">
+        <div class="demo-intro">
+            <div class="demo-description">
+                <h2>How It Works</h2>
+                <p>
+                    This interactive demo uses a machine learning model trained on the MNIST dataset to recognize handwritten digits. 
+                    Simply draw a digit (0-9) in the canvas below and click "Predict" to see the AI's prediction with confidence scores.
+                </p>
+                <div class="demo-features">
+                    <div class="feature-item">
+                        <i class="fas fa-brain"></i>
+                        <span>Enhanced Neural Network with 97.9% accuracy</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Real-time predictions with confidence scores</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Works on desktop and mobile devices</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-container">
+            <div class="demo-card">
+                <div class="demo-header">
+                    <h3>Draw a Digit</h3>
+                    <p>Use your mouse or finger to draw a digit in the box below</p>
+                </div>
+                
+                <div class="canvas-section">
+                    <div class="canvas-container">
+                        <canvas id="canvas" width="280" height="280"></canvas>
+                    </div>
+                    
+                    <div class="canvas-instructions">
+                        <p><i class="fas fa-info-circle"></i> Draw clearly and fill most of the canvas for best results</p>
+                    </div>
+                </div>
+                
+                <div class="demo-controls">
+                    <button id="predictBtn" class="btn btn-primary" onclick="predictDigit()">
+                        <i class="fas fa-brain"></i>
+                        Predict Digit
+                    </button>
+                    <button id="clearBtn" class="btn btn-secondary" onclick="clearCanvas()">
+                        <i class="fas fa-eraser"></i>
+                        Clear Canvas
+                    </button>
+                </div>
+                
+                <div id="result" class="demo-result"></div>
+                <div id="topPredictions" class="top-predictions"></div>
+            </div>
+        </div>
+
+        <div class="demo-info">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-cogs"></i> Model Details</h3>
+                    <ul>
+                        <li><strong>Architecture:</strong> Enhanced Neural Network (MLPClassifier)</li>
+                        <li><strong>Training Data:</strong> MNIST + Data Augmentation (120K samples)</li>
+                        <li><strong>Accuracy:</strong> 97.9% on test set</li>
+                        <li><strong>Model Size:</strong> Ultra-lightweight at 5.7MB</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-tools"></i> Technology Stack</h3>
+                    <ul>
+                        <li><strong>Backend:</strong> Python Flask with scikit-learn</li>
+                        <li><strong>Frontend:</strong> HTML5 Canvas with JavaScript</li>
+                        <li><strong>Preprocessing:</strong> Multi-stage image processing pipeline</li>
+                        <li><strong>Deployment:</strong> Cloud-optimized for fast startup</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-tips">
+            <h3>Tips for Best Results</h3>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Draw digits clearly with thick, connected strokes</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                    <span>Use most of the canvas area for your digit</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-align-center"></i>
+                    <span>Center your digit in the drawing area</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-redo"></i>
+                    <span>Clear and redraw if the prediction seems off</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Canvas and drawing context references
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Drawing state management
+let isDrawing = false;
+
+// Drawing configuration constants
+const DRAWING_CONFIG = {
+    lineWidth: 20,           // Pen thickness for good visibility
+    lineCap: "round",        // Smooth line endings
+    strokeStyle: "black",    // Black ink on white background
+    backgroundColor: "white" // White canvas background
+};
+
+/**
+ * Initialize the canvas with a white background.
+ */
+function initializeCanvas() {
+    ctx.fillStyle = DRAWING_CONFIG.backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+/**
+ * Start drawing when mouse is pressed down.
+ */
+function startDrawing(event) {
+    isDrawing = true;
+    ctx.beginPath();
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    ctx.moveTo(x, y);
+}
+
+/**
+ * Stop drawing when mouse is released or leaves canvas.
+ */
+function stopDrawing() {
+    if (isDrawing) {
+        isDrawing = false;
+    }
+}
+
+/**
+ * Handle drawing while mouse is moving.
+ */
+function draw(event) {
+    if (!isDrawing) return;
+    
+    // Configure drawing style
+    ctx.lineWidth = DRAWING_CONFIG.lineWidth;
+    ctx.lineCap = DRAWING_CONFIG.lineCap;
+    ctx.strokeStyle = DRAWING_CONFIG.strokeStyle;
+    
+    // Draw line to current mouse position
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
+
+/**
+ * Clear the canvas and reset to white background.
+ */
+function clearCanvas() {
+    // Clear the entire canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Restore white background
+    ctx.fillStyle = DRAWING_CONFIG.backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Reset drawing path
+    ctx.beginPath();
+    
+    // Clear previous prediction results
+    const resultElement = document.getElementById('result');
+    const topPredictionsElement = document.getElementById('topPredictions');
+    
+    if (resultElement) {
+        resultElement.innerHTML = "";
+        resultElement.className = "demo-result";
+    }
+    
+    if (topPredictionsElement) {
+        topPredictionsElement.innerHTML = "";
+    }
+}
+
+/**
+ * Capture canvas image and send to server for digit prediction.
+ */
+async function predictDigit() {
+    try {
+        // Show loading state
+        const resultElement = document.getElementById('result');
+        if (resultElement) {
+            resultElement.innerHTML = `
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Analyzing your drawing...</span>
+                </div>
+            `;
+            resultElement.className = "demo-result loading";
+        }
+        
+        // Convert canvas to base64 data URL
+        const dataURL = canvas.toDataURL('image/png');
+        
+        // Send prediction request to server with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ image: dataURL }),
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        // Check if request was successful
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Parse JSON response
+        const result = await response.json();
+        
+        // Check for server-side errors
+        if (result.error) {
+            throw new Error(result.error);
+        }
+        
+        // Display prediction result
+        if (resultElement) {
+            resultElement.innerHTML = `
+                <div class="prediction-main">
+                    <h4>Prediction Result</h4>
+                    <div class="predicted-digit">${result.prediction}</div>
+                    <div class="confidence-score">Confidence: ${result.confidence}</div>
+                </div>
+            `;
+            resultElement.className = "demo-result success";
+        }
+        
+        // Display top predictions if available
+        if (result.probabilities) {
+            displayTopPredictions(result.probabilities);
+        }
+        
+    } catch (error) {
+        console.error("Error during prediction:", error);
+        
+        // Display appropriate error message to user
+        const resultElement = document.getElementById('result');
+        if (resultElement) {
+            let errorMessage = "An error occurred during prediction.";
+            
+            if (error.name === 'AbortError') {
+                errorMessage = "Request timed out. Please try again.";
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage = "Network connection failed. Please check your internet connection.";
+            } else {
+                errorMessage = error.message;
+            }
+            
+            resultElement.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Error: ${errorMessage}</span>
+                </div>
+            `;
+            resultElement.className = "demo-result error";
+        }
+    }
+}
+
+/**
+ * Display top 3 predictions with confidence scores.
+ */
+function displayTopPredictions(probabilities) {
+    const topPredictionsElement = document.getElementById('topPredictions');
+    if (!topPredictionsElement) return;
+    
+    // Create array of [digit, probability] pairs and sort by probability
+    const predictions = probabilities
+        .map((prob, index) => [index, prob])
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+    
+    const topPredictionsHTML = `
+        <div class="top-predictions-container">
+            <h4>Top 3 Predictions</h4>
+            <div class="predictions-list">
+                ${predictions.map(([digit, prob], index) => `
+                    <div class="prediction-item ${index === 0 ? 'primary' : ''}">
+                        <span class="prediction-digit">${digit}</span>
+                        <span class="prediction-confidence">${(prob * 100).toFixed(1)}%</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    topPredictionsElement.innerHTML = topPredictionsHTML;
+}
+
+/**
+ * Set up event listeners for canvas drawing interactions.
+ */
+function setupEventListeners() {
+    // Mouse events for desktop
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    canvas.addEventListener('mousemove', draw);
+    
+    // Touch events for mobile devices
+    canvas.addEventListener('touchstart', (event) => {
+        event.preventDefault();
+        const touch = event.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        startDrawing(mouseEvent);
+    });
+    
+    canvas.addEventListener('touchend', (event) => {
+        event.preventDefault();
+        stopDrawing();
+    });
+    
+    canvas.addEventListener('touchmove', (event) => {
+        event.preventDefault();
+        const touch = event.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        draw(mouseEvent);
+    });
+}
+
+/**
+ * Initialize the drawing interface when the page loads.
+ */
+function initialize() {
+    if (!canvas || !ctx) {
+        console.error("Canvas or context not found!");
+        return;
+    }
+    
+    initializeCanvas();
+    setupEventListeners();
+    console.log("Handwriting demo initialized successfully");
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize);
+} else {
+    initialize();
+}
+</script>
+{% endblock %}

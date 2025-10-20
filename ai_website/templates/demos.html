@@ -12,14 +12,44 @@
 
 <section class="demos-content">
     <div class="container">
+        <!-- Featured Demo: Handwriting Recognition -->
+        <div class="featured-demo">
+            <!-- <h2>🚀 Now Available: Handwriting Recognition</h2> -->
+            <div class="demo-preview">
+                <div class="demo-preview-content">
+                    <h3>Digit Recognition with Neural Networks</h3>
+                    <p>
+                        Experience machine learning in action! Draw digits (0-9) and watch as our enhanced neural network 
+                        predicts what you wrote with 97.9% accuracy. This demo showcases the power of deep learning 
+                        applied to computer vision tasks.
+                    </p>
+                    <div class="demo-features">
+                        <span class="feature-tag"><i class="fas fa-brain"></i> Neural Network</span>
+                        <span class="feature-tag"><i class="fas fa-chart-line"></i> 97.9% Accuracy</span>
+                        <span class="feature-tag"><i class="fas fa-mobile-alt"></i> Mobile Friendly</span>
+                    </div>
+                    <a href="{{ url_for('handwriting_demo') }}" class="btn btn-primary demo-btn">
+                        <i class="fas fa-play-circle"></i>
+                        Try Handwriting Demo
+                    </a>
+                </div>
+                <div class="demo-preview-visual">
+                    <div class="demo-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coming Soon Demos -->
         <div class="coming-soon">
             <div class="coming-soon-icon">
                 <i class="fas fa-cogs"></i>
             </div>
-            <h2>Exciting AI Demos Coming Soon!</h2>
+            <h2>More AI Demos Coming Soon!</h2>
             <p>
-                I'm working to bring you interactive demonstrations of cutting-edge AI technologies. 
-                Check back soon to explore my machine learning models, neural networks, and other AI applications.
+                I'm working to bring you more interactive demonstrations of cutting-edge AI technologies. 
+                Check back soon to explore additional machine learning models, neural networks, and AI applications.
             </p>
             <div class="planned-demos">
                 <h3>Planned Demonstrations:</h3>
@@ -31,7 +61,7 @@
                     <li><i class="fas fa-gamepad"></i> AI Game Playing Agents</li>
                 </ul>
             </div>
-            <a href="{{ url_for('home') }}" class="btn btn-primary">
+            <a href="{{ url_for('home') }}" class="btn btn-secondary">
                 <i class="fas fa-home"></i>
                 Return Home
             </a>

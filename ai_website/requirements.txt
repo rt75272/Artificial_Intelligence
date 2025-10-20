@@ -13,3 +13,10 @@ gunicorn
 
 # Security enhancement for production.
 Werkzeug
+
+# Machine learning and data processing for handwriting recognition demo.
+numpy
+scikit-learn
+
+# Image processing for handwriting recognition demo.
+Pillow
