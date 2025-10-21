@@ -11,7 +11,6 @@ import secrets
 import logging
 import traceback
 import pickle
-import json
 from typing import Optional
 import numpy as np
 from flask import Flask, render_template, request, jsonify
@@ -21,26 +20,12 @@ from PIL import Image
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Try to import TensorFlow for cat/dog model
-try:
-    import tensorflow as tf
-    TF_AVAILABLE = True
-    logger.info("✅ TensorFlow available for cat/dog classification")
-except ImportError:
-    TF_AVAILABLE = False
-    logger.warning("⚠️ TensorFlow not available - cat/dog classification will use fallback method")
-
 # Initialize Flask application
 app = Flask(__name__)
 
 # Global model variables for handwriting recognition
 digit_model = None
 scaler = None
-
-# Global model variables for cat vs dog classification
-cat_dog_model = None
-cat_dog_model_available = False
-cat_dog_metadata = {}
 
 # Application configuration.
 class Config:
@@ -90,69 +75,7 @@ def load_sklearn_model():
         logger.error(f"❌ Failed to load sklearn model: {e}")
         return None, None
 
-def load_cat_dog_model():
-    """
-    Load the trained cat vs dog classification model.
-    
-    Returns:
-        tuple: (model, metadata) if successful, (None, None) if failed
-    """
-    global cat_dog_model_available
-    
-    try:
-        if not TF_AVAILABLE:
-            logger.info("📝 TensorFlow not available - using heuristic fallback for cat/dog classification")
-            return None, None
-            
-        # Only use the ultra model; otherwise fallback to heuristic
-        ultra_model_path = 'cat_dog_ultra_model.h5'
-        ultra_metadata_path = 'cat_dog_ultra_metadata.json'
-
-        if not os.path.exists(ultra_model_path):
-            logger.info("📝 Ultra model not found - using heuristic classification")
-            logger.info("� Run 'python train_ultra_model.py' to train the ultra model")
-            return None, None
-
-        model_path = ultra_model_path
-        metadata_path = ultra_metadata_path
-        logger.info("🚀 Loading ultra-advanced cat vs dog ensemble CNN model...")
-        
-        # Load the trained model
-        model = tf.keras.models.load_model(model_path)
-        
-        # Load metadata if available
-        metadata = {}
-        if os.path.exists(metadata_path):
-            with open(metadata_path, 'r') as f:
-                metadata = json.load(f)
-        
-        # Test the model with dummy input using metadata input shape when available
-        try:
-            ishape = metadata.get('input_shape') or [224, 224, 3]
-            h, w = int(ishape[0]), int(ishape[1])
-            test_input = np.random.random((1, h, w, 3))
-            test_prediction = model.predict(test_input, verbose=0)
-            if isinstance(test_prediction, list):
-                pred_shape = [p.shape for p in test_prediction]
-            else:
-                pred_shape = test_prediction.shape
-        except Exception:
-            pred_shape = 'unknown'
-        
-        logger.info(f"✅ Cat/dog CNN model loaded successfully")
-        logger.info(f"📊 Model type: {metadata.get('model_type', 'CNN')}")
-        logger.info(f"🧪 Model test successful: prediction shape={pred_shape}")
-        
-        cat_dog_model_available = True
-        # Save metadata globally
-        globals()['cat_dog_metadata'] = metadata
-        return model, metadata
-        
-    except Exception as e:
-        logger.error(f"❌ Failed to load cat/dog model: {e}")
-        logger.error(f"🔍 Traceback: {traceback.format_exc()}")
-        cat_dog_model_available = False
-        return None, None
+# (Cat vs Dog demo removed from website)
 
 def enhanced_preprocess(image_data: str) -> Optional[np.ndarray]:
     """Convert base64 image data to normalized numpy array for model prediction.
@@ -268,14 +191,7 @@ def linear_regression_demo():
     """
     return render_template('linear_regression_demo.html')
 
-@app.route('/demos/cat-dog')
-def cat_dog_demo():
-    """Render the cat vs dog image classification demo page.
-    
-    Returns:
-        str: Rendered HTML template for the cat vs dog classification demo.
-    """
-    return render_template('cat_dog_demo.html')
+# Cat vs Dog demo route removed
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -334,268 +250,15 @@ def predict():
         logger.error(f"🔍 Traceback: {traceback.format_exc()}")
         return jsonify({'error': 'Prediction failed'}), 500
 
-@app.route('/classify-image', methods=['POST'])
-def classify_image():
-    """Classify uploaded image as cat or dog using CNN model or improved heuristic fallback.
-    
-    Expected form data:
-        - image: Image file (JPG, PNG, GIF)
-    
-    Returns:
-        JSON response with classification results:
-        {
-            "prediction": "cat",
-            "confidence": 0.92,
-            "probabilities": {
-                "cat": 0.92,
-                "dog": 0.08
-            }
-        }
-    """
-    try:
-        # Check if image file is present in request
-        if 'image' not in request.files:
-            return jsonify({'error': 'No image file provided'}), 400
-        
-        file = request.files['image']
-        if file.filename == '':
-            return jsonify({'error': 'No image file selected'}), 400
-        
-        # Validate file type
-        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
-        if not ('.' in file.filename and 
-                file.filename.rsplit('.', 1)[1].lower() in allowed_extensions):
-            return jsonify({'error': 'Invalid file type. Please use PNG, JPG, or GIF'}), 400
-        
-        # Process the uploaded image
-        try:
-            image = Image.open(file.stream)
-            
-            # Convert to RGB if needed
-            if image.mode != 'RGB':
-                image = image.convert('RGB')
-            
-            # Resize to model input size from metadata if available
-            try:
-                ishape = cat_dog_metadata.get('input_shape') if isinstance(cat_dog_metadata, dict) else None
-                if ishape and len(ishape) >= 2:
-                    target_w, target_h = int(ishape[1]), int(ishape[0])
-                else:
-                    target_w, target_h = 224, 224
-            except Exception:
-                target_w, target_h = 224, 224
-            image = image.resize((target_w, target_h), Image.Resampling.LANCZOS)
-            
-            # Convert to numpy array
-            img_array = np.array(image, dtype=np.float32)
-            
-            # Normalize pixel values to [0, 1] range
-            img_array = img_array / 255.0
-            
-            logger.info(f"🖼️ Image processed successfully: shape {img_array.shape}")
-            
-        except Exception as e:
-            logger.error(f"❌ Image processing failed: {e}")
-            return jsonify({'error': 'Failed to process image'}), 400
-        
-        # Use real CNN model if available, otherwise fall back to improved heuristics
-        if cat_dog_model is not None and cat_dog_model_available:
-            logger.info("🧠 Using trained CNN model for classification")
-            prediction, confidence, cat_prob, dog_prob = classify_with_cnn_model(img_array)
-        else:
-            logger.info("📝 Using improved heuristic classification (no CNN model available)")
-            prediction, confidence, cat_prob, dog_prob = classify_with_improved_heuristics(img_array)
-        
-        logger.info(f"🎯 Image classification: {prediction} (confidence: {confidence:.3f})")
-        
-        # Return classification results
-        return jsonify({
-            'prediction': prediction,
-            'confidence': float(confidence),
-            'probabilities': {
-                'cat': float(cat_prob),
-                'dog': float(dog_prob)
-            }
-        })
-        
-    except Exception as e:
-        logger.error(f"❌ Image classification error: {e}")
-        logger.error(f"🔍 Traceback: {traceback.format_exc()}")
-        return jsonify({'error': 'Classification failed'}), 500
+"""
+Cat vs Dog classification endpoint removed along with demo.
+"""
 
-def classify_with_cnn_model(img_array):
-    """
-    Classify image using the trained CNN model.
-    
-    Args:
-        img_array: Preprocessed image array (224, 224, 3)
-        
-    Returns:
-        tuple: (prediction, confidence, cat_prob, dog_prob)
-    """
-    try:
-        # Add batch dimension for model input
-        img_batch = np.expand_dims(img_array, axis=0)
-        
-        # Make prediction using the trained model (handle multi-output models)
-        raw = cat_dog_model.predict(img_batch, verbose=0)
-        if isinstance(raw, list):
-            # Expect [main_prediction, uncertainty]
-            raw_prediction = float(raw[0][0][0])
-        else:
-            raw_prediction = float(raw[0][0])
+# Cat vs Dog model helper removed
 
-        # Decision threshold from metadata if available
-        try:
-            thr = float(cat_dog_metadata.get('decision_threshold', 0.5))
-        except Exception:
-            thr = 0.5
-
-        # Convert to probabilities (sigmoid output: >thr = dog, <thr = cat)
-        if raw_prediction > thr:
-            # Predict dog
-            dog_prob = float(raw_prediction)
-            cat_prob = 1.0 - dog_prob
-            prediction = 'dog'
-        else:
-            # Predict cat
-            cat_prob = float(1.0 - raw_prediction)
-            dog_prob = 1.0 - cat_prob
-            prediction = 'cat'
-        
-        confidence = max(cat_prob, dog_prob)
-        
-        logger.info(f"🧠 CNN prediction: {prediction} (raw: {raw_prediction:.4f}, confidence: {confidence:.4f})")
-        
-        return prediction, confidence, cat_prob, dog_prob
-        
-    except Exception as e:
-        logger.error(f"❌ CNN model prediction failed: {e}")
-        # Fall back to heuristic method
-        return classify_with_improved_heuristics(img_array)
-
-def classify_with_improved_heuristics(img_array):
-    """
-    Classify image using improved heuristic analysis.
-    This is a fallback method when the CNN model is not available.
-    
-    Args:
-        img_array: Preprocessed image array (224, 224, 3)
-        
-    Returns:
-        tuple: (prediction, confidence, cat_prob, dog_prob)
-    """
-    try:
-        # Enhanced heuristic analysis based on multiple image features
-        
-        # 1. Color analysis - cats and dogs have different typical color distributions
-        avg_red = np.mean(img_array[:, :, 0])
-        avg_green = np.mean(img_array[:, :, 1])
-        avg_blue = np.mean(img_array[:, :, 2])
-        
-        # Calculate color scores (empirically derived)
-        orange_score = (avg_red - avg_blue) * (avg_red - avg_green)  # Orange cats
-        brown_score = min(avg_red, avg_green) - avg_blue  # Brown animals
-        
-        # 2. Texture and contrast analysis
-        # Convert to grayscale for texture analysis
-        gray = 0.299 * img_array[:, :, 0] + 0.587 * img_array[:, :, 1] + 0.114 * img_array[:, :, 2]
-        
-        # Calculate texture metrics
-        texture_std = np.std(gray)
-        texture_mean = np.mean(gray)
-        
-        # Edge detection approximation using gradient
-        grad_x = np.gradient(gray, axis=1)
-        grad_y = np.gradient(gray, axis=0)
-        edge_magnitude = np.sqrt(grad_x**2 + grad_y**2)
-        edge_density = np.mean(edge_magnitude)
-        
-        # 3. Shape analysis using central regions (face area approximation)
-        center_h, center_w = img_array.shape[0] // 2, img_array.shape[1] // 2
-        center_region = img_array[
-            center_h-30:center_h+30,
-            center_w-30:center_w+30,
-            :
-        ]
-        
-        center_brightness = np.mean(center_region) if center_region.size > 0 else 0.5
-        center_contrast = np.std(center_region) if center_region.size > 0 else 0.1
-        
-        # 4. Combine features into classification scores
-        # These weights were empirically tuned based on cat/dog characteristics
-        
-        # Cat indicators: higher orange/warm tones, more texture variation, distinct facial features
-        cat_score = (
-            orange_score * 2.0 +           # Orange cats are common
-            texture_std * 1.5 +           # Cats often have more fur texture
-            center_contrast * 1.2 +       # Cat faces often have more defined features
-            (0.6 - texture_mean) * 0.8    # Bias towards slightly darker images
-        )
-        
-        # Dog indicators: more varied colors, different texture patterns, broader faces
-        dog_score = (
-            brown_score * 1.8 +           # Many dogs are brown/tan
-            edge_density * 1.0 +          # Dog photos often have more background
-            center_brightness * 1.0 +     # Dogs often have lighter facial regions
-            texture_std * 0.8             # Different texture pattern than cats
-        )
-        
-        # Add some controlled randomness to prevent completely deterministic results
-        # This simulates model uncertainty in a realistic way
-        random_factor = np.random.uniform(0.85, 1.15)
-        cat_score *= random_factor
-        dog_score *= (2.0 - random_factor)  # Inverse correlation
-        
-        # Convert scores to probabilities using softmax-like normalization
-        exp_cat = np.exp(cat_score * 2.0)  # Scale factor for sensitivity
-        exp_dog = np.exp(dog_score * 2.0)
-        total = exp_cat + exp_dog
-        
-        cat_prob = exp_cat / total
-        dog_prob = exp_dog / total
-        
-        # Ensure minimum confidence threshold (avoid being too uncertain)
-        min_confidence = 0.60
-        max_confidence = 0.95
-        
-        if max(cat_prob, dog_prob) < min_confidence:
-            # Boost the winning class to meet minimum confidence
-            if cat_prob > dog_prob:
-                cat_prob = min_confidence
-                dog_prob = 1.0 - cat_prob
-            else:
-                dog_prob = min_confidence
-                cat_prob = 1.0 - dog_prob
-        elif max(cat_prob, dog_prob) > max_confidence:
-            # Cap the confidence to seem realistic
-            if cat_prob > dog_prob:
-                cat_prob = max_confidence
-                dog_prob = 1.0 - cat_prob
-            else:
-                dog_prob = max_confidence
-                cat_prob = 1.0 - dog_prob
-        
-        # Final prediction
-        prediction = 'cat' if cat_prob > dog_prob else 'dog'
-        confidence = max(cat_prob, dog_prob)
-        
-        logger.info(f"📊 Heuristic analysis - Cat score: {cat_score:.3f}, Dog score: {dog_score:.3f}")
-        logger.info(f"🎯 Heuristic prediction: {prediction} (confidence: {confidence:.3f})")
-        
-        return prediction, confidence, cat_prob, dog_prob
-        
-    except Exception as e:
-        logger.error(f"❌ Heuristic classification failed: {e}")
-        
-        # Ultimate fallback - random but realistic prediction
-        is_cat = np.random.random() > 0.5
-        confidence = np.random.uniform(0.65, 0.85)  # Modest confidence
-        
-        if is_cat:
-            return 'cat', confidence, confidence, 1.0 - confidence
-        else:
-            return 'dog', confidence, 1.0 - confidence, confidence
+"""
+Cat vs Dog heuristic/classifier helpers removed with demo.
+"""
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -638,9 +301,9 @@ def create_app():
     return app
 
 def initialize_models():
-    """Initialize all models (handwriting and cat/dog classification)."""
-    global digit_model, scaler, cat_dog_model
-    
+    """Initialize models used by the website (handwriting only)."""
+    global digit_model, scaler
+
     try:
         # Initialize handwriting recognition model
         logger.info("🚀 Initializing handwriting recognition model...")
@@ -649,15 +312,7 @@ def initialize_models():
             logger.info("✅ Handwriting model loaded successfully")
         else:
             logger.warning("⚠️ Handwriting model not available - predictions will not work")
-            
-        # Initialize cat vs dog classification model
-        logger.info("🚀 Initializing cat vs dog classification model...")
-        cat_dog_model, cat_dog_metadata = load_cat_dog_model()
-        if cat_dog_model is not None:
-            logger.info("✅ Cat/dog CNN model loaded successfully")
-        else:
-            logger.info("📝 Using heuristic fallback for cat/dog classification")
-            
+
     except Exception as e:
         logger.error(f"❌ Model initialization failed: {e}")
         logger.error(f"🔍 Traceback: {traceback.format_exc()}")

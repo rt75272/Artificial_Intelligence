@@ -21,11 +21,11 @@ scikit-learn
 # Image processing for handwriting recognition demo.
 Pillow
 
-# Deep learning framework with GPU support.
-tensorflow==2.17.1
+# # Deep learning framework with GPU support.
+# tensorflow==2.17.1
 
-# Legacy Keras for GPU compatibility
-tf_keras
+# # Legacy Keras for GPU compatibility
+# tf_keras
 
-# Additional ML dependencies for advanced models.
-matplotlib>=3.6.0
+# # Additional ML dependencies for advanced models.
+# matplotlib>=3.6.0

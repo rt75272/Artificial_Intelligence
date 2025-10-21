@@ -6,3 +6,4 @@ __pycache__/
 ai_website/*.h5
 ai_website/*.keras
 ai_website/*.hdf5
+*.h5
