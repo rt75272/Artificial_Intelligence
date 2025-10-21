@@ -1,0 +1,63 @@
+{
+  "model_type": "Ultra-Advanced Ensemble CNN with Uncertainty Estimation",
+  "base_architectures": [
+    "MobileNetV2",
+    "ResNet50",
+    "Attention Mechanism"
+  ],
+  "input_shape": [
+    224,
+    224,
+    3
+  ],
+  "classes": [
+    "cats",
+    "dogs"
+  ],
+  "training_strategy": "Multi-phase with photorealistic synthetic data",
+  "base_epochs": 15,
+  "fine_tune_epochs": 25,
+  "batch_size": 32,
+  "dataset_size": 3000,
+  "framework": "TensorFlow/Keras",
+  "created_date": "2025-10-21T14:47:10.225545",
+  "version": "3.0",
+  "final_accuracy": 0.865,
+  "average_confidence": 0.9943650364875793,
+  "decision_threshold": 0.3,
+  "mixup_alpha": 0.2,
+  "label_smoothing": 0.05,
+  "focal_alpha": 0.25,
+  "focal_gamma": 0.0,
+  "tta": true,
+  "class_performance": {
+    "cats": {
+      "precision": 0.7874015748031497,
+      "recall": 1.0,
+      "f1_score": 0.8810572687224669
+    },
+    "dogs": {
+      "precision": 1.0,
+      "recall": 0.73,
+      "f1_score": 0.8439306358381503
+    }
+  },
+  "advanced_features": [
+    "Photorealistic synthetic dataset",
+    "Ensemble CNN architecture",
+    "Uncertainty estimation",
+    "Attention mechanism",
+    "Advanced data augmentation",
+    "Multi-phase training",
+    "Real-world photo simulation",
+    "Domain adaptation techniques"
+  ],
+  "improvements_over_basic": [
+    "Solved domain gap between synthetic and real photos",
+    "Added uncertainty estimation for reliability",
+    "Ensemble voting for robustness",
+    "Photorealistic training data",
+    "Advanced augmentation pipeline",
+    "Multi-output architecture"
+  ]
+}

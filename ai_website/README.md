@@ -179,7 +179,25 @@ The website uses CSS custom properties for easy theming:
 - **`/demos`** - AI demos page (currently placeholder with planned features)
 - **`/404`** - Custom error page for missing routes
 
-## 🔮 Future Enhancements
+## � GPU Training Status
+
+**Current Issue**: NVIDIA driver/library version mismatch detected
+- **Status**: GPU training temporarily unavailable
+- **Cause**: Kernel driver (580.65.06) != Library version (580.95.05)
+- **Solution**: **REBOOT REQUIRED** to load updated kernel modules
+
+### Quick Diagnostics
+```bash
+# Check GPU status after reboot
+python3 nvidia_diagnostic.py
+
+# Or manually check
+nvidia-smi  # Should work without errors after reboot
+```
+
+See `GPU_SETUP.md` for detailed GPU configuration and troubleshooting.
+
+## �🔮 Future Enhancements
 
 ### Planned Features
 - [ ] Interactive AI demonstrations (image classification, text generation)

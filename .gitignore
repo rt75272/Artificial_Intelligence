@@ -1,1 +1,8 @@
 AI/
+Handwritting/digits/
+*.png
+__pycache__/
+# Large model artifacts (keep out of git)
+ai_website/*.h5
+ai_website/*.keras
+ai_website/*.hdf5

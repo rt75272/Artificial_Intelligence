@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ai-portfolio
+    rootDir: ai_website
+    env: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn -w 2 -k gevent -b 0.0.0.0:$PORT app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+    autoDeploy: true
+    healthCheckPath: /

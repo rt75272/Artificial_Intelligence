@@ -69,6 +69,34 @@
             </div>
         </div>
 
+        <!-- Third Demo: Cat vs Dog Classification -->
+        <div class="demo-section">
+            <div class="demo-preview">
+                <div class="demo-preview-content">
+                    <h3>Cat vs Dog Image Classification</h3>
+                    <p>
+                        Upload any image and watch our convolutional neural network classify it as a cat or dog! 
+                        This demo demonstrates computer vision capabilities using deep learning for binary image 
+                        classification with confidence scoring.
+                    </p>
+                    <div class="demo-features">
+                        <span class="feature-tag"><i class="fas fa-eye"></i> Computer Vision</span>
+                        <span class="feature-tag"><i class="fas fa-upload"></i> Image Upload</span>
+                        <span class="feature-tag"><i class="fas fa-paw"></i> CNN Model</span>
+                    </div>
+                    <a href="{{ url_for('cat_dog_demo') }}" class="btn btn-primary demo-btn">
+                        <i class="fas fa-play-circle"></i>
+                        Try Cat vs Dog Demo
+                    </a>
+                </div>
+                <div class="demo-preview-visual">
+                    <div class="demo-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Coming Soon Demos -->
         <div class="coming-soon">
             <div class="coming-soon-icon">
@@ -76,17 +104,17 @@
             </div>
             <h2>More AI Demos Coming Soon!</h2>
             <p>
-                I'm working to bring you more interactive demonstrations of cutting-edge AI technologies. 
-                Check back soon to explore additional machine learning models, neural networks, and AI applications.
+                I'm continuously expanding the collection of interactive AI demonstrations. 
+                Check back soon to explore additional machine learning models and cutting-edge AI applications.
             </p>
             <div class="planned-demos">
                 <h3>Planned Demonstrations:</h3>
                 <ul>
-                    <li><i class="fas fa-image"></i> Image Classification with CNNs</li>
                     <li><i class="fas fa-comments"></i> Text Generation with Language Models</li>
                     <li><i class="fas fa-music"></i> Music Generation with AI</li>
-                    <li><i class="fas fa-chart-bar"></i> Data Analysis and Predictions</li>
+                    <li><i class="fas fa-chart-bar"></i> Advanced Data Analysis</li>
                     <li><i class="fas fa-gamepad"></i> AI Game Playing Agents</li>
+                    <li><i class="fas fa-robot"></i> Reinforcement Learning Demos</li>
                 </ul>
             </div>
             <a href="{{ url_for('home') }}" class="btn btn-secondary">

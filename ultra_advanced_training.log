@@ -1,0 +1,144 @@
+2025-10-21 14:17:23,532 - INFO - 🔍 System Configuration Check:
+2025-10-21 14:17:23,532 - INFO - 📦 TensorFlow version: 2.17.1
+2025-10-21 14:17:23,786 - INFO - 🎯 1 GPU(s) detected:
+2025-10-21 14:17:23,786 - INFO -    GPU 0: /physical_device:GPU:0
+2025-10-21 14:17:23,787 - INFO - 🔧 Configured XLA CUDA base path: /usr/lib/cuda
+2025-10-21 14:17:23,787 - INFO - 🚀 GPU acceleration enabled with 1 GPU(s)
+2025-10-21 14:17:23,787 - INFO - 💾 Memory growth enabled to prevent OOM errors
+2025-10-21 14:17:23,787 - INFO - ⚡ Mixed precision training enabled for faster performance
+2025-10-21 14:17:23,787 - INFO - 🔧 XLA compilation disabled by default (set ULTRA_ENABLE_XLA=1 to opt in)
+2025-10-21 14:17:23,789 - INFO - 🎯 GPU 0: NVIDIA GeForce RTX 2080 SUPER
+2025-10-21 14:17:23,789 - INFO - 🚀 GPU-optimized configuration selected
+2025-10-21 14:17:23,789 - INFO - 🚀 Ultra-Advanced Cat vs Dog Trainer initialized
+2025-10-21 14:17:23,789 - INFO - 📊 Training configuration: Batch size=32, Base epochs=15, Fine-tune epochs=25
+2025-10-21 14:17:23,789 - INFO - 🚀 Starting ultra-advanced model training...
+2025-10-21 14:17:23,789 - INFO - 🎨 Creating photorealistic synthetic dataset...
+2025-10-21 14:18:42,705 - INFO - ✅ Generated 3000 photorealistic synthetic images
+2025-10-21 14:18:42,706 - INFO - 🏗️ Building ultra-advanced ensemble CNN architecture...
+2025-10-21 14:18:45,357 - INFO - 🏗️ Model created with 27,902,148 parameters
+2025-10-21 14:18:45,357 - INFO - ⚡ Mixed precision training enabled for GPU acceleration
+2025-10-21 14:18:45,416 - INFO - 📊 Class weights: {0: 1.0, 1: 1.0}
+2025-10-21 14:18:45,422 - INFO - ⚡ GPU-optimized AdamW optimizer configured
+2025-10-21 14:18:45,422 - INFO - 🎯 Using Focal Loss: alpha=0.25, gamma=2.0
+2025-10-21 14:18:45,429 - INFO - 📋 Model architecture: 27902148 parameters
+2025-10-21 14:18:45,429 - INFO - 📊 GPU performance monitoring enabled
+2025-10-21 14:18:45,429 - INFO - 🏋️ Phase 1: Training with frozen base layers...
+2025-10-21 14:19:57,546 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:19:58,225 - INFO - ⏱️  Epoch 1 completed in 72.1s
+2025-10-21 14:20:27,545 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:20:28,143 - INFO - ⏱️  Epoch 2 completed in 29.9s
+2025-10-21 14:20:56,078 - INFO - ⏱️  Epoch 3 completed in 27.9s
+2025-10-21 14:21:23,771 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:21:24,441 - INFO - ⏱️  Epoch 4 completed in 28.3s
+2025-10-21 14:21:51,131 - INFO - ⏱️  Epoch 5 completed in 26.7s
+2025-10-21 14:22:18,568 - INFO - ⏱️  Epoch 6 completed in 27.4s
+2025-10-21 14:22:46,827 - INFO - ⏱️  Epoch 7 completed in 28.2s
+2025-10-21 14:23:15,261 - INFO - ⏱️  Epoch 8 completed in 28.4s
+2025-10-21 14:23:42,723 - INFO - ⏱️  Epoch 9 completed in 27.5s
+2025-10-21 14:24:10,976 - INFO - ⏱️  Epoch 10 completed in 28.2s
+2025-10-21 14:24:38,613 - INFO - ⏱️  Epoch 11 completed in 27.6s
+2025-10-21 14:24:39,279 - INFO - 🔧 Phase 2: Fine-tuning with unfrozen layers...
+2025-10-21 14:25:55,022 - INFO - ⏱️  Epoch 1 completed in 75.0s
+2025-10-21 14:26:23,273 - INFO - ⏱️  Epoch 2 completed in 28.2s
+2025-10-21 14:26:50,699 - INFO - ⏱️  Epoch 3 completed in 27.4s
+2025-10-21 14:27:18,135 - INFO - ⏱️  Epoch 4 completed in 27.4s
+2025-10-21 14:27:45,646 - INFO - ⏱️  Epoch 5 completed in 27.5s
+2025-10-21 14:28:12,859 - INFO - ⏱️  Epoch 6 completed in 27.2s
+2025-10-21 14:28:41,995 - INFO - ⏱️  Epoch 7 completed in 29.1s
+2025-10-21 14:28:42,298 - INFO - 📊 Evaluating ultra-advanced model performance...
+2025-10-21 14:28:55,698 - INFO - 🔧 Optimized decision threshold (f1) = 0.300
+2025-10-21 14:28:55,705 - INFO - 🎯 Final Model Accuracy: 0.5000 (50.00%)
+2025-10-21 14:28:55,705 - INFO - 🔮 Average Confidence: 1.0000 (100.00%)
+2025-10-21 14:28:55,705 - INFO - 📈 Precision - Cats: 0.500, Dogs: 0.000
+2025-10-21 14:28:55,705 - INFO - 📈 Recall - Cats: 1.000, Dogs: 0.000
+2025-10-21 14:28:55,705 - INFO - 📈 F1-Score - Cats: 0.667, Dogs: 0.000
+2025-10-21 14:28:55,705 - INFO - 🎭 Confusion Matrix:
+2025-10-21 14:28:55,706 - INFO -     True\Pred  Cats  Dogs
+2025-10-21 14:28:55,706 - INFO -     Cats        300     0
+2025-10-21 14:28:55,706 - INFO -     Dogs        300     0
+2025-10-21 14:28:55,706 - INFO - 💾 Saving ultra-advanced model...
+2025-10-21 14:28:55,706 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:28:56,325 - INFO - ✅ Ultra-advanced model saved to: cat_dog_ultra_model.h5
+2025-10-21 14:28:56,326 - INFO - ✅ Metadata saved to: cat_dog_ultra_metadata.json
+2025-10-21 14:28:56,439 - INFO - 🗑️ Photorealistic dataset cleaned up
+2025-10-21 14:28:56,439 - INFO - 🎉 Ultra-advanced training completed successfully!
+2025-10-21 14:28:56,439 - INFO - 📈 Final accuracy: 50.00%
+2025-10-21 14:28:56,439 - INFO - 🔮 Average confidence: 100.00%
+2025-10-21 14:28:56,439 - INFO - 📁 Model files created:
+2025-10-21 14:28:56,439 - INFO -    - cat_dog_ultra_model.h5 (ultra-advanced model)
+2025-10-21 14:28:56,439 - INFO -    - cat_dog_ultra_metadata.json (comprehensive metadata)
+2025-10-21 14:28:56,439 - INFO - 🏁 Ultra-advanced training script finished
+2025-10-21 14:34:17,868 - INFO - 🔍 System Configuration Check:
+2025-10-21 14:34:17,868 - INFO - 📦 TensorFlow version: 2.17.1
+2025-10-21 14:34:18,009 - INFO - 🎯 1 GPU(s) detected:
+2025-10-21 14:34:18,009 - INFO -    GPU 0: /physical_device:GPU:0
+2025-10-21 14:34:18,009 - INFO - 🔧 Configured XLA CUDA base path: /usr/lib/cuda
+2025-10-21 14:34:18,009 - INFO - 🚀 GPU acceleration enabled with 1 GPU(s)
+2025-10-21 14:34:18,009 - INFO - 💾 Memory growth enabled to prevent OOM errors
+2025-10-21 14:34:18,009 - INFO - ⚡ Mixed precision training enabled for faster performance
+2025-10-21 14:34:18,009 - INFO - 🔧 XLA compilation disabled by default (set ULTRA_ENABLE_XLA=1 to opt in)
+2025-10-21 14:34:18,011 - INFO - 🎯 GPU 0: NVIDIA GeForce RTX 2080 SUPER
+2025-10-21 14:34:18,011 - INFO - 🚀 GPU-optimized configuration selected
+2025-10-21 14:34:18,011 - INFO - 🚀 Ultra-Advanced Cat vs Dog Trainer initialized
+2025-10-21 14:34:18,011 - INFO - 📊 Training configuration: Batch size=32, Base epochs=15, Fine-tune epochs=25
+2025-10-21 14:34:18,011 - INFO - 🚀 Starting ultra-advanced model training...
+2025-10-21 14:34:18,011 - INFO - 🎨 Creating photorealistic synthetic dataset...
+2025-10-21 14:35:37,245 - INFO - ✅ Generated 3000 photorealistic synthetic images
+2025-10-21 14:35:37,245 - INFO - 🏗️ Building ultra-advanced ensemble CNN architecture...
+2025-10-21 14:35:39,933 - INFO - 🏗️ Model created with 27,902,148 parameters
+2025-10-21 14:35:39,933 - INFO - ⚡ Mixed precision training enabled for GPU acceleration
+2025-10-21 14:35:39,993 - INFO - 📊 Class weights: {0: 1.0, 1: 1.0}
+2025-10-21 14:35:39,998 - INFO - ⚡ GPU-optimized AdamW optimizer configured
+2025-10-21 14:35:40,006 - INFO - 📋 Model architecture: 27902148 parameters
+2025-10-21 14:35:40,007 - INFO - 📊 GPU performance monitoring enabled
+2025-10-21 14:35:40,007 - INFO - 🧪 MixUp enabled: alpha=0.2
+2025-10-21 14:35:40,007 - INFO - 🏋️ Phase 1: Training with frozen base layers...
+2025-10-21 14:36:50,243 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:36:50,998 - INFO - ⏱️  Epoch 1 completed in 70.2s
+2025-10-21 14:37:19,380 - INFO - ⏱️  Epoch 2 completed in 28.4s
+2025-10-21 14:37:47,203 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:37:47,799 - INFO - ⏱️  Epoch 3 completed in 28.4s
+2025-10-21 14:38:15,213 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:38:15,900 - INFO - ⏱️  Epoch 4 completed in 28.1s
+2025-10-21 14:38:42,898 - INFO - ⏱️  Epoch 5 completed in 27.0s
+2025-10-21 14:39:10,190 - INFO - ⏱️  Epoch 6 completed in 27.3s
+2025-10-21 14:39:37,921 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:39:38,592 - INFO - ⏱️  Epoch 7 completed in 28.4s
+2025-10-21 14:40:05,394 - INFO - ⏱️  Epoch 8 completed in 26.8s
+2025-10-21 14:40:32,909 - INFO - ⏱️  Epoch 9 completed in 27.5s
+2025-10-21 14:41:00,436 - INFO - ⏱️  Epoch 10 completed in 27.5s
+2025-10-21 14:41:27,828 - INFO - ⏱️  Epoch 11 completed in 27.4s
+2025-10-21 14:41:55,278 - INFO - ⏱️  Epoch 12 completed in 27.4s
+2025-10-21 14:42:22,742 - INFO - ⏱️  Epoch 13 completed in 27.5s
+2025-10-21 14:42:50,053 - INFO - ⏱️  Epoch 14 completed in 27.3s
+2025-10-21 14:42:50,617 - INFO - 🔧 Phase 2: Fine-tuning with unfrozen layers...
+2025-10-21 14:44:06,048 - INFO - ⏱️  Epoch 1 completed in 74.7s
+2025-10-21 14:44:34,470 - INFO - ⏱️  Epoch 2 completed in 28.4s
+2025-10-21 14:45:02,274 - INFO - ⏱️  Epoch 3 completed in 27.8s
+2025-10-21 14:45:30,072 - INFO - ⏱️  Epoch 4 completed in 27.8s
+2025-10-21 14:45:57,834 - INFO - ⏱️  Epoch 5 completed in 27.7s
+2025-10-21 14:46:25,838 - INFO - ⏱️  Epoch 6 completed in 28.0s
+2025-10-21 14:46:53,393 - INFO - ⏱️  Epoch 7 completed in 27.5s
+2025-10-21 14:46:53,691 - INFO - 📊 Evaluating ultra-advanced model performance...
+2025-10-21 14:47:09,583 - INFO - 🔧 Optimized decision threshold (f1) = 0.300
+2025-10-21 14:47:09,590 - INFO - 🎯 Final Model Accuracy: 0.8650 (86.50%)
+2025-10-21 14:47:09,590 - INFO - 🔮 Average Confidence: 0.9944 (99.44%)
+2025-10-21 14:47:09,590 - INFO - 📈 Precision - Cats: 0.787, Dogs: 1.000
+2025-10-21 14:47:09,590 - INFO - 📈 Recall - Cats: 1.000, Dogs: 0.730
+2025-10-21 14:47:09,590 - INFO - 📈 F1-Score - Cats: 0.881, Dogs: 0.844
+2025-10-21 14:47:09,590 - INFO - 🎭 Confusion Matrix:
+2025-10-21 14:47:09,590 - INFO -     True\Pred  Cats  Dogs
+2025-10-21 14:47:09,590 - INFO -     Cats        300     0
+2025-10-21 14:47:09,590 - INFO -     Dogs         81   219
+2025-10-21 14:47:09,590 - INFO - 💾 Saving ultra-advanced model...
+2025-10-21 14:47:09,590 - WARNING - You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+2025-10-21 14:47:10,226 - INFO - ✅ Ultra-advanced model saved to: cat_dog_ultra_model.h5
+2025-10-21 14:47:10,226 - INFO - ✅ Metadata saved to: cat_dog_ultra_metadata.json
+2025-10-21 14:47:10,341 - INFO - 🗑️ Photorealistic dataset cleaned up
+2025-10-21 14:47:10,341 - INFO - 🎉 Ultra-advanced training completed successfully!
+2025-10-21 14:47:10,341 - INFO - 📈 Final accuracy: 86.50%
+2025-10-21 14:47:10,341 - INFO - 🔮 Average confidence: 99.44%
+2025-10-21 14:47:10,341 - INFO - 📁 Model files created:
+2025-10-21 14:47:10,341 - INFO -    - cat_dog_ultra_model.h5 (ultra-advanced model)
+2025-10-21 14:47:10,341 - INFO -    - cat_dog_ultra_metadata.json (comprehensive metadata)
+2025-10-21 14:47:10,342 - INFO - 🏁 Ultra-advanced training script finished
