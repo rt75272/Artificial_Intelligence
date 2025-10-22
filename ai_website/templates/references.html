@@ -14,7 +14,7 @@
     <div class="container">
         <div class="references-grid">
 
-            <!-- Machine Learning Fundamentals -->
+            <!-- Machine Learning Fundamentals. -->
             <article class="reference-card">
                 <div class="reference-header collapsed" onclick="toggleReferenceContent(this)">
                     <h2>Linear Regression</h2>
@@ -278,7 +278,143 @@
                 </div>
             </article>
 
-            <!-- Neural Networks -->
+            <!-- Logistic Regression. -->
+            <article class="reference-card">
+                <div class="reference-header collapsed" onclick="toggleReferenceContent(this)">
+                    <h2>Logistic Regression</h2>
+                    <span class="reference-category">Classification</span>
+                </div>
+                <div class="reference-body collapsed">
+                    <p>
+                        Logistic regression is a supervised learning algorithm used for binary classification. Instead of predicting a continuous value, it predicts the probability that an input belongs to the positive class, then applies a threshold (typically 0.5) to produce a class label.
+                    </p>
+
+                    <h3>Mathematical Foundation</h3>
+                    <p>The model uses the sigmoid function to map real values to probabilities between 0 and 1.</p>
+                    <div class="math-equation">
+                        <strong>σ(z) = 1 / (1 + e⁻ᶻ)</strong><br>
+                        <strong>h<sub>θ</sub>(x) = σ(θᵀx)</strong>
+                    </div>
+                    <p>Decision rule:</p>
+                    <div class="math-equation">
+                        <strong>ŷ = 1</strong> if <strong>h<sub>θ</sub>(x) ≥ 0.5</strong>, else <strong>ŷ = 0</strong>.<br>
+                        Equivalent: <strong>θᵀx ≥ 0</strong> implies class 1, otherwise class 0.
+                    </div>
+
+                    <h3>Loss Function (Log Loss)</h3>
+                    <p>We optimize the negative log-likelihood (cross-entropy) over m examples:</p>
+                    <div class="math-equation">
+                        <strong>L(y, h) = -[y·log(h) + (1-y)·log(1-h)]</strong><br>
+                        <strong>J(θ) = (1/m) Σᵢ L(yᵢ, h<sub>θ</sub>(xᵢ))</strong>
+                    </div>
+
+                    <h3>Gradient and Updates</h3>
+                    <p>The gradient of the loss with respect to parameters is:</p>
+                    <div class="math-equation">
+                        <strong>∂J/∂θ = (1/m) Xᵀ(h - y)</strong>
+                    </div>
+                    <p>Gradient descent update:</p>
+                    <div class="math-equation">
+                        <strong>θ := θ - α · (1/m) Xᵀ(h - y)</strong>
+                    </div>
+
+                    <h3>Regularization</h3>
+                    <p>To reduce overfitting, add L2 regularization (λ ≥ 0):</p>
+                    <div class="math-equation">
+                        <strong>J<sub>reg</sub>(θ) = J(θ) + (λ/2m) Σ<sub>j=1</sub><sup>n</sup> θ<sub>j</sub>²</strong>
+                    </div>
+                    <p>Update for j ≥ 1:</p>
+                    <div class="math-equation">
+                        <strong>θ<sub>j</sub> := θ<sub>j</sub> - α·[(1/m) Σ(h - y)·x<sub>j</sub> + (λ/m) θ<sub>j</sub>]</strong><br>
+                        Bias term θ<sub>0</sub> is not regularized.
+                    </div>
+
+                    <h3>Worked Example</h3>
+                    <p>Binary classification with a single feature x and labels y ∈ {0,1}:</p>
+                    <div class="math-equation">
+                        <strong>Data:</strong> (x, y) = (0.5, 0), (1.0, 0), (2.0, 1), (3.0, 1).<br>
+                        Initialize θ = [θ₀, θ₁] = [0, 0], α = 0.1.
+                    </div>
+                    <p>Compute h = σ(θ₀ + θ₁x) for each point, accumulate gradient (h - y)x, and update θ repeatedly until convergence.</p>
+
+                    <h3>Interactive Decision Boundary</h3>
+                    <div class="interactive-demo">
+                        <div class="parameter-controls">
+                            <label>Bias (θ₀): <span id="theta0Value">-4.0</span></label>
+                            <input type="range" id="theta0Slider" min="-5" max="5" step="0.1" value="-4" oninput="updateLogistic()">
+
+                            <label>Weight x₁ (θ₁): <span id="theta1Value">2.0</span></label>
+                            <input type="range" id="theta1Slider" min="-5" max="5" step="0.1" value="2" oninput="updateLogistic()">
+
+                            <label>Weight x₂ (θ₂): <span id="theta2Value">2.0</span></label>
+                            <input type="range" id="theta2Slider" min="-5" max="5" step="0.1" value="2" oninput="updateLogistic()">
+
+                            <label>Threshold (t): <span id="threshValue">0.50</span></label>
+                            <input type="range" id="threshSlider" min="0.1" max="0.9" step="0.05" value="0.5" oninput="updateLogistic()">
+                        </div>
+                        <canvas id="logisticCanvas" width="500" height="300"></canvas>
+                    </div>
+
+                    <h3>Implementation from Scratch</h3>
+                    <p>A compact NumPy implementation of binary logistic regression using gradient descent:</p>
+                    <pre class="code-block"><code><span class="keyword">import</span> <span class="builtin">numpy</span> <span class="keyword">as</span> <span class="builtin">np</span>
+
+<span class="keyword">class</span> <span class="class-name">LogisticRegressionGD</span><span class="punctuation">:</span>
+    <span class="string">"""Binary Logistic Regression trained via gradient descent."""</span>
+
+    <span class="keyword">def</span> <span class="function">__init__</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">learning_rate</span><span class="operator">=</span><span class="number">0.1</span><span class="punctuation">,</span> <span class="variable">max_iterations</span><span class="operator">=</span><span class="number">1000</span><span class="punctuation">,</span> <span class="variable">l2</span><span class="operator">=</span><span class="number">0.0</span><span class="punctuation">):</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">=</span> <span class="variable">learning_rate</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">max_iterations</span> <span class="operator">=</span> <span class="variable">max_iterations</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">l2</span> <span class="operator">=</span> <span class="variable">l2</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">theta</span> <span class="operator">=</span> <span class="constant">None</span>
+
+    <span class="keyword">def</span> <span class="function">_sigmoid</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">z</span><span class="punctuation">):</span>
+        <span class="string">"""Numerically stable sigmoid."""</span>
+        <span class="variable">z</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">clip</span><span class="punctuation">(</span><span class="variable">z</span><span class="punctuation">,</span> <span class="operator">-</span><span class="number">250</span><span class="punctuation">,</span> <span class="number">250</span><span class="punctuation">)</span>
+        <span class="keyword">return</span> <span class="number">1</span> <span class="operator">/</span> <span class="punctuation">(</span><span class="number">1</span> <span class="operator">+</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">exp</span><span class="punctuation">(-</span><span class="variable">z</span><span class="punctuation">))</span>
+
+    <span class="keyword">def</span> <span class="function">fit</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">):</span>
+        <span class="string">"""Train on features X (m×n) and targets y (m,)."""</span>
+        <span class="variable">m</span><span class="punctuation">,</span> <span class="variable">n</span> <span class="operator">=</span> <span class="variable">X</span><span class="punctuation">.</span><span class="variable">shape</span>
+        <span class="variable">self</span><span class="punctuation">.</span><span class="variable">theta</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">zeros</span><span class="punctuation">(</span><span class="variable">n</span> <span class="operator">+</span> <span class="number">1</span><span class="punctuation">)</span>  <span class="comment"># Include bias.</span>
+        <span class="variable">Xb</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">c_</span><span class="punctuation">[</span><span class="builtin">np</span><span class="punctuation">.</span><span class="method">ones</span><span class="punctuation">(</span><span class="variable">m</span><span class="punctuation">),</span> <span class="variable">X</span><span class="punctuation">]</span>
+        <span class="keyword">for</span> <span class="variable">_</span> <span class="keyword">in</span> <span class="builtin">range</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">max_iterations</span><span class="punctuation">)</span>:
+            <span class="variable">z</span> <span class="operator">=</span> <span class="variable">Xb</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">theta</span><span class="punctuation">)</span>
+            <span class="variable">h</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">_sigmoid</span><span class="punctuation">(</span><span class="variable">z</span><span class="punctuation">)</span>
+            <span class="variable">gradient</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="number">1</span><span class="operator">/</span><span class="variable">m</span><span class="punctuation">)</span> <span class="operator">*</span> <span class="variable">Xb</span><span class="punctuation">.</span><span class="variable">T</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">h</span> <span class="operator">-</span> <span class="variable">y</span><span class="punctuation">)</span>
+            <span class="comment"># L2 regularization on weights only (skip bias at index 0).</span>
+            <span class="keyword">if</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">l2</span> <span class="operator">></span> <span class="number">0</span><span class="punctuation">:</span>
+                <span class="variable">reg</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">theta</span><span class="punctuation">.</span><span class="method">copy</span><span class="punctuation">()</span>
+                <span class="variable">reg</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="number">0</span>
+                <span class="variable">gradient</span> <span class="operator">+=</span> <span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">l2</span> <span class="operator">/</span> <span class="variable">m</span><span class="punctuation">)</span> <span class="operator">*</span> <span class="variable">reg</span>
+            <span class="variable">self</span><span class="punctuation">.</span><span class="variable">theta</span> <span class="operator">-=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="variable">learning_rate</span> <span class="operator">*</span> <span class="variable">gradient</span>
+
+    <span class="keyword">def</span> <span class="function">predict_proba</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">):</span>
+        <span class="string">"""Return probabilities P(y=1|x)."""</span>
+        <span class="variable">m</span> <span class="operator">=</span> <span class="variable">X</span><span class="punctuation">.</span><span class="variable">shape</span><span class="punctuation">[</span><span class="number">0</span><span class="punctuation">]</span>
+        <span class="variable">Xb</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">c_</span><span class="punctuation">[</span><span class="builtin">np</span><span class="punctuation">.</span><span class="method">ones</span><span class="punctuation">(</span><span class="variable">m</span><span class="punctuation">),</span> <span class="variable">X</span><span class="punctuation">]</span>
+        <span class="keyword">return</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">_sigmoid</span><span class="punctuation">(</span><span class="variable">Xb</span><span class="punctuation">.</span><span class="method">dot</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="variable">theta</span><span class="punctuation">))</span>
+
+    <span class="keyword">def</span> <span class="function">predict</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">,</span> <span class="variable">X</span><span class="punctuation">,</span> <span class="variable">threshold</span><span class="operator">=</span><span class="number">0.5</span><span class="punctuation">):</span>
+        <span class="string">"""Return class labels using a threshold (default 0.5)."""</span>
+        <span class="variable">proba</span> <span class="operator">=</span> <span class="variable">self</span><span class="punctuation">.</span><span class="method">predict_proba</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)</span>
+        <span class="keyword">return</span> <span class="punctuation">(</span><span class="variable">proba</span> <span class="operator">>=</span> <span class="variable">threshold</span><span class="punctuation">)</span><span class="punctuation">.</span><span class="method">astype</span><span class="punctuation">(</span><span class="builtin">int</span><span class="punctuation">)</span>
+
+<span class="comment"># Example usage.</span>
+<span class="keyword">if</span> <span class="variable">__name__</span> <span class="operator">==</span> <span class="string">"__main__"</span><span class="punctuation">:</span>
+    <span class="comment"># Simple separable dataset.</span>
+    <span class="variable">X</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([[</span><span class="number">0.5</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">1.0</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">2.0</span><span class="punctuation">],</span> <span class="punctuation">[</span><span class="number">3.0</span><span class="punctuation">]])</span>
+    <span class="variable">y</span> <span class="operator">=</span> <span class="builtin">np</span><span class="punctuation">.</span><span class="method">array</span><span class="punctuation">([</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">0</span><span class="punctuation">,</span> <span class="number">1</span><span class="punctuation">,</span> <span class="number">1</span><span class="punctuation">])</span>
+    <span class="variable">clf</span> <span class="operator">=</span> <span class="class-name">LogisticRegressionGD</span><span class="punctuation">(</span><span class="variable">learning_rate</span><span class="operator">=</span><span class="number">0.5</span><span class="punctuation">,</span> <span class="variable">max_iterations</span><span class="operator">=</span><span class="number">2000</span><span class="punctuation">)</span>
+    <span class="variable">clf</span><span class="punctuation">.</span><span class="method">fit</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">,</span> <span class="variable">y</span><span class="punctuation">)</span>
+    <span class="variable">proba</span> <span class="operator">=</span> <span class="variable">clf</span><span class="punctuation">.</span><span class="method">predict_proba</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)</span>
+    <span class="variable">pred</span> <span class="operator">=</span> <span class="variable">clf</span><span class="punctuation">.</span><span class="method">predict</span><span class="punctuation">(</span><span class="variable">X</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">"Probabilities:"</span><span class="punctuation">,</span> <span class="variable">proba</span><span class="punctuation">)</span>
+    <span class="builtin">print</span><span class="punctuation">(</span><span class="string">"Predictions:"</span><span class="punctuation">,</span> <span class="variable">pred</span><span class="punctuation">)</span></code></pre>
+                </div>
+            </article>
+
+            <!-- Neural Networks. -->
             <article class="reference-card">
                 <div class="reference-header collapsed" onclick="toggleReferenceContent(this)">
                     <h2>Neural Networks</h2>
@@ -845,298 +981,33 @@
 </section>
 
 <script>
-// Sample house data
-const houseData = [
-    {size: 1000, price: 150000},
-    {size: 1500, price: 225000},
-    {size: 2000, price: 300000}
+// Sample house data.
+const houseData = [{size: 1000, price: 150000}, {size: 1500, price: 225000}, {size: 2000, price: 300000}];
+// Utility functions for drawing.
+function clearCanvas(canvas) { const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); }
+function drawAxes(ctx, canvas) { const margin = 50; ctx.strokeStyle = '#374151'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(margin, canvas.height - margin); ctx.lineTo(canvas.width - margin, canvas.height - margin); ctx.stroke(); ctx.beginPath(); ctx.moveTo(margin, margin); ctx.lineTo(margin, canvas.height - margin); ctx.stroke(); ctx.fillStyle = '#374151'; ctx.font = '12px Inter'; ctx.fillText('House Size (sq ft)', canvas.width/2 - 50, canvas.height - 10); ctx.save(); ctx.translate(15, canvas.height/2 + 30); ctx.rotate(-Math.PI/2); ctx.fillText('Price ($)', 0, 0); ctx.restore(); }
+function scalePoint(value, min, max, pixelMin, pixelMax) { return pixelMin + (value - min) * (pixelMax - pixelMin) / (max - min); }
+// Show data points and fitted line.
+function showDataFit() { const canvas = document.getElementById('dataFitCanvas'); const ctx = canvas.getContext('2d'); clearCanvas(canvas); const margin = 50; const minSize = 800, maxSize = 2200; const minPrice = 100000, maxPrice = 350000; drawAxes(ctx, canvas); ctx.fillStyle = '#3b82f6'; houseData.forEach(point => { const x = scalePoint(point.size, minSize, maxSize, margin, canvas.width - margin); const y = scalePoint(point.price, minPrice, maxPrice, canvas.height - margin, margin); ctx.beginPath(); ctx.arc(x, y, 8, 0, 2 * Math.PI); ctx.fill(); ctx.fillStyle = '#1f2937'; ctx.font = '10px Inter'; ctx.fillText(`(${point.size}, $${point.price/1000}k)`, x + 10, y - 10); ctx.fillStyle = '#3b82f6'; }); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); const x1 = scalePoint(minSize, minSize, maxSize, margin, canvas.width - margin); const y1 = scalePoint(150 * minSize, minPrice, maxPrice, canvas.height - margin, margin); const x2 = scalePoint(maxSize, minSize, maxSize, margin, canvas.width - margin); const y2 = scalePoint(150 * maxSize, minPrice, maxPrice, canvas.height - margin, margin); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.fillStyle = '#ef4444'; ctx.font = '14px Inter'; ctx.fillText('ŷ = 150x + 0', canvas.width - 120, margin + 20); }
+// Show cost reduction over iterations.
+function showCostReduction() { const canvas = document.getElementById('costCanvas'); const ctx = canvas.getContext('2d'); clearCanvas(canvas); const margin = 50; const iterations = Array.from({length: 50}, (_, i) => i); const costs = iterations.map(i => Math.exp(-i/10) * 27180000000 + Math.random() * 1000000000); drawAxes(ctx, canvas); ctx.strokeStyle = '#8b5cf6'; ctx.lineWidth = 2; ctx.beginPath(); const maxCost = Math.max(...costs); costs.forEach((cost, i) => { const x = scalePoint(i, 0, iterations.length - 1, margin, canvas.width - margin); const y = scalePoint(cost, 0, maxCost, canvas.height - margin, margin); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }); ctx.stroke(); ctx.fillStyle = '#374151'; ctx.font = '12px Inter'; ctx.fillText('Iterations', canvas.width/2 - 30, canvas.height - 10); ctx.save(); ctx.translate(15, canvas.height/2 + 20); ctx.rotate(-Math.PI/2); ctx.fillText('Cost (MSE)', 0, 0); ctx.restore(); ctx.fillStyle = '#8b5cf6'; ctx.font = '14px Inter'; ctx.fillText('Cost decreases as model learns', margin, margin - 10); }
+// Animate gradient descent.
+function animateGradientDescent() { const canvas = document.getElementById('costCanvas'); const ctx = canvas.getContext('2d'); let frame = 0; function animate() { clearCanvas(canvas); drawAxes(ctx, canvas); const margin = 50; const iterations = Math.min(frame, 50); const costs = Array.from({length: iterations + 1}, (_, i) => Math.exp(-i/10) * 27180000000 + Math.random() * 500000000); ctx.strokeStyle = '#8b5cf6'; ctx.lineWidth = 3; ctx.beginPath(); const maxCost = 30000000000; costs.forEach((cost, i) => { const x = scalePoint(i, 0, 50, margin, canvas.width - margin); const y = scalePoint(cost, 0, maxCost, canvas.height - margin, margin); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }); ctx.stroke(); if (costs.length > 0) { const currentCost = costs[costs.length - 1]; const x = scalePoint(iterations, 0, 50, margin, canvas.width - margin); const y = scalePoint(currentCost, 0, maxCost, canvas.height - margin, margin); ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(x, y, 6, 0, 2 * Math.PI); ctx.fill(); } ctx.fillStyle = '#374151'; ctx.font = '12px Inter'; ctx.fillText(`Iteration: ${iterations}`, margin, margin - 10); frame++; if (frame <= 50) { setTimeout(() => requestAnimationFrame(animate), 100); } } animate(); }
+// Interactive parameter explorer.
+function updateLine() { const canvas = document.getElementById('interactiveCanvas'); const ctx = canvas.getContext('2d'); clearCanvas(canvas); const margin = 50; const minSize = 800, maxSize = 2200; const minPrice = 50000, maxPrice = 400000; drawAxes(ctx, canvas); const slope = parseFloat(document.getElementById('slopeSlider').value); const intercept = parseFloat(document.getElementById('interceptSlider').value); document.getElementById('slopeValue').textContent = slope; document.getElementById('interceptValue').textContent = intercept.toLocaleString(); ctx.fillStyle = '#3b82f6'; let totalCost = 0; houseData.forEach(point => { const x = scalePoint(point.size, minSize, maxSize, margin, canvas.width - margin); const y = scalePoint(point.price, minPrice, maxPrice, canvas.height - margin, margin); ctx.beginPath(); ctx.arc(x, y, 8, 0, 2 * Math.PI); ctx.fill(); const prediction = slope * point.size + intercept; const error = point.price - prediction; totalCost += error * error; const predY = scalePoint(prediction, minPrice, maxPrice, canvas.height - margin, margin); ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 1; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, predY); ctx.stroke(); ctx.setLineDash([]); }); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.beginPath(); const x1 = scalePoint(minSize, minSize, maxSize, margin, canvas.width - margin); const y1 = scalePoint(slope * minSize + intercept, minPrice, maxPrice, canvas.height - margin, margin); const x2 = scalePoint(maxSize, minSize, maxSize, margin, canvas.width - margin); const y2 = scalePoint(slope * maxSize + intercept, minPrice, maxPrice, canvas.height - margin, margin); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); const mse = totalCost / houseData.length; document.getElementById('currentCost').textContent = mse.toLocaleString(undefined, {maximumFractionDigits: 0}); ctx.fillStyle = '#ef4444'; ctx.font = '14px Inter'; ctx.fillText(`ŷ = ${slope}x + ${intercept}`, canvas.width - 150, margin + 20); }
+
+// Logistic regression demo data and helpers.
+const logisticData = [
+    {x1: 1.0, x2: 1.0, y: 0}, {x1: 1.8, x2: 0.8, y: 0}, {x1: 1.2, x2: 1.5, y: 0}, {x1: 2.0, x2: 1.0, y: 0},
+    {x1: 2.6, x2: 2.7, y: 1}, {x1: 3.0, x2: 3.2, y: 1}, {x1: 2.8, x2: 2.4, y: 1}, {x1: 3.2, x2: 2.8, y: 1}
 ];
-
-// Utility functions for drawing
-function clearCanvas(canvas) {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function drawAxes(ctx, canvas) {
-    const margin = 50;
-    ctx.strokeStyle = '#374151';
-    ctx.lineWidth = 2;
-
-    // X-axis
-    ctx.beginPath();
-    ctx.moveTo(margin, canvas.height - margin);
-    ctx.lineTo(canvas.width - margin, canvas.height - margin);
-    ctx.stroke();
-
-    // Y-axis
-    ctx.beginPath();
-    ctx.moveTo(margin, margin);
-    ctx.lineTo(margin, canvas.height - margin);
-    ctx.stroke();
-
-    // Labels
-    ctx.fillStyle = '#374151';
-    ctx.font = '12px Inter';
-    ctx.fillText('House Size (sq ft)', canvas.width/2 - 50, canvas.height - 10);
-
-    ctx.save();
-    ctx.translate(15, canvas.height/2 + 30);
-    ctx.rotate(-Math.PI/2);
-    ctx.fillText('Price ($)', 0, 0);
-    ctx.restore();
-}
-
-function scalePoint(value, min, max, pixelMin, pixelMax) {
-    return pixelMin + (value - min) * (pixelMax - pixelMin) / (max - min);
-}
-
-// Show data points and fitted line
-function showDataFit() {
-    const canvas = document.getElementById('dataFitCanvas');
-    const ctx = canvas.getContext('2d');
-    clearCanvas(canvas);
-
-    const margin = 50;
-    const minSize = 800, maxSize = 2200;
-    const minPrice = 100000, maxPrice = 350000;
-
-    drawAxes(ctx, canvas);
-
-    // Draw data points
-    ctx.fillStyle = '#3b82f6';
-    houseData.forEach(point => {
-        const x = scalePoint(point.size, minSize, maxSize, margin, canvas.width - margin);
-        const y = scalePoint(point.price, minPrice, maxPrice, canvas.height - margin, margin);
-
-        ctx.beginPath();
-        ctx.arc(x, y, 8, 0, 2 * Math.PI);
-        ctx.fill();
-
-        // Label
-        ctx.fillStyle = '#1f2937';
-        ctx.font = '10px Inter';
-        ctx.fillText(`(${point.size}, $${point.price/1000}k)`, x + 10, y - 10);
-        ctx.fillStyle = '#3b82f6';
-    });
-
-    // Draw fitted line y = 150x + 0
-    ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-
-    const x1 = scalePoint(minSize, minSize, maxSize, margin, canvas.width - margin);
-    const y1 = scalePoint(150 * minSize, minPrice, maxPrice, canvas.height - margin, margin);
-    const x2 = scalePoint(maxSize, minSize, maxSize, margin, canvas.width - margin);
-    const y2 = scalePoint(150 * maxSize, minPrice, maxPrice, canvas.height - margin, margin);
-
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-
-    // Line equation label
-    ctx.fillStyle = '#ef4444';
-    ctx.font = '14px Inter';
-    ctx.fillText('ŷ = 150x + 0', canvas.width - 120, margin + 20);
-}
-
-// Show cost reduction over iterations
-function showCostReduction() {
-    const canvas = document.getElementById('costCanvas');
-    const ctx = canvas.getContext('2d');
-    clearCanvas(canvas);
-
-    const margin = 50;
-
-    // Simulated cost history (exponential decay)
-    const iterations = Array.from({length: 50}, (_, i) => i);
-    const costs = iterations.map(i => Math.exp(-i/10) * 27180000000 + Math.random() * 1000000000);
-
-    drawAxes(ctx, canvas);
-
-    // Draw cost curve
-    ctx.strokeStyle = '#8b5cf6';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-
-    const maxCost = Math.max(...costs);
-    costs.forEach((cost, i) => {
-        const x = scalePoint(i, 0, iterations.length - 1, margin, canvas.width - margin);
-        const y = scalePoint(cost, 0, maxCost, canvas.height - margin, margin);
-
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-
-    // Labels
-    ctx.fillStyle = '#374151';
-    ctx.font = '12px Inter';
-    ctx.fillText('Iterations', canvas.width/2 - 30, canvas.height - 10);
-
-    ctx.save();
-    ctx.translate(15, canvas.height/2 + 20);
-    ctx.rotate(-Math.PI/2);
-    ctx.fillText('Cost (MSE)', 0, 0);
-    ctx.restore();
-
-    // Title
-    ctx.fillStyle = '#8b5cf6';
-    ctx.font = '14px Inter';
-    ctx.fillText('Cost decreases as model learns', margin, margin - 10);
-}
-
-// Animate gradient descent
-function animateGradientDescent() {
-    const canvas = document.getElementById('costCanvas');
-    const ctx = canvas.getContext('2d');
-    let frame = 0;
-
-    function animate() {
-        clearCanvas(canvas);
-        drawAxes(ctx, canvas);
-
-        const margin = 50;
-        const iterations = Math.min(frame, 50);
-        const costs = Array.from({length: iterations + 1}, (_, i) =>
-            Math.exp(-i/10) * 27180000000 + Math.random() * 500000000
-        );
-
-        // Draw cost curve up to current frame
-        ctx.strokeStyle = '#8b5cf6';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-
-        const maxCost = 30000000000;
-        costs.forEach((cost, i) => {
-            const x = scalePoint(i, 0, 50, margin, canvas.width - margin);
-            const y = scalePoint(cost, 0, maxCost, canvas.height - margin, margin);
-
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
-        ctx.stroke();
-
-        // Draw current point
-        if (costs.length > 0) {
-            const currentCost = costs[costs.length - 1];
-            const x = scalePoint(iterations, 0, 50, margin, canvas.width - margin);
-            const y = scalePoint(currentCost, 0, maxCost, canvas.height - margin, margin);
-
-            ctx.fillStyle = '#ef4444';
-            ctx.beginPath();
-            ctx.arc(x, y, 6, 0, 2 * Math.PI);
-            ctx.fill();
-        }
-
-        // Labels
-        ctx.fillStyle = '#374151';
-        ctx.font = '12px Inter';
-        ctx.fillText(`Iteration: ${iterations}`, margin, margin - 10);
-
-        frame++;
-        if (frame <= 50) {
-            setTimeout(() => requestAnimationFrame(animate), 100);
-        }
-    }
-
-    animate();
-}
-
-// Interactive parameter explorer
-function updateLine() {
-    const canvas = document.getElementById('interactiveCanvas');
-    const ctx = canvas.getContext('2d');
-    clearCanvas(canvas);
-
-    const margin = 50;
-    const minSize = 800, maxSize = 2200;
-    const minPrice = 50000, maxPrice = 400000;
-
-    drawAxes(ctx, canvas);
-
-    // Get current parameter values
-    const slope = parseFloat(document.getElementById('slopeSlider').value);
-    const intercept = parseFloat(document.getElementById('interceptSlider').value);
-
-    document.getElementById('slopeValue').textContent = slope;
-    document.getElementById('interceptValue').textContent = intercept.toLocaleString();
-
-    // Draw data points
-    ctx.fillStyle = '#3b82f6';
-    let totalCost = 0;
-    houseData.forEach(point => {
-        const x = scalePoint(point.size, minSize, maxSize, margin, canvas.width - margin);
-        const y = scalePoint(point.price, minPrice, maxPrice, canvas.height - margin, margin);
-
-        ctx.beginPath();
-        ctx.arc(x, y, 8, 0, 2 * Math.PI);
-        ctx.fill();
-
-        // Calculate prediction and cost
-        const prediction = slope * point.size + intercept;
-        const error = point.price - prediction;
-        totalCost += error * error;
-
-        // Draw prediction line to point
-        const predY = scalePoint(prediction, minPrice, maxPrice, canvas.height - margin, margin);
-        ctx.strokeStyle = '#fbbf24';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x, predY);
-        ctx.stroke();
-        ctx.setLineDash([]);
-    });
-
-    // Draw current line
-    ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-
-    const x1 = scalePoint(minSize, minSize, maxSize, margin, canvas.width - margin);
-    const y1 = scalePoint(slope * minSize + intercept, minPrice, maxPrice, canvas.height - margin, margin);
-    const x2 = scalePoint(maxSize, minSize, maxSize, margin, canvas.width - margin);
-    const y2 = scalePoint(slope * maxSize + intercept, minPrice, maxPrice, canvas.height - margin, margin);
-
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-
-    // Update cost display
-    const mse = totalCost / houseData.length;
-    document.getElementById('currentCost').textContent = mse.toLocaleString(undefined, {maximumFractionDigits: 0});
-
-    // Line equation
-    ctx.fillStyle = '#ef4444';
-    ctx.font = '14px Inter';
-    ctx.fillText(`ŷ = ${slope}x + ${intercept}`, canvas.width - 150, margin + 20);
-}
-
-// Toggle reference content visibility
-function toggleReferenceContent(header) {
-    const referenceBody = header.nextElementSibling;
-    const isCollapsed = referenceBody.classList.contains('collapsed');
-
-    if (isCollapsed) {
-        // Expand
-        header.classList.remove('collapsed');
-        referenceBody.classList.remove('collapsed');
-    } else {
-        // Collapse
-        header.classList.add('collapsed');
-        referenceBody.classList.add('collapsed');
-    }
-}
-
-// Initialize graphs when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Show the data fit graph automatically
-    setTimeout(showDataFit, 100);
-    // Initialize the interactive canvas
-    setTimeout(updateLine, 200);
-});
+function logit(p) { return Math.log(p / (1 - p)); }
+function drawAxes2D(ctx, canvas, xLabel, yLabel) { const margin = 40; ctx.strokeStyle = '#374151'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(margin, canvas.height - margin); ctx.lineTo(canvas.width - margin, canvas.height - margin); ctx.stroke(); ctx.beginPath(); ctx.moveTo(margin, margin); ctx.lineTo(margin, canvas.height - margin); ctx.stroke(); ctx.fillStyle = '#374151'; ctx.font = '12px Inter'; ctx.fillText(xLabel, canvas.width/2 - 10, canvas.height - 8); ctx.save(); ctx.translate(12, canvas.height/2 + 10); ctx.rotate(-Math.PI/2); ctx.fillText(yLabel, 0, 0); ctx.restore(); }
+function updateLogistic() { const canvas = document.getElementById('logisticCanvas'); if (!canvas) { return; } const ctx = canvas.getContext('2d'); const margin = 40; const xMin = 0, xMax = 4, yMin = 0, yMax = 4; const sx = (x) => margin + (x - xMin) * (canvas.width - 2 * margin) / (xMax - xMin); const sy = (y) => canvas.height - margin - (y - yMin) * (canvas.height - 2 * margin) / (yMax - yMin); const t0 = parseFloat(document.getElementById('theta0Slider').value); const t1 = parseFloat(document.getElementById('theta1Slider').value); const t2 = parseFloat(document.getElementById('theta2Slider').value); const thresh = parseFloat(document.getElementById('threshSlider').value); document.getElementById('theta0Value').textContent = t0.toFixed(1); document.getElementById('theta1Value').textContent = t1.toFixed(1); document.getElementById('theta2Value').textContent = t2.toFixed(1); document.getElementById('threshValue').textContent = thresh.toFixed(2); clearCanvas(canvas); drawAxes2D(ctx, canvas, 'x₁', 'x₂'); logisticData.forEach(p => { ctx.beginPath(); ctx.arc(sx(p.x1), sy(p.x2), 6, 0, Math.PI * 2); ctx.fillStyle = p.y === 1 ? '#10b981' : '#ef4444'; ctx.fill(); }); const L = logit(thresh); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; if (Math.abs(t2) > 1e-6) { const xA = xMin, xB = xMax; const yA = (L - t0 - t1 * xA) / t2; const yB = (L - t0 - t1 * xB) / t2; ctx.beginPath(); ctx.moveTo(sx(xA), sy(yA)); ctx.lineTo(sx(xB), sy(yB)); ctx.stroke(); } else if (Math.abs(t1) > 1e-6) { const xV = (L - t0) / t1; ctx.beginPath(); ctx.moveTo(sx(xV), sy(yMin)); ctx.lineTo(sx(xV), sy(yMax)); ctx.stroke(); } ctx.fillStyle = '#3b82f6'; ctx.font = '12px Inter'; ctx.fillText('Decision boundary', canvas.width - 150, margin + 10); }
+// Toggle reference content visibility.
+function toggleReferenceContent(header) { const referenceBody = header.nextElementSibling; const isCollapsed = referenceBody.classList.contains('collapsed'); if (isCollapsed) { header.classList.remove('collapsed'); referenceBody.classList.remove('collapsed'); } else { header.classList.add('collapsed'); referenceBody.classList.add('collapsed'); } }
+// Initialize graphs when page loads.
+document.addEventListener('DOMContentLoaded', function() { setTimeout(showDataFit, 100); setTimeout(updateLine, 200); setTimeout(updateLogistic, 300); });
 </script>
 
 {% endblock %}

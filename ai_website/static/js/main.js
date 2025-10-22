@@ -43,22 +43,17 @@ const AIPortfolio = {
             threshold: this.config.animationThreshold,
             rootMargin: this.config.animationRootMargin
         };
-
         // Create intersection observer for animation triggers.
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('animate-fade-in');
                 }
             });
         }, observerOptions);
-
         // Observe elements that should animate on scroll.
-        const elementsToAnimate = document.querySelectorAll(
-            '.feature-card, .approach-item, .tech-item'
-        );
-        
-        elementsToAnimate.forEach(element => {
+        const elementsToAnimate = document.querySelectorAll('.feature-card, .approach-item, .tech-item');
+        elementsToAnimate.forEach((element) => {
             observer.observe(element);
         });
     },
@@ -77,19 +72,13 @@ const AIPortfolio = {
      */
     setupSmoothScrolling() {
         const anchorLinks = document.querySelectorAll('a[href^="#"]');
-        
-        anchorLinks.forEach(link => {
+        anchorLinks.forEach((link) => {
             link.addEventListener('click', (event) => {
                 event.preventDefault();
-                
                 const targetId = link.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
-                
                 if (targetElement) {
-                    targetElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
@@ -108,23 +97,18 @@ const AIPortfolio = {
     updateActiveNavItem() {
         const sections = document.querySelectorAll('section[id]');
         const navLinks = document.querySelectorAll('.nav-link');
-        
         let currentSection = '';
-        
         // Find the currently visible section.
-        sections.forEach(section => {
+        sections.forEach((section) => {
             const sectionTop = section.offsetTop;
             const sectionHeight = section.clientHeight;
-            
             if (window.pageYOffset >= (sectionTop - this.config.scrollOffset)) {
                 currentSection = section.getAttribute('id');
             }
         });
-
         // Update active navigation link.
-        navLinks.forEach(link => {
+        navLinks.forEach((link) => {
             link.classList.remove('active');
-            
             if (link.getAttribute('href') === `#${currentSection}`) {
                 link.classList.add('active');
             }
@@ -136,20 +120,17 @@ const AIPortfolio = {
      */
     initializeStatCounters() {
         const statNumbers = document.querySelectorAll('.stat-number');
-        
         if (statNumbers.length === 0) {
-            return; // No stat numbers found, exit early.
+            return;
         }
-
         // Create intersection observer for counter animation.
         const statsObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     this.animateCounters(statNumbers);
                 }
             });
         }, { threshold: 0.5 });
-
         // Observe the stats section for counter animation trigger.
         const statsSection = document.querySelector('.stats');
         if (statsSection) {
@@ -163,15 +144,12 @@ const AIPortfolio = {
      * @param {NodeList} statNumbers - Collection of stat number elements.
      */
     animateCounters(statNumbers) {
-        statNumbers.forEach(stat => {
+        statNumbers.forEach((stat) => {
             const text = stat.textContent;
             const number = parseInt(text.replace(/\D/g, ''), 10);
-            
-            // Skip if already animated or no valid number found.
             if (!number || stat.dataset.animated) {
                 return;
             }
-            
             stat.dataset.animated = 'true';
             this.countUp(stat, number, text);
         });
@@ -187,19 +165,14 @@ const AIPortfolio = {
     countUp(element, target, originalText) {
         const increment = target / this.config.counterAnimationSteps;
         const stepDuration = this.config.counterAnimationDuration / this.config.counterAnimationSteps;
-        
         let current = 0;
         element.textContent = '0';
-        
         const timer = setInterval(() => {
             current += increment;
-            
             if (current >= target) {
-                // Animation complete, set final value.
                 element.textContent = originalText;
                 clearInterval(timer);
             } else {
-                // Update current value, preserving suffixes.
                 const suffix = this.extractSuffix(originalText);
                 element.textContent = Math.floor(current) + suffix;
             }
@@ -214,7 +187,7 @@ const AIPortfolio = {
      */
     extractSuffix(text) {
         const suffixes = ['+', '%', 'K', 'M'];
-        return suffixes.find(suffix => text.includes(suffix)) || '';
+        return suffixes.find((suffix) => text.includes(suffix)) || '';
     },
 
     /**

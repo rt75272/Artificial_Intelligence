@@ -117,275 +117,32 @@
 </section>
 
 <script>
-// Canvas and drawing context references
+// Canvas and drawing context references.
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-
-// Drawing state management
+// Drawing state management.
 let isDrawing = false;
-
-// Drawing configuration constants
-const DRAWING_CONFIG = {
-    lineWidth: 20,           // Pen thickness for good visibility
-    lineCap: "round",        // Smooth line endings
-    strokeStyle: "black",    // Black ink on white background
-    backgroundColor: "white" // White canvas background
-};
-
-/**
- * Initialize the canvas with a white background.
- */
-function initializeCanvas() {
-    ctx.fillStyle = DRAWING_CONFIG.backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-/**
- * Start drawing when mouse is pressed down.
- */
-function startDrawing(event) {
-    isDrawing = true;
-    ctx.beginPath();
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    ctx.moveTo(x, y);
-}
-
-/**
- * Stop drawing when mouse is released or leaves canvas.
- */
-function stopDrawing() {
-    if (isDrawing) {
-        isDrawing = false;
-    }
-}
-
-/**
- * Handle drawing while mouse is moving.
- */
-function draw(event) {
-    if (!isDrawing) return;
-    
-    // Configure drawing style
-    ctx.lineWidth = DRAWING_CONFIG.lineWidth;
-    ctx.lineCap = DRAWING_CONFIG.lineCap;
-    ctx.strokeStyle = DRAWING_CONFIG.strokeStyle;
-    
-    // Draw line to current mouse position
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    ctx.lineTo(x, y);
-    ctx.stroke();
-}
-
-/**
- * Clear the canvas and reset to white background.
- */
-function clearCanvas() {
-    // Clear the entire canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Restore white background
-    ctx.fillStyle = DRAWING_CONFIG.backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Reset drawing path
-    ctx.beginPath();
-    
-    // Clear previous prediction results
-    const resultElement = document.getElementById('result');
-    const topPredictionsElement = document.getElementById('topPredictions');
-    
-    if (resultElement) {
-        resultElement.innerHTML = "";
-        resultElement.className = "demo-result";
-    }
-    
-    if (topPredictionsElement) {
-        topPredictionsElement.innerHTML = "";
-    }
-}
-
-/**
- * Capture canvas image and send to server for digit prediction.
- */
-async function predictDigit() {
-    try {
-        // Show loading state
-        const resultElement = document.getElementById('result');
-        if (resultElement) {
-            resultElement.innerHTML = `
-                <div class="loading-spinner">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <span>Analyzing your drawing...</span>
-                </div>
-            `;
-            resultElement.className = "demo-result loading";
-        }
-        
-        // Convert canvas to base64 data URL
-        const dataURL = canvas.toDataURL('image/png');
-        
-        // Send prediction request to server with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-        
-        const response = await fetch("/predict", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ image: dataURL }),
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        // Check if request was successful
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        // Parse JSON response
-        const result = await response.json();
-        
-        // Check for server-side errors
-        if (result.error) {
-            throw new Error(result.error);
-        }
-        
-        // Display prediction result
-        if (resultElement) {
-            resultElement.innerHTML = `
-                <div class="prediction-main">
-                    <h4>Prediction Result</h4>
-                    <div class="predicted-digit">${result.prediction}</div>
-                    <div class="confidence-score">Confidence: ${result.confidence}</div>
-                </div>
-            `;
-            resultElement.className = "demo-result success";
-        }
-        
-        // Display top predictions if available
-        if (result.probabilities) {
-            displayTopPredictions(result.probabilities);
-        }
-        
-    } catch (error) {
-        console.error("Error during prediction:", error);
-        
-        // Display appropriate error message to user
-        const resultElement = document.getElementById('result');
-        if (resultElement) {
-            let errorMessage = "An error occurred during prediction.";
-            
-            if (error.name === 'AbortError') {
-                errorMessage = "Request timed out. Please try again.";
-            } else if (error.message.includes('Failed to fetch')) {
-                errorMessage = "Network connection failed. Please check your internet connection.";
-            } else {
-                errorMessage = error.message;
-            }
-            
-            resultElement.innerHTML = `
-                <div class="error-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>Error: ${errorMessage}</span>
-                </div>
-            `;
-            resultElement.className = "demo-result error";
-        }
-    }
-}
-
-/**
- * Display top 3 predictions with confidence scores.
- */
-function displayTopPredictions(probabilities) {
-    const topPredictionsElement = document.getElementById('topPredictions');
-    if (!topPredictionsElement) return;
-    
-    // Create array of [digit, probability] pairs and sort by probability
-    const predictions = probabilities
-        .map((prob, index) => [index, prob])
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3);
-    
-    const topPredictionsHTML = `
-        <div class="top-predictions-container">
-            <h4>Top 3 Predictions</h4>
-            <div class="predictions-list">
-                ${predictions.map(([digit, prob], index) => `
-                    <div class="prediction-item ${index === 0 ? 'primary' : ''}">
-                        <span class="prediction-digit">${digit}</span>
-                        <span class="prediction-confidence">${(prob * 100).toFixed(1)}%</span>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-    
-    topPredictionsElement.innerHTML = topPredictionsHTML;
-}
-
-/**
- * Set up event listeners for canvas drawing interactions.
- */
-function setupEventListeners() {
-    // Mouse events for desktop
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseout', stopDrawing);
-    canvas.addEventListener('mousemove', draw);
-    
-    // Touch events for mobile devices
-    canvas.addEventListener('touchstart', (event) => {
-        event.preventDefault();
-        const touch = event.touches[0];
-        const mouseEvent = new MouseEvent('mousedown', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        startDrawing(mouseEvent);
-    });
-    
-    canvas.addEventListener('touchend', (event) => {
-        event.preventDefault();
-        stopDrawing();
-    });
-    
-    canvas.addEventListener('touchmove', (event) => {
-        event.preventDefault();
-        const touch = event.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        draw(mouseEvent);
-    });
-}
-
-/**
- * Initialize the drawing interface when the page loads.
- */
-function initialize() {
-    if (!canvas || !ctx) {
-        console.error("Canvas or context not found!");
-        return;
-    }
-    
-    initializeCanvas();
-    setupEventListeners();
-    console.log("Handwriting demo initialized successfully");
-}
-
-// Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initialize);
-} else {
-    initialize();
-}
+// Drawing configuration constants.
+const DRAWING_CONFIG = { lineWidth: 20, lineCap: "round", strokeStyle: "black", backgroundColor: "white" };
+/** Initialize the canvas with a white background. */
+function initializeCanvas() { ctx.fillStyle = DRAWING_CONFIG.backgroundColor; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+/** Start drawing when mouse is pressed down. */
+function startDrawing(event) { isDrawing = true; ctx.beginPath(); const rect = canvas.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; ctx.moveTo(x, y); }
+/** Stop drawing when mouse is released or leaves canvas. */
+function stopDrawing() { if (isDrawing) { isDrawing = false; } }
+/** Handle drawing while mouse is moving. */
+function draw(event) { if (!isDrawing) return; ctx.lineWidth = DRAWING_CONFIG.lineWidth; ctx.lineCap = DRAWING_CONFIG.lineCap; ctx.strokeStyle = DRAWING_CONFIG.strokeStyle; const rect = canvas.getBoundingClientRect(); const x = event.clientX - rect.left; const y = event.clientY - rect.top; ctx.lineTo(x, y); ctx.stroke(); }
+/** Clear the canvas and reset to white background. */
+function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = DRAWING_CONFIG.backgroundColor; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.beginPath(); const resultElement = document.getElementById('result'); const topPredictionsElement = document.getElementById('topPredictions'); if (resultElement) { resultElement.innerHTML = ""; resultElement.className = "demo-result"; } if (topPredictionsElement) { topPredictionsElement.innerHTML = ""; } }
+/** Capture canvas image and send to server for digit prediction. */
+async function predictDigit() { try { const resultElement = document.getElementById('result'); if (resultElement) { resultElement.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i><span>Analyzing your drawing...</span></div>`; resultElement.className = "demo-result loading"; } const dataURL = canvas.toDataURL('image/png'); const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 30000); const response = await fetch("/predict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: dataURL }), signal: controller.signal }); clearTimeout(timeoutId); if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); } const result = await response.json(); if (result.error) { throw new Error(result.error); } if (resultElement) { resultElement.innerHTML = `<div class="prediction-main"><h4>Prediction Result</h4><div class="predicted-digit">${result.prediction}</div><div class="confidence-score">Confidence: ${result.confidence}</div></div>`; resultElement.className = "demo-result success"; } if (result.probabilities) { displayTopPredictions(result.probabilities); } } catch (error) { console.error("Error during prediction:", error); const resultElement = document.getElementById('result'); if (resultElement) { let errorMessage = "An error occurred during prediction."; if (error.name === 'AbortError') { errorMessage = "Request timed out. Please try again."; } else if (error.message.includes('Failed to fetch')) { errorMessage = "Network connection failed. Please check your internet connection."; } else { errorMessage = error.message; } resultElement.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><span>Error: ${errorMessage}</span></div>`; resultElement.className = "demo-result error"; } } }
+/** Display top 3 predictions with confidence scores. */
+function displayTopPredictions(probabilities) { const topPredictionsElement = document.getElementById('topPredictions'); if (!topPredictionsElement) return; const predictions = probabilities.map((prob, index) => [index, prob]).sort((a, b) => b[1] - a[1]).slice(0, 3); const topPredictionsHTML = `<div class="top-predictions-container"><h4>Top 3 Predictions</h4><div class="predictions-list">${predictions.map(([digit, prob], index) => `<div class="prediction-item ${index === 0 ? 'primary' : ''}"><span class="prediction-digit">${digit}</span><span class="prediction-confidence">${(prob * 100).toFixed(1)}%</span></div>`).join('')}</div></div>`; topPredictionsElement.innerHTML = topPredictionsHTML; }
+/** Set up event listeners for canvas drawing interactions. */
+function setupEventListeners() { canvas.addEventListener('mousedown', startDrawing); canvas.addEventListener('mouseup', stopDrawing); canvas.addEventListener('mouseout', stopDrawing); canvas.addEventListener('mousemove', draw); canvas.addEventListener('touchstart', (event) => { event.preventDefault(); const touch = event.touches[0]; const mouseEvent = new MouseEvent('mousedown', { clientX: touch.clientX, clientY: touch.clientY }); startDrawing(mouseEvent); }); canvas.addEventListener('touchend', (event) => { event.preventDefault(); stopDrawing(); }); canvas.addEventListener('touchmove', (event) => { event.preventDefault(); const touch = event.touches[0]; const mouseEvent = new MouseEvent('mousemove', { clientX: touch.clientX, clientY: touch.clientY }); draw(mouseEvent); }); }
+/** Initialize the drawing interface when the page loads. */
+function initialize() { if (!canvas || !ctx) { console.error("Canvas or context not found!"); return; } initializeCanvas(); setupEventListeners(); console.log("Handwriting demo initialized successfully."); }
+// Initialize when DOM is ready.
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initialize); } else { initialize(); }
 </script>
 {% endblock %}

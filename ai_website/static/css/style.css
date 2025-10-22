@@ -1,3 +1,23 @@
+/*
+ * Site Stylesheet for AI Portfolio.
+ *
+ * Structure overview:
+ * - Reset and Base Styles.
+ * - CSS Variables and Typography.
+ * - Navigation and Layout Containers.
+ * - Hero, Features, Stats, About, Team/Approach, Technologies.
+ * - Demos and Error Pages.
+ * - Footer.
+ * - Responsive Breakpoints (768px, 480px).
+ * - References Page and Visualization Components.
+ * - Handwriting Demo styles.
+ *
+ * Conventions:
+ * - Use CSS variables defined in :root for colors/shadows.
+ * - Keep selectors scoped and descriptive.
+ * - Group related rules and keep comments short and declarative.
+ */
+
 /* Reset and Base Styles */
 * {
     margin: 0;
@@ -57,7 +77,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 70px;
+    height: 96px;
 }
 
 .nav-logo a {
@@ -68,6 +88,15 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Small logo image in the navbar. */
+.nav-logo-img {
+    height: 80px;
+    width: 80px;
+    border-radius: 0; /* Square image to avoid cropping. */
+    object-fit: contain; /* Show entire image without cutting off. */
+    display: inline-block;
 }
 
 .nav-menu {
@@ -809,8 +838,19 @@ h1, h2, h3, h4, h5, h6 {
         gap: 0.5rem;
     }
 
+    /* Keep navbar compact on very small screens. */
+    .nav-container {
+        height: 84px;
+    }
+
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Slightly smaller logo on very small screens. */
+    .nav-logo-img {
+        height: 64px;
+        width: 64px;
     }
 }
 
@@ -1064,6 +1104,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 3px;
     background: #e2e8f0;
     outline: none;
+    appearance: none;
     -webkit-appearance: none;
 }
 
