@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}K-Means Clustering Demo - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">K-Means Clustering</h1>
+    <p class="page-subtitle">Explore unsupervised learning by clustering points and watching centroids move</p>
+  </div>
+</section>
+
+<section class="demo-page">
+  <div class="container">
+    <div class="demo-layout">
+      <div class="demo-controls">
+        <div class="control-group">
+          <label for="kInput">Number of clusters (k)</label>
+          <input id="kInput" type="range" min="1" max="8" value="3" />
+          <div class="control-inline">
+            <span class="muted">k = </span><span id="kValue">3</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="pointsInput">Number of points</label>
+          <input id="pointsInput" type="range" min="10" max="400" value="150" />
+          <div class="control-inline">
+            <span class="muted">n = </span><span id="pointsValue">150</span>
+          </div>
+        </div>
+        <div class="buttons">
+          <button id="regenBtn" class="btn btn-secondary"><i class="fas fa-random"></i> Regenerate Data</button>
+          <button id="initBtn" class="btn btn-secondary"><i class="fas fa-bullseye"></i> Init Centroids</button>
+          <button id="stepBtn" class="btn btn-primary"><i class="fas fa-step-forward"></i> Step</button>
+          <button id="runBtn" class="btn btn-primary"><i class="fas fa-play"></i> Run</button>
+          <button id="resetBtn" class="btn btn-danger"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+        <div class="help-text">
+          Tip: Click on the canvas to add points. Drag a centroid to reposition it.
+        </div>
+      </div>
+      <div class="demo-canvas-wrap">
+        <canvas id="kmeansCanvas" width="800" height="520"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .demo-page .demo-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+  @media (max-width: 900px) { .demo-page .demo-layout { grid-template-columns: 1fr; } }
+  .demo-controls { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; }
+  .demo-controls .control-group { margin-bottom: 16px; }
+  .demo-controls label { display: block; font-weight: 600; margin-bottom: 6px; }
+  .demo-controls input[type=range] { width: 100%; }
+  .demo-controls .control-inline { margin-top: 4px; font-size: 0.95rem; color: #6b7280; }
+  .demo-controls .buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .demo-controls .help-text { margin-top: 10px; font-size: 0.9rem; color: #6b7280; }
+  .demo-canvas-wrap { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: auto; }
+  #kmeansCanvas { width: 100%; height: auto; display: block; }
+</style>
+
+<script>
+// --- K-Means Demo (pure JS) ---
+(function() {
+  const canvas = document.getElementById('kmeansCanvas');
+  const ctx = canvas.getContext('2d');
+  const kInput = document.getElementById('kInput');
+  const kValue = document.getElementById('kValue');
+  const pointsInput = document.getElementById('pointsInput');
+  const pointsValue = document.getElementById('pointsValue');
+  const regenBtn = document.getElementById('regenBtn');
+  const initBtn = document.getElementById('initBtn');
+  const stepBtn = document.getElementById('stepBtn');
+  const runBtn = document.getElementById('runBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const width = canvas.width, height = canvas.height;
+  const margin = 32;
+  const plot = { x0: margin, y0: margin, x1: width - margin, y1: height - margin };
+  const colors = ['#3b82f6','#ef4444','#10b981','#f59e0b','#8b5cf6','#ec4899','#22d3ee','#84cc16'];
+
+  let data = [];
+  let centroids = [];
+  let assignments = [];
+  let running = false;
+  let rafId = null;
+  let draggingCentroid = -1;
+
+  function randn(rng = Math.random) {
+    // Box-Muller transform for Gaussian noise
+    let u = 0, v = 0;
+    while (u === 0) u = rng();
+    while (v === 0) v = rng();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+  }
+
+  function generateData(n = 150) {
+    // Generate a few Gaussian blobs
+    data = [];
+    const centers = [
+      {x: 0.25, y: 0.25}, {x: 0.7, y: 0.3}, {x: 0.4, y: 0.75}, {x: 0.75, y: 0.75}
+    ];
+    const s = 0.08;
+    for (let i = 0; i < n; i++) {
+      const c = centers[Math.floor(Math.random()*centers.length)];
+      const x = c.x + randn()*s;
+      const y = c.y + randn()*s;
+      data.push({x: clamp(x, 0, 1), y: clamp(y, 0, 1)});
+    }
+    assignments = new Array(data.length).fill(-1);
+  }
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function sx(x) { return plot.x0 + x * (plot.x1 - plot.x0); }
+  function sy(y) { return plot.y1 - y * (plot.y1 - plot.y0); }
+
+  function drawAxes() {
+    ctx.strokeStyle = '#9ca3af';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(plot.x0, plot.y1);
+    ctx.lineTo(plot.x1, plot.y1); // x-axis
+    ctx.moveTo(plot.x0, plot.y0);
+    ctx.lineTo(plot.x0, plot.y1); // y-axis
+    ctx.stroke();
+  }
+
+  function clear() { ctx.clearRect(0, 0, width, height); }
+
+  function draw() {
+    clear();
+    drawAxes();
+    // Draw points
+    for (let i = 0; i < data.length; i++) {
+      const p = data[i];
+      const a = assignments[i];
+      ctx.beginPath();
+      ctx.arc(sx(p.x), sy(p.y), 5, 0, Math.PI*2);
+      ctx.fillStyle = a >= 0 ? colors[a % colors.length] + 'cc' : '#6b7280aa';
+      ctx.fill();
+    }
+    // Draw centroids
+    for (let j = 0; j < centroids.length; j++) {
+      const c = centroids[j];
+      ctx.beginPath();
+      ctx.arc(sx(c.x), sy(c.y), 8, 0, Math.PI*2);
+      ctx.fillStyle = colors[j % colors.length];
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#111827';
+      ctx.stroke();
+    }
+  }
+
+  function initCentroids(k) {
+    // K-Means++ style seeding (simplified)
+    centroids = [];
+    if (data.length === 0) return;
+    // pick one random point
+    centroids.push({...data[Math.floor(Math.random()*data.length)]});
+    while (centroids.length < k) {
+      const d2 = data.map(p => {
+        let minD = Infinity;
+        for (const c of centroids) {
+          const dx = p.x - c.x, dy = p.y - c.y;
+          const dist = dx*dx + dy*dy;
+          if (dist < minD) minD = dist;
+        }
+        return minD;
+      });
+      const sum = d2.reduce((a,b)=>a+b,0);
+      let r = Math.random() * sum;
+      let idx = 0;
+      for (; idx < d2.length; idx++) { r -= d2[idx]; if (r <= 0) break; }
+      centroids.push({...data[Math.min(idx, data.length-1)]});
+    }
+  }
+
+  function assign() {
+    let changed = false;
+    for (let i = 0; i < data.length; i++) {
+      const p = data[i];
+      let best = -1, bestD = Infinity;
+      for (let j = 0; j < centroids.length; j++) {
+        const c = centroids[j];
+        const dx = p.x - c.x, dy = p.y - c.y;
+        const d = dx*dx + dy*dy;
+        if (d < bestD) { bestD = d; best = j; }
+      }
+      if (assignments[i] !== best) { assignments[i] = best; changed = true; }
+    }
+    return changed;
+  }
+
+  function updateCentroids() {
+    const k = centroids.length;
+    const sums = new Array(k).fill(0).map(()=>({x:0,y:0,count:0}));
+    for (let i = 0; i < data.length; i++) {
+      const a = assignments[i];
+      if (a >= 0) { sums[a].x += data[i].x; sums[a].y += data[i].y; sums[a].count++; }
+    }
+    for (let j = 0; j < k; j++) {
+      if (sums[j].count > 0) {
+        centroids[j].x = sums[j].x / sums[j].count;
+        centroids[j].y = sums[j].y / sums[j].count;
+      }
+    }
+  }
+
+  function step() {
+    if (centroids.length === 0) initCentroids(parseInt(kInput.value, 10));
+    const changed = assign();
+    updateCentroids();
+    draw();
+    return changed;
+  }
+
+  function runLoop() {
+    if (!running) return;
+    const changed = step();
+    if (!changed) { running = false; runBtn.innerHTML = '<i class="fas fa-play"></i> Run'; }
+    rafId = requestAnimationFrame(()=> setTimeout(runLoop, 200));
+  }
+
+  // Event handlers
+  kInput.addEventListener('input', () => { kValue.textContent = kInput.value; });
+  pointsInput.addEventListener('input', () => { pointsValue.textContent = pointsInput.value; });
+  regenBtn.addEventListener('click', () => { generateData(parseInt(pointsInput.value,10)); assignments.fill(-1); draw(); });
+  initBtn.addEventListener('click', () => { initCentroids(parseInt(kInput.value,10)); draw(); });
+  stepBtn.addEventListener('click', () => { step(); });
+  runBtn.addEventListener('click', () => {
+    running = !running;
+    runBtn.innerHTML = running ? '<i class="fas fa-pause"></i> Pause' : '<i class="fas fa-play"></i> Run';
+    if (running) runLoop(); else if (rafId) cancelAnimationFrame(rafId);
+  });
+  resetBtn.addEventListener('click', () => { assignments = new Array(data.length).fill(-1); centroids = []; running = false; runBtn.innerHTML = '<i class="fas fa-play"></i> Run'; draw(); });
+
+  // Interactions: add points on click, drag centroids
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    const px = clamp(x, 0, 1), py = clamp(1 - y, 0, 1);
+    data.push({x: px, y: py});
+    assignments.push(-1);
+    draw();
+  });
+
+  canvas.addEventListener('mousedown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const cx = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const cy = (e.clientY - rect.top) * (canvas.height / rect.height);
+    for (let j=0; j<centroids.length; j++) {
+      const c = centroids[j];
+      const dx = sx(c.x) - cx, dy = sy(c.y) - cy;
+      if (dx*dx + dy*dy <= 12*12) { draggingCentroid = j; break; }
+    }
+  });
+  canvas.addEventListener('mousemove', (e) => {
+    if (draggingCentroid < 0) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    centroids[draggingCentroid].x = clamp(x, 0, 1);
+    centroids[draggingCentroid].y = clamp(1 - y, 0, 1);
+    draw();
+  });
+  canvas.addEventListener('mouseup', ()=> { draggingCentroid = -1; });
+  canvas.addEventListener('mouseleave', ()=> { draggingCentroid = -1; });
+
+  // Init
+  generateData(parseInt(pointsInput.value,10));
+  draw();
+})();
+</script>
+{% endblock %}

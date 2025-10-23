@@ -176,6 +176,14 @@ def housing_prices_demo():
     """
     return render_template('housing_prices.html')
 
+@app.route('/demos/kmeans')
+def kmeans_demo():
+    """Render the interactive K-Means clustering demo page.
+    Returns:
+        str: Rendered HTML template for the K-Means demo.
+    """
+    return render_template('kmeans_demo.html')
+
 @app.route('/predict', methods=['POST'])
 def predict():
     """Predict digit from canvas drawing using the trained model.
