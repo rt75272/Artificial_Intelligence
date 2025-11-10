@@ -94,8 +94,8 @@ h1, h2, h3, h4, h5, h6 {
 .nav-logo-img {
     height: 80px;
     width: 80px;
-    border-radius: 0; /* Square image to avoid cropping. */
-    object-fit: contain; /* Show entire image without cutting off. */
+    border-radius: 50%; /* Circular image. */
+    object-fit: cover; /* Crop image to fit circle properly. */
     display: inline-block;
 }
 
