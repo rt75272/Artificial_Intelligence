@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+
+{% block title %}Neural Network Playground - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Neural Network Playground</h1>
+        <p class="page-subtitle">Watch neurons activate for submitted digits (0-9)</p>
+    </div>
+</section>
+
+<section class="demo-section">
+    <div class="container">
+        <div class="demo-layout">
+            <div class="left-panel">
+                <div class="canvas-section">
+                    <h3>Draw Pattern</h3>
+                    <canvas id="drawCanvas" width="280" height="280"></canvas>
+                    <div class="canvas-controls">
+                        <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                        <button id="predictBtn" class="btn btn-success">Analyze</button>
+                    </div>
+                </div>
+                <div class="prediction-section">
+                    <h3>Prediction</h3>
+                    <div id="predictionResult" class="prediction-display">
+                        <span class="prediction-number">-</span>
+                    </div>
+                    <div id="status" class="status-message"></div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <h3>Network Activations</h3>
+                <div class="network-visualization">
+                    <div class="layer-container">
+                        <h4>Hidden Layer 1</h4>
+                        <div id="layer1" class="neuron-grid"></div>
+                    </div>
+                    <div class="layer-container">
+                        <h4>Hidden Layer 2</h4>
+                        <div id="layer2" class="neuron-grid"></div>
+                    </div>
+                    <div class="layer-container">
+                        <h4>Output Layer</h4>
+                        <div id="outputLayer" class="output-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.demo-layout {
+    display: flex;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.left-panel {
+    flex: 0 0 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.right-panel {
+    flex: 1;
+    min-width: 0;
+}
+
+.canvas-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.canvas-section h3 {
+    margin: 0 0 1rem 0;
+    color: #374151;
+    font-size: 1.1rem;
+}
+
+#drawCanvas {
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: crosshair;
+    background: white;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.canvas-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.canvas-controls .btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+}
+
+.prediction-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prediction-section h3 {
+    margin: 0 0 1rem 0;
+    color: #374151;
+    font-size: 1.1rem;
+}
+
+.prediction-display {
+    background: #f3f4f6;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.prediction-number {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #3b82f6;
+}
+
+.status-message {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    min-height: 1.5rem;
+}
+
+.right-panel h3 {
+    margin: 0 0 1rem 0;
+    color: #374151;
+    font-size: 1.1rem;
+}
+
+.network-visualization {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.layer-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.layer-container h4 {
+    margin: 0 0 1rem 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.neuron-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.5rem;
+}
+
+.neuron {
+    aspect-ratio: 1;
+    border-radius: 0.25rem;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-size: 0.7rem;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.neuron-label {
+    font-weight: 600;
+    font-size: 0.65rem;
+}
+
+.neuron-value {
+    font-size: 0.6rem;
+    opacity: 0.9;
+}
+
+.output-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+}
+
+.output-neuron {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.output-label {
+    font-size: 1.2rem;
+    color: #374151;
+}
+
+.output-prob {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 1024px) {
+    .demo-layout {
+        flex-direction: column;
+    }
+    .left-panel {
+        flex: none;
+    }
+}
+</style>
+
+<script>
+const canvas = document.getElementById('drawCanvas');
+const ctx = canvas.getContext('2d');
+const clearBtn = document.getElementById('clearBtn');
+const predictBtn = document.getElementById('predictBtn');
+const predictionResult = document.getElementById('predictionResult');
+const status = document.getElementById('status');
+const layer1Div = document.getElementById('layer1');
+const layer2Div = document.getElementById('layer2');
+const outputLayerDiv = document.getElementById('outputLayer');
+
+let isDrawing = false;
+
+// Initialize canvas.
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.strokeStyle = 'black';
+ctx.lineWidth = 15;
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+
+// Drawing events.
+canvas.addEventListener('mousedown', (e) => {
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (!isDrawing) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.stroke();
+});
+
+canvas.addEventListener('mouseup', () => {
+    isDrawing = false;
+});
+
+canvas.addEventListener('mouseleave', () => {
+    isDrawing = false;
+});
+
+// Touch support.
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    ctx.beginPath();
+    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    ctx.stroke();
+});
+
+canvas.addEventListener('touchend', () => {
+    isDrawing = false;
+});
+
+// Clear canvas.
+clearBtn.addEventListener('click', () => {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    predictionResult.innerHTML = '<span class="prediction-number">-</span>';
+    clearLayers();
+    showStatus('', '');
+});
+
+// Predict pattern.
+predictBtn.addEventListener('click', async () => {
+    showStatus('Analyzing...', 'info');
+    try {
+        // Get pixel data.
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = [];
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const r = imageData.data[i];
+            const g = imageData.data[i + 1];
+            const b = imageData.data[i + 2];
+            const gray = (r + g + b) / 3;
+            pixels.push(255 - gray);
+        }
+        // Reshape to 2D array.
+        const pixelArray = [];
+        const size = Math.sqrt(pixels.length);
+        for (let i = 0; i < size; i++) {
+            pixelArray.push(pixels.slice(i * size, (i + 1) * size));
+        }
+        // Send to API.
+        const response = await fetch('/api/neural-network', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pixels: pixelArray })
+        });
+        const data = await response.json();
+        if (data.error) {
+            showStatus(data.error, 'error');
+        } else {
+            predictionResult.innerHTML = `<span class="prediction-number">${data.prediction}</span>`;
+            visualizeLayers(data);
+            showStatus('Analysis complete', 'success');
+        }
+    } catch (error) {
+        showStatus('Analysis failed', 'error');
+    }
+});
+
+// Visualize layer activations.
+function visualizeLayers(data) {
+    // Layer 1.
+    layer1Div.innerHTML = '';
+    data.layer1.forEach((activation, idx) => {
+        const neuron = document.createElement('div');
+        neuron.className = 'neuron';
+        const intensity = Math.min(255, Math.max(0, activation * 255));
+        neuron.style.background = `rgb(${intensity}, ${100 + intensity/2}, 246)`;
+        neuron.innerHTML = `
+            <div class="neuron-label">N${idx + 1}</div>
+            <div class="neuron-value">${activation.toFixed(2)}</div>
+        `;
+        layer1Div.appendChild(neuron);
+    });
+    // Layer 2.
+    layer2Div.innerHTML = '';
+    data.layer2.forEach((activation, idx) => {
+        const neuron = document.createElement('div');
+        neuron.className = 'neuron';
+        const intensity = Math.min(255, Math.max(0, activation * 255));
+        neuron.style.background = `rgb(${intensity}, ${100 + intensity/2}, 246)`;
+        neuron.innerHTML = `
+            <div class="neuron-label">N${idx + 1}</div>
+            <div class="neuron-value">${activation.toFixed(2)}</div>
+        `;
+        layer2Div.appendChild(neuron);
+    });
+    // Output layer.
+    outputLayerDiv.innerHTML = '';
+    data.output.forEach((prob, idx) => {
+        const neuron = document.createElement('div');
+        neuron.className = 'output-neuron';
+        const percentage = (prob * 100).toFixed(1);
+        const intensity = prob * 200 + 55;
+        neuron.style.background = `rgba(59, 130, 246, ${prob * 0.8 + 0.2})`;
+        neuron.innerHTML = `
+            <div class="output-label">${idx}</div>
+            <div class="output-prob">${percentage}%</div>
+        `;
+        outputLayerDiv.appendChild(neuron);
+    });
+}
+
+// Clear layer visualizations.
+function clearLayers() {
+    layer1Div.innerHTML = '';
+    layer2Div.innerHTML = '';
+    outputLayerDiv.innerHTML = '';
+}
+
+// Show status message.
+function showStatus(message, type) {
+    status.textContent = message;
+    status.style.background = type === 'error' ? '#fee2e2' : 
+                              type === 'success' ? '#d1fae5' : 
+                              type === 'info' ? '#dbeafe' : 'transparent';
+    status.style.color = type === 'error' ? '#991b1b' : 
+                        type === 'success' ? '#065f46' : 
+                        type === 'info' ? '#1e40af' : 'transparent';
+}
+
+// Initialize neuron grids.
+for (let i = 0; i < 16; i++) {
+    const n1 = document.createElement('div');
+    n1.className = 'neuron';
+    n1.style.background = '#e5e7eb';
+    n1.innerHTML = `
+        <div class="neuron-label">N${i + 1}</div>
+        <div class="neuron-value">0.00</div>
+    `;
+    layer1Div.appendChild(n1);
+    const n2 = document.createElement('div');
+    n2.className = 'neuron';
+    n2.style.background = '#e5e7eb';
+    n2.innerHTML = `
+        <div class="neuron-label">N${i + 1}</div>
+        <div class="neuron-value">0.00</div>
+    `;
+    layer2Div.appendChild(n2);
+}
+for (let i = 0; i < 10; i++) {
+    const n = document.createElement('div');
+    n.className = 'output-neuron';
+    n.style.background = '#f3f4f6';
+    n.innerHTML = `<div class="output-label">${i}</div><div class="output-prob">0%</div>`;
+    outputLayerDiv.appendChild(n);
+}
+</script>
+
+{% endblock %}

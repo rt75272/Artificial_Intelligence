@@ -199,6 +199,64 @@ def decision_tree_demo():
     """
     return render_template('decision_tree_demo.html')
 
+@app.route('/demos/neural-network')
+def neural_network_demo():
+    """Render the neural network visualization demo page.
+
+    Returns:
+        str: Rendered HTML template for the neural network demo.
+    """
+    return render_template('neural_network_demo.html')
+
+@app.route('/api/neural-network', methods=['POST'])
+def predict_pattern():
+    """Process drawn pattern and return neuron activations.
+
+    Expected JSON input:
+        {"pixels": [[0.1, 0.5, ...], ...]}.
+
+    Returns:
+        JSON response with layer activations and prediction.
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+        pixels = data.get('pixels', [])
+        if not pixels:
+            return jsonify({'error': 'No pixel data provided'}), 400
+        # Flatten and normalize pixel data.
+        flat_pixels = np.array(pixels).flatten()
+        flat_pixels = flat_pixels / 255.0 if flat_pixels.max() > 1 else flat_pixels
+        # Simulate network layers with activations.
+        input_size = len(flat_pixels)
+        hidden1_size = 64
+        hidden2_size = 32
+        output_size = 10
+        # Random weights for visualization purposes.
+        np.random.seed(42)
+        w1 = np.random.randn(input_size, hidden1_size) * 0.1
+        w2 = np.random.randn(hidden1_size, hidden2_size) * 0.1
+        w3 = np.random.randn(hidden2_size, output_size) * 0.1
+        # Forward pass with ReLU activation.
+        h1 = np.maximum(0, np.dot(flat_pixels, w1))
+        h2 = np.maximum(0, np.dot(h1, w2))
+        output = np.dot(h2, w3)
+        # Softmax for output probabilities.
+        exp_output = np.exp(output - np.max(output))
+        probabilities = exp_output / exp_output.sum()
+        # Sample neurons for visualization.
+        layer1_activations = h1[:16].tolist()
+        layer2_activations = h2[:16].tolist()
+        output_activations = probabilities.tolist()
+        return jsonify({
+            'layer1': layer1_activations,
+            'layer2': layer2_activations,
+            'output': output_activations,
+            'prediction': int(np.argmax(probabilities))
+        })
+    except Exception as e:
+        logger.error(f"Neural network prediction error: {str(e)}")
+        return jsonify({'error': 'Prediction failed'}), 500
+
 @app.route('/api/decision-tree', methods=['POST'])
 def train_decision_tree():
     """Train a decision tree on provided data points.
