@@ -7,16 +7,14 @@
     <div class="hero-container">
         <div class="hero-content">
             <h1 class="hero-title">
-                Welcome to Ryan Thompson's Landing Page
-                <!-- <span class="gradient-text">Ryan Thompson's</span> -->
+                Ryan Thompson
             </h1>
             <p class="hero-description">
-                Exploring AI technologies, building interactive demos, and showcasing how artificial intelligence 
-                can transform ideas.
+                Software developer interested in machine learning, web development, and building interactive demos.
             </p>
             <div class="hero-buttons">
-                <a href="{{ url_for('demos') }}" class="btn btn-primary">
-                    Explore Demos
+                <a href="{{ url_for('projects') }}" class="btn btn-primary">
+                    View Projects
                 </a>
                 <a href="{{ url_for('about') }}" class="btn btn-secondary">
                     Learn More
@@ -47,53 +45,30 @@
                     <i class="fas fa-brain"></i>
                 </div>
                 <h3>Machine Learning</h3>
-                <p>Advanced algorithms that learn from data to make predictions and decisions without explicit programming.</p>
+                <p>Building and training models to solve real-world problems.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
-                    <i class="fas fa-eye"></i>
+                    <i class="fas fa-code"></i>
                 </div>
-                <h3>Computer Vision</h3>
-                <p>AI systems that can interpret and understand visual information from the world around us.</p>
+                <h3>Web Development</h3>
+                <p>Creating interactive web applications with modern frameworks.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
-                    <i class="fas fa-comments"></i>
+                    <i class="fas fa-database"></i>
                 </div>
-                <h3>Natural Language</h3>
-                <p>Processing and understanding human language to enable seamless communication with AI systems.</p>
+                <h3>Data Analysis</h3>
+                <p>Exploring and visualizing data to extract insights.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
-                    <i class="fas fa-robot"></i>
+                    <i class="fas fa-flask"></i>
                 </div>
-                <h3>Deep Learning</h3>
-                <p>Neural networks with multiple layers that can learn complex patterns and representations.</p>
+                <h3>Experimentation</h3>
+                <p>Testing new technologies and building proof-of-concept demos.</p>
             </div>
         </div>
     </div>
 </section>
-
-<!-- <section class="stats">
-    <div class="container">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h3 class="stat-number">100+</h3>
-                <p class="stat-label">AI Models</p>
-            </div>
-            <div class="stat-item">
-                <h3 class="stat-number">50K+</h3>
-                <p class="stat-label">Users</p>
-            </div>
-            <div class="stat-item">
-                <h3 class="stat-number">99.9%</h3>
-                <p class="stat-label">Uptime</p>
-            </div>
-            <div class="stat-item">
-                <h3 class="stat-number">24/7</h3>
-                <p class="stat-label">Support</p>
-            </div>
-        </div>
-    </div>
-</section> -->
 {% endblock %}

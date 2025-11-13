@@ -30,11 +30,8 @@
                 <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
                     <i class="fas fa-info-circle"></i> About
                 </a>
-                <a href="{{ url_for('demos') }}" class="nav-link {% if request.endpoint == 'demos' %}active{% endif %}">
-                    <i class="fas fa-flask"></i> Demos
-                </a>
-                <a href="{{ url_for('references') }}" class="nav-link {% if request.endpoint == 'references' %}active{% endif %}">
-                    <i class="fas fa-book"></i> References
+                <a href="{{ url_for('projects') }}" class="nav-link {% if request.endpoint == 'projects' or 'demo' in request.endpoint %}active{% endif %}">
+                    <i class="fas fa-flask"></i> Projects
                 </a>
             </div>
         </div>
@@ -46,7 +43,7 @@
 
     <footer class="footer">
         <div class="footer-container">
-            <p>&copy; 2025 Ryan Thompson. AI Developer & Technology Enthusiast.</p>
+            <p>&copy; 2025 Ryan Thompson.</p>
             <div class="footer-links">
                 <a href="https://github.com/rt75272" target="blank"><i class="fab fa-github"></i></a>
                 <a href="mailto:rt75272@gmail.com" target="blank"><i class="fas fa-envelope"></i></a>

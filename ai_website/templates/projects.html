@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Projects</h1>
+        <p class="page-subtitle">Interactive demos and code examples</p>
+    </div>
+</section>
+
+<section class="demos-content">
+    <div class="container">
+        
+        <!-- Handwriting Recognition. -->
+        <div class="demo-section">
+            <div class="demo-preview">
+                <div class="demo-preview-content">
+                    <h3>Handwriting Recognition</h3>
+                    <p>
+                        Draw digits (0-9) and watch as a neural network predicts what you wrote. 
+                        Trained on the MNIST dataset with 97.9% accuracy.
+                    </p>
+                    <div class="demo-features">
+                        <span class="feature-tag"><i class="fas fa-brain"></i> Neural Network</span>
+                        <span class="feature-tag"><i class="fas fa-chart-line"></i> 97.9% Accuracy</span>
+                    </div>
+                    <a href="{{ url_for('handwriting_demo') }}" class="btn btn-primary demo-btn">
+                        <i class="fas fa-play-circle"></i> Try Demo
+                    </a>
+                </div>
+                <div class="demo-preview-visual">
+                    <div class="demo-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Linear Regression. -->
+        <div class="demo-section">
+            <div class="demo-preview">
+                <div class="demo-preview-content">
+                    <h3>Linear Regression</h3>
+                    <p>
+                        Click to add data points and watch the algorithm find the best-fitting line in real-time.
+                        See how least squares optimization works.
+                    </p>
+                    <div class="demo-features">
+                        <span class="feature-tag"><i class="fas fa-chart-line"></i> Real-time</span>
+                        <span class="feature-tag"><i class="fas fa-calculator"></i> Statistics</span>
+                    </div>
+                    <a href="{{ url_for('linear_regression_demo') }}" class="btn btn-primary demo-btn">
+                        <i class="fas fa-play-circle"></i> Try Demo
+                    </a>
+                </div>
+                <div class="demo-preview-visual">
+                    <div class="demo-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Housing Prices. -->
+        <div class="demo-section">
+            <div class="demo-preview">
+                <div class="demo-preview-content">
+                    <h3>Housing Price Prediction</h3>
+                    <p>
+                        Estimate home prices using a machine learning model. Enter property features
+                        to see an instant prediction.
+                    </p>
+                    <div class="demo-features">
+                        <span class="feature-tag"><i class="fas fa-home"></i> Linear Model</span>
+                        <span class="feature-tag"><i class="fas fa-sliders-h"></i> Feature Inputs</span>
+                    </div>
+                    <a href="{{ url_for('housing_prices_demo') }}" class="btn btn-primary demo-btn">
+                        <i class="fas fa-play-circle"></i> Try Demo
+                    </a>
+                </div>
+                <div class="demo-preview-visual">
+                    <div class="demo-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- K-Means Clustering. -->
+        <div class="demo-section">
+            <div class="demo-preview">
+                <div class="demo-preview-content">
+                    <h3>K-Means Clustering</h3>
+                    <p>
+                        Visualize unsupervised learning by clustering points into groups.
+                        Adjust parameters and watch centroids move as the algorithm converges.
+                    </p>
+                    <div class="demo-features">
+                        <span class="feature-tag"><i class="fas fa-braille"></i> Unsupervised</span>
+                        <span class="feature-tag"><i class="fas fa-play-circle"></i> Animated</span>
+                    </div>
+                    <a href="{{ url_for('kmeans_demo') }}" class="btn btn-primary demo-btn">
+                        <i class="fas fa-play-circle"></i> Try Demo
+                    </a>
+                </div>
+                <div class="demo-preview-visual">
+                    <div class="demo-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
