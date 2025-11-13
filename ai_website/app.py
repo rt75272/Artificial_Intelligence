@@ -223,26 +223,68 @@ def predict_pattern():
         pixels = data.get('pixels', [])
         if not pixels:
             return jsonify({'error': 'No pixel data provided'}), 400
-        # Flatten and normalize pixel data.
-        flat_pixels = np.array(pixels).flatten()
-        flat_pixels = flat_pixels / 255.0 if flat_pixels.max() > 1 else flat_pixels
-        # Simulate network layers with activations.
+        # Convert to numpy array.
+        pixel_array = np.array(pixels)
+        from PIL import Image as PILImage, ImageOps
+        img = PILImage.fromarray(pixel_array.astype('uint8'))
+        # Invert if needed so digit is white on black background.
+        img_array = np.array(img)
+        if np.mean(img_array) > 127:
+            img = ImageOps.invert(img)
+        # Find bounding box of drawn content.
+        img_array = np.array(img)
+        rows = np.any(img_array > 30, axis=1)
+        cols = np.any(img_array > 30, axis=0)
+        if rows.any() and cols.any():
+            rmin, rmax = np.where(rows)[0][[0, -1]]
+            cmin, cmax = np.where(cols)[0][[0, -1]]
+            # Crop to content with padding.
+            pad = 10
+            rmin = max(0, rmin - pad)
+            rmax = min(img_array.shape[0], rmax + pad)
+            cmin = max(0, cmin - pad)
+            cmax = min(img_array.shape[1], cmax + pad)
+            img = img.crop((cmin, rmin, cmax, rmax))
+        # Resize to 20x20 maintaining aspect ratio.
+        img.thumbnail((20, 20), PILImage.Resampling.LANCZOS)
+        # Create 28x28 image with digit centered.
+        final_img = PILImage.new('L', (28, 28), 0)
+        offset_x = (28 - img.width) // 2
+        offset_y = (28 - img.height) // 2
+        final_img.paste(img, (offset_x, offset_y))
+        # Convert to array and normalize.
+        img_array = np.array(final_img)
+        flat_pixels = img_array.flatten() / 255.0
+        # Use trained model for actual prediction if available.
+        if digit_model is not None:
+            # Apply scaler if available.
+            if scaler is not None:
+                flat_pixels = scaler.transform([flat_pixels])[0]
+            # Get prediction from trained model.
+            prediction = digit_model.predict([flat_pixels])[0]
+            # Get probability estimates if available.
+            if hasattr(digit_model, 'predict_proba'):
+                probabilities = digit_model.predict_proba([flat_pixels])[0]
+            else:
+                # Create one-hot style probabilities.
+                probabilities = np.zeros(10)
+                probabilities[prediction] = 1.0
+        else:
+            # Fallback if no model available.
+            logger.warning("No trained model available, using random prediction")
+            prediction = 0
+            probabilities = np.random.dirichlet(np.ones(10))
+        # Generate layer activations for visualization.
         input_size = len(flat_pixels)
         hidden1_size = 64
         hidden2_size = 32
-        output_size = 10
-        # Random weights for visualization purposes.
-        np.random.seed(42)
+        # Create synthetic layer activations based on input.
+        np.random.seed(int(flat_pixels.sum() * 1000) % 2**32)
         w1 = np.random.randn(input_size, hidden1_size) * 0.1
         w2 = np.random.randn(hidden1_size, hidden2_size) * 0.1
-        w3 = np.random.randn(hidden2_size, output_size) * 0.1
-        # Forward pass with ReLU activation.
+        # Forward pass for visualization.
         h1 = np.maximum(0, np.dot(flat_pixels, w1))
         h2 = np.maximum(0, np.dot(h1, w2))
-        output = np.dot(h2, w3)
-        # Softmax for output probabilities.
-        exp_output = np.exp(output - np.max(output))
-        probabilities = exp_output / exp_output.sum()
         # Sample neurons for visualization.
         layer1_activations = h1[:16].tolist()
         layer2_activations = h2[:16].tolist()
@@ -251,7 +293,7 @@ def predict_pattern():
             'layer1': layer1_activations,
             'layer2': layer2_activations,
             'output': output_activations,
-            'prediction': int(np.argmax(probabilities))
+            'prediction': int(prediction)
         })
     except Exception as e:
         logger.error(f"Neural network prediction error: {str(e)}")
