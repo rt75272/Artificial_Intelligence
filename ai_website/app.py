@@ -56,8 +56,10 @@ def load_sklearn_model():
     """
     try:
         logger.info("Loading digit recognition model...")
-        model_path = 'sklearn_digit_model.pkl'
-        scaler_path = 'sklearn_scaler.pkl'
+        # Get absolute path to app directory.
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(app_dir, 'sklearn_digit_model.pkl')
+        scaler_path = os.path.join(app_dir, 'sklearn_scaler.pkl')
         # Check if model file exists.
         if not os.path.exists(model_path):
             logger.error(f"Model file {model_path} not found!")
@@ -187,6 +189,55 @@ def kmeans_demo():
         str: Rendered HTML template for the K-Means demo.
     """
     return render_template('kmeans_demo.html')
+
+@app.route('/demos/decision-tree')
+def decision_tree_demo():
+    """Render the decision tree classifier demo page.
+
+    Returns:
+        str: Rendered HTML template for the decision tree demo.
+    """
+    return render_template('decision_tree_demo.html')
+
+@app.route('/api/decision-tree', methods=['POST'])
+def train_decision_tree():
+    """Train a decision tree on provided data points.
+
+    Expected JSON input:
+        {"points": [{"x": 0.5, "y": 0.3, "class": 0}, ...]}.
+
+    Returns:
+        JSON response with decision boundary grid.
+    """
+    try:
+        from sklearn.tree import DecisionTreeClassifier
+        data = request.get_json(silent=True) or {}
+        points = data.get('points', [])
+        if len(points) < 2:
+            return jsonify({'error': 'Need at least 2 points'}), 400
+        # Extract features and labels.
+        X = [[p['x'], p['y']] for p in points]
+        y = [p['class'] for p in points]
+        # Train decision tree.
+        clf = DecisionTreeClassifier(max_depth=5, random_state=42)
+        clf.fit(X, y)
+        # Generate prediction grid.
+        grid_size = 30
+        x_min, x_max = 0, 1
+        y_min, y_max = 0, 1
+        xx = np.linspace(x_min, x_max, grid_size)
+        yy = np.linspace(y_min, y_max, grid_size)
+        grid = []
+        for yi in yy:
+            row = []
+            for xi in xx:
+                pred = int(clf.predict([[xi, yi]])[0])
+                row.append(pred)
+            grid.append(row)
+        return jsonify({'grid': grid, 'grid_size': grid_size})
+    except Exception as e:
+        logger.error(f"Decision tree error: {e}")
+        return jsonify({'error': 'Training failed'}), 500
 
 @app.route('/predict', methods=['POST'])
 def predict():

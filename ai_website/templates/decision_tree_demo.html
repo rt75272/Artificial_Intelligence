@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}Decision Tree - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Decision Tree Classifier</h1>
+        <p class="page-subtitle">Interactive binary classification demo</p>
+    </div>
+</section>
+
+<section class="demo-section">
+    <div class="container">
+        <div class="demo-container">
+            <div class="demo-controls">
+                <h3>Controls</h3>
+                <button id="classBtn" class="btn btn-primary">Class: 0</button>
+                <button id="trainBtn" class="btn btn-success">Train Model</button>
+                <button id="clearBtn" class="btn btn-secondary">Clear All</button>
+                <div class="info-panel">
+                    <p><strong>Instructions:</strong></p>
+                    <p>1. Click the canvas to add points</p>
+                    <p>2. Toggle class to add different colors</p>
+                    <p>3. Train to see decision boundary</p>
+                </div>
+                <div id="status" class="status-message"></div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="treeCanvas" width="600" height="600"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.demo-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 2rem 0;
+}
+
+.demo-controls {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.demo-controls h3 {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+}
+
+.demo-controls .btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+}
+
+.info-panel {
+    background: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.info-panel p {
+    margin: 0.5rem 0;
+    color: #374151;
+}
+
+.status-message {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-weight: 500;
+    min-height: 2rem;
+}
+
+.canvas-container {
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#treeCanvas {
+    display: block;
+    cursor: crosshair;
+    background: white;
+}
+
+@media (max-width: 768px) {
+    .demo-container {
+        flex-direction: column;
+    }
+    .demo-controls {
+        width: 100%;
+    }
+    #treeCanvas {
+        width: 100%;
+        height: auto;
+    }
+}
+</style>
+
+<script>
+const canvas = document.getElementById('treeCanvas');
+const ctx = canvas.getContext('2d');
+const classBtn = document.getElementById('classBtn');
+const trainBtn = document.getElementById('trainBtn');
+const clearBtn = document.getElementById('clearBtn');
+const status = document.getElementById('status');
+
+let points = [];
+let currentClass = 0;
+let decisionGrid = null;
+
+// Toggle class.
+classBtn.addEventListener('click', () => {
+    currentClass = 1 - currentClass;
+    classBtn.textContent = `Class: ${currentClass}`;
+    classBtn.style.background = currentClass === 0 ? '#3b82f6' : '#ef4444';
+});
+
+// Add point on click.
+canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / canvas.width;
+    const y = (e.clientY - rect.top) / canvas.height;
+    points.push({ x, y, class: currentClass });
+    draw();
+});
+
+// Clear all.
+clearBtn.addEventListener('click', () => {
+    points = [];
+    decisionGrid = null;
+    draw();
+    showStatus('', '');
+});
+
+// Train model.
+trainBtn.addEventListener('click', async () => {
+    if (points.length < 2) {
+        showStatus('Need at least 2 points', 'error');
+        return;
+    }
+    showStatus('Training...', 'info');
+    try {
+        const response = await fetch('/api/decision-tree', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ points })
+        });
+        const data = await response.json();
+        if (data.error) {
+            showStatus(data.error, 'error');
+        } else {
+            decisionGrid = data.grid;
+            draw();
+            showStatus('Model trained!', 'success');
+        }
+    } catch (error) {
+        showStatus('Training failed', 'error');
+    }
+});
+
+// Draw canvas.
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw decision boundary.
+    if (decisionGrid) {
+        const gridSize = decisionGrid.length;
+        const cellWidth = canvas.width / gridSize;
+        const cellHeight = canvas.height / gridSize;
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const pred = decisionGrid[i][j];
+                ctx.fillStyle = pred === 0 ? 'rgba(59, 130, 246, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+                ctx.fillRect(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
+            }
+        }
+    }
+    // Draw points.
+    points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x * canvas.width, p.y * canvas.height, 6, 0, Math.PI * 2);
+        ctx.fillStyle = p.class === 0 ? '#3b82f6' : '#ef4444';
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    });
+}
+
+// Show status message.
+function showStatus(message, type) {
+    status.textContent = message;
+    status.style.background = type === 'error' ? '#fee2e2' : 
+                              type === 'success' ? '#d1fae5' : 
+                              type === 'info' ? '#dbeafe' : 'transparent';
+    status.style.color = type === 'error' ? '#991b1b' : 
+                        type === 'success' ? '#065f46' : 
+                        type === 'info' ? '#1e40af' : 'transparent';
+}
+
+// Initial draw.
+draw();
+</script>
+
+{% endblock %}
