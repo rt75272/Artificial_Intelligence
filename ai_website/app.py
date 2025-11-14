@@ -208,6 +208,68 @@ def neural_network_demo():
     """
     return render_template('neural_network_demo.html')
 
+@app.route('/demos/svm')
+def svm_demo():
+    """Render the SVM classifier demo page.
+
+    Returns:
+        str: Rendered HTML template for the SVM demo.
+    """
+    return render_template('svm_demo.html')
+
+@app.route('/api/svm', methods=['POST'])
+def train_svm():
+    """Train an SVM classifier and return decision boundary with support vectors.
+
+    Expected JSON input:
+        {"points": [{"x": 0.5, "y": 0.3, "class": 0}, ...]}.
+
+    Returns:
+        JSON response with decision boundary grid and support vector indices.
+    """
+    try:
+        from sklearn.svm import SVC
+        data = request.get_json(silent=True) or {}
+        points = data.get('points', [])
+        if len(points) < 2:
+            return jsonify({'error': 'Need at least 2 points'}), 400
+        # Extract features and labels.
+        X = np.array([[p['x'], p['y']] for p in points])
+        y = np.array([p['class'] for p in points])
+        # Check if we have both classes.
+        if len(np.unique(y)) < 2:
+            return jsonify({'error': 'Need points from both classes'}), 400
+        # Train SVM with linear kernel.
+        model = SVC(kernel='linear', C=1.0)
+        model.fit(X, y)
+        # Get support vectors.
+        support_indices = model.support_.tolist()
+        # Generate prediction grid.
+        grid_size = 50
+        grid = []
+        confidence_grid = []
+        for i in range(grid_size):
+            row = []
+            conf_row = []
+            for j in range(grid_size):
+                x_coord = j / grid_size
+                y_coord = i / grid_size
+                pred = model.predict([[x_coord, y_coord]])[0]
+                # Get decision function value for margin visualization.
+                decision_val = model.decision_function([[x_coord, y_coord]])[0]
+                row.append(int(pred))
+                conf_row.append(float(decision_val))
+            grid.append(row)
+            confidence_grid.append(conf_row)
+        return jsonify({
+            'grid': grid,
+            'confidence': confidence_grid,
+            'support_vectors': support_indices
+        })
+    except Exception as e:
+        logger.error(f"SVM training error: {str(e)}")
+        return jsonify({'error': 'Training failed'}), 500
+
 @app.route('/api/neural-network', methods=['POST'])
 def predict_pattern():
     """Process drawn pattern and return neuron activations.

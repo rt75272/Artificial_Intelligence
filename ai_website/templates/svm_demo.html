@@ -1,0 +1,469 @@
+{% extends "base.html" %}
+
+{% block title %}Support Vector Machine - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Support Vector Machine</h1>
+        <p class="page-subtitle">Visualize support vectors and decision margins</p>
+    </div>
+</section>
+
+<section class="demo-section">
+    <div class="container">
+        <div class="demo-container">
+            <div class="demo-controls">
+                <h3>Controls</h3>
+                <button id="classBtn" class="btn btn-primary">Class: 0</button>
+                <button id="trainBtn" class="btn btn-success">Train SVM</button>
+                <button id="clearBtn" class="btn btn-secondary">Clear All</button>
+                <div class="info-panel">
+                    <p><strong>Instructions:</strong></p>
+                    <p>1. Click canvas to add points</p>
+                    <p>2. Toggle class for different colors</p>
+                    <p>3. Train to see decision boundary</p>
+                    <p>4. Support vectors shown with rings</p>
+                </div>
+                <div class="legend">
+                    <h4>Legend</h4>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: rgba(59, 130, 246, 0.2);"></div>
+                        <span>Class 0 Region</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: rgba(239, 68, 68, 0.2);"></div>
+                        <span>Class 1 Region</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-circle"></div>
+                        <span>Support Vectors</span>
+                    </div>
+                </div>
+                <div id="status" class="status-message"></div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="svmCanvas" width="600" height="600"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.demo-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 2rem 0;
+}
+
+.demo-controls {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.demo-controls h3 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.demo-controls .btn {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.demo-controls .btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+}
+
+.info-panel {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    border: 1px solid #bae6fd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.info-panel p {
+    margin: 0.5rem 0;
+    color: #0c4a6e;
+    line-height: 1.6;
+}
+
+.info-panel strong {
+    color: #075985;
+    font-size: 0.95rem;
+}
+
+.legend {
+    background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid #fde047;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.legend h4 {
+    margin: 0 0 0.875rem 0;
+    color: #713f12;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.625rem 0;
+    font-size: 0.875rem;
+    color: #854d0e;
+    font-weight: 500;
+    transition: transform 0.2s;
+}
+
+.legend-item:hover {
+    transform: translateX(3px);
+}
+
+.legend-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 0.375rem;
+    border: 2px solid #d1d5db;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.legend-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 3px solid #fbbf24;
+    background: transparent;
+    box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+    animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+    0%, 100% {
+        box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.3);
+    }
+}
+
+.status-message {
+    padding: 0.875rem;
+    border-radius: 0.625rem;
+    text-align: center;
+    font-weight: 600;
+    min-height: 2.5rem;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.canvas-container {
+    border: 3px solid #e5e7eb;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.3s;
+    background: white;
+}
+
+.canvas-container:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+
+#svmCanvas {
+    display: block;
+    cursor: crosshair;
+    background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);
+}
+
+@media (max-width: 768px) {
+    .demo-container {
+        flex-direction: column;
+    }
+    .demo-controls {
+        width: 100%;
+    }
+    #svmCanvas {
+        width: 100%;
+        height: auto;
+    }
+}
+</style>
+
+<script>
+const canvas = document.getElementById('svmCanvas');
+const ctx = canvas.getContext('2d');
+const classBtn = document.getElementById('classBtn');
+const trainBtn = document.getElementById('trainBtn');
+const clearBtn = document.getElementById('clearBtn');
+const status = document.getElementById('status');
+
+let points = [];
+let currentClass = 0;
+let decisionGrid = null;
+let confidenceGrid = null;
+let supportVectors = [];
+let animationFrame = null;
+let newPointScale = 0;
+
+// Toggle class with animation.
+classBtn.addEventListener('click', () => {
+    currentClass = 1 - currentClass;
+    classBtn.textContent = `Class: ${currentClass}`;
+    const gradient = currentClass === 0 ? 
+        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 
+        'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+    classBtn.style.background = gradient;
+});
+
+// Add point with animation.
+canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / canvas.width;
+    const y = (e.clientY - rect.top) / canvas.height;
+    points.push({ x, y, class: currentClass, scale: 0 });
+    animateNewPoint(points.length - 1);
+    draw();
+});
+
+// Animate new point appearance.
+function animateNewPoint(idx) {
+    if (idx >= points.length) return;
+    let scale = 0;
+    function animate() {
+        scale += 0.15;
+        if (scale < 1) {
+            points[idx].scale = scale;
+            draw();
+            requestAnimationFrame(animate);
+        } else {
+            points[idx].scale = 1;
+            draw();
+        }
+    }
+    animate();
+}
+
+// Clear all.
+clearBtn.addEventListener('click', () => {
+    points = [];
+    decisionGrid = null;
+    confidenceGrid = null;
+    supportVectors = [];
+    draw();
+    showStatus('', '');
+});
+
+// Train model.
+trainBtn.addEventListener('click', async () => {
+    if (points.length < 2) {
+        showStatus('Need at least 2 points', 'error');
+        return;
+    }
+    const classes = new Set(points.map(p => p.class));
+    if (classes.size < 2) {
+        showStatus('Need points from both classes', 'error');
+        return;
+    }
+    showStatus('Training...', 'info');
+    try {
+        const response = await fetch('/api/svm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ points })
+        });
+        const data = await response.json();
+        if (data.error) {
+            showStatus(data.error, 'error');
+        } else {
+            decisionGrid = data.grid;
+            confidenceGrid = data.confidence;
+            supportVectors = data.support_vectors;
+            draw();
+            animateSupportVectors();
+            const svCount = supportVectors.length;
+            const emoji = svCount > 0 ? '✨' : '✓';
+            showStatus(`${emoji} Trained! ${svCount} support vector${svCount !== 1 ? 's' : ''}`, 'success');
+        }
+    } catch (error) {
+        showStatus('❌ Training failed', 'error');
+    }
+});
+
+// Draw canvas.
+function draw() {
+    // Gradient background.
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#ffffff');
+    gradient.addColorStop(1, '#f9fafb');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Draw decision regions with smooth gradients.
+    if (decisionGrid && confidenceGrid) {
+        const gridSize = decisionGrid.length;
+        const cellWidth = canvas.width / gridSize;
+        const cellHeight = canvas.height / gridSize;
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const pred = decisionGrid[i][j];
+                const conf = confidenceGrid[i][j];
+                // Smooth color intensity based on confidence.
+                const alpha = Math.min(0.4, Math.abs(conf) * 0.15 + 0.08);
+                ctx.fillStyle = pred === 0 ? 
+                    `rgba(59, 130, 246, ${alpha})` : 
+                    `rgba(239, 68, 68, ${alpha})`;
+                ctx.fillRect(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
+            }
+        }
+        // Draw decision boundary with glow effect.
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = 'rgba(55, 65, 81, 0.3)';
+        ctx.strokeStyle = '#1f2937';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const conf = confidenceGrid[i][j];
+                if (Math.abs(conf) < 0.05) {
+                    ctx.rect(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
+                }
+            }
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        // Draw margin boundaries with dashed style.
+        ctx.strokeStyle = '#9ca3af';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const conf = confidenceGrid[i][j];
+                if (Math.abs(conf - 1) < 0.1 || Math.abs(conf + 1) < 0.1) {
+                    ctx.rect(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
+                }
+            }
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    // Draw points with enhanced styling.
+    points.forEach((p, idx) => {
+        const isSupportVector = supportVectors.includes(idx);
+        const px = p.x * canvas.width;
+        const py = p.y * canvas.height;
+        const scale = p.scale !== undefined ? p.scale : 1;
+        const radius = 8 * scale;
+        // Draw support vector glow with animation.
+        if (isSupportVector) {
+            const time = Date.now() / 1000;
+            const pulse = Math.sin(time * 2) * 0.5 + 0.5;
+            ctx.shadowBlur = 12 + pulse * 4;
+            ctx.shadowColor = 'rgba(251, 191, 36, 0.6)';
+            ctx.beginPath();
+            ctx.arc(px, py, 15 + pulse * 2, 0, Math.PI * 2);
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+        // Draw main point with gradient.
+        const pointGradient = ctx.createRadialGradient(px, py, 0, px, py, radius);
+        if (p.class === 0) {
+            pointGradient.addColorStop(0, '#60a5fa');
+            pointGradient.addColorStop(1, '#3b82f6');
+        } else {
+            pointGradient.addColorStop(0, '#f87171');
+            pointGradient.addColorStop(1, '#ef4444');
+        }
+        ctx.beginPath();
+        ctx.arc(px, py, radius, 0, Math.PI * 2);
+        ctx.fillStyle = pointGradient;
+        ctx.fill();
+        // White border with shadow.
+        ctx.shadowBlur = 3;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    });
+}
+
+// Animate support vectors.
+function animateSupportVectors() {
+    if (supportVectors.length > 0) {
+        draw();
+        requestAnimationFrame(animateSupportVectors);
+    }
+}
+
+// Show status message.
+function showStatus(message, type) {
+    status.textContent = message;
+    status.style.background = type === 'error' ? '#fee2e2' : 
+                              type === 'success' ? '#d1fae5' : 
+                              type === 'info' ? '#dbeafe' : 'transparent';
+    status.style.color = type === 'error' ? '#991b1b' : 
+                        type === 'success' ? '#065f46' : 
+                        type === 'info' ? '#1e40af' : 'transparent';
+}
+
+// Initial draw.
+draw();
+</script>
+
+{% endblock %}
