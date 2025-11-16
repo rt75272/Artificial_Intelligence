@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Game of Life - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Conway's Game of Life</h1>
+        <p class="page-subtitle">Interactive cellular automaton sandbox.</p>
+    </div>
+</section>
+
+<section class="info-section">
+    <div class="container">
+        <h2>What is the Game of Life?</h2>
+        <p>
+            Conway's Game of Life is a classic cellular automaton—a grid of cells that evolve over time
+            based on simple rules. Each cell is either alive or dead. Once you set an initial pattern,
+            the system progresses automatically: no further input is required.
+        </p>
+        <h3>Rules</h3>
+        <ul>
+            <li><strong>Birth:</strong> A dead cell with exactly 3 live neighbors becomes alive.</li>
+            <li><strong>Survival:</strong> A live cell with exactly 2 live neighbors stays alive.</li>
+            <li><strong>Death:</strong> Otherwise, a live cell dies (from isolation or overcrowding).</li>
+            <li><strong>Edges wrap:</strong> In this demo the grid wraps around, so neighbors across an edge count.</li>
+        </ul>
+        <p>
+            Try drawing classic patterns like a <em>glider</em> (moves diagonally), a <em>blinker</em> (oscillates),
+            or a <em>block</em> (stable). Use Randomize to explore emergent behavior.
+        </p>
+    </div>
+    <style>
+    .info-section { padding: 1rem 0 0.5rem; }
+    .info-section h2 { margin-bottom: 0.5rem; }
+    .info-section h3 { margin-top: 0.75rem; }
+    .info-section ul { margin-left: 1.25rem; }
+    </style>
+</section>
+
+<section class="demo-section">
+    <div class="container">
+        <div class="game-controls">
+            <button id="stepBtn" class="btn btn-primary">Step</button>
+            <button id="runBtn" class="btn btn-success">Run</button>
+            <button id="stopBtn" class="btn btn-secondary">Stop</button>
+            <button id="clearBtn" class="btn btn-secondary">Clear</button>
+            <button id="randBtn" class="btn btn-primary">Randomize</button>
+            <label>Speed: <input id="speed" type="range" min="50" max="1000" value="300"></label>
+        </div>
+        <div class="grid-wrapper">
+            <canvas id="lifeCanvas" width="600" height="600"></canvas>
+        </div>
+    </div>
+</section>
+
+<style>
+.game-controls {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+.grid-wrapper {
+    display: flex;
+    justify-content: center;
+}
+#lifeCanvas {
+    border: 2px solid #e5e7eb;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+</style>
+
+<script>
+// Minimal Game of Life client with server-step support.
+const canvas = document.getElementById('lifeCanvas');
+const ctx = canvas.getContext('2d');
+const stepBtn = document.getElementById('stepBtn');
+const runBtn = document.getElementById('runBtn');
+const stopBtn = document.getElementById('stopBtn');
+const clearBtn = document.getElementById('clearBtn');
+const randBtn = document.getElementById('randBtn');
+const speed = document.getElementById('speed');
+
+const cols = 50;
+const rows = 50;
+const cellW = canvas.width / cols;
+const cellH = canvas.height / rows;
+let grid = Array.from({ length: rows }, () => Array(cols).fill(0));
+let running = false;
+let timer = null;
+
+// Draw grid to canvas.
+function drawGrid() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (grid[r][c]) {
+                ctx.fillStyle = '#0ea5a4';
+                ctx.fillRect(c * cellW, r * cellH, cellW - 1, cellH - 1);
+            } else {
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(c * cellW, r * cellH, cellW - 1, cellH - 1);
+            }
+        }
+    }
+}
+
+// Toggle cell on click.
+canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const c = Math.floor(x / cellW);
+    const r = Math.floor(y / cellH);
+    grid[r][c] = grid[r][c] ? 0 : 1;
+    drawGrid();
+});
+
+// Request next generation from server.
+async function stepServer() {
+    try {
+        const res = await fetch('/api/game-of-life', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ grid })
+        });
+        const data = await res.json();
+        if (data.grid) {
+            grid = data.grid;
+            drawGrid();
+        }
+    } catch (e) {
+        console.error('Step failed.', e);
+    }
+}
+
+// Local step fallback for instant response.
+function stepLocal() {
+    const newGrid = Array.from({ length: rows }, () => Array(cols).fill(0));
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            let n = 0;
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    if (dr === 0 && dc === 0) continue;
+                    const rr = (r + dr + rows) % rows;
+                    const cc = (c + dc + cols) % cols;
+                    n += grid[rr][cc];
+                }
+            }
+            newGrid[r][c] = (n === 3 || (grid[r][c] === 1 && n === 2)) ? 1 : 0;
+        }
+    }
+    grid = newGrid;
+    drawGrid();
+}
+
+// Controls.
+stepBtn.addEventListener('click', () => { stepServer(); });
+runBtn.addEventListener('click', () => {
+    if (running) return;
+    running = true;
+    timer = setInterval(() => { stepServer(); }, parseInt(speed.value));
+});
+stopBtn.addEventListener('click', () => { running = false; clearInterval(timer); });
+clearBtn.addEventListener('click', () => { grid = Array.from({ length: rows }, () => Array(cols).fill(0)); drawGrid(); });
+randBtn.addEventListener('click', () => {
+    grid = grid.map(row => row.map(() => Math.random() > 0.75 ? 1 : 0));
+    drawGrid();
+});
+
+// Initial draw.
+drawGrid();
+</script>
+
+{% endblock %}

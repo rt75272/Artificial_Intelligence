@@ -217,6 +217,15 @@ def svm_demo():
     """
     return render_template('svm_demo.html')
 
+@app.route('/demos/game-of-life')
+def game_of_life_demo():
+    """Render the Conway's Game of Life demo page.
+
+    Returns:
+        str: Rendered HTML template for the Game of Life demo.
+    """
+    return render_template('game_of_life.html')
+
 @app.route('/api/svm', methods=['POST'])
 def train_svm():
     """Train an SVM classifier and return decision boundary with support vectors.
@@ -360,6 +369,36 @@ def predict_pattern():
     except Exception as e:
         logger.error(f"Neural network prediction error: {str(e)}")
         return jsonify({'error': 'Prediction failed'}), 500
+
+@app.route('/api/game-of-life', methods=['POST'])
+def step_game_of_life():
+    """Compute the next Game of Life generation from a provided grid.
+
+    Expected JSON input:
+        {"grid": [[0,1,0,...], ...]}.
+
+    Returns:
+        JSON response with the updated grid.
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+        grid = data.get('grid', [])
+        if not grid:
+            return jsonify({'error': 'No grid provided'}), 400
+        arr = np.array(grid, dtype=int)
+        # Use numpy roll to sum neighbors with wrap-around boundaries.
+        neighbors = (
+            np.roll(np.roll(arr, 1, 0), 1, 1) + np.roll(np.roll(arr, 1, 0), 0, 1) +
+            np.roll(np.roll(arr, 1, 0), -1, 1) + np.roll(np.roll(arr, 0, 0), 1, 1) +
+            np.roll(np.roll(arr, 0, 0), -1, 1) + np.roll(np.roll(arr, -1, 0), 1, 1) +
+            np.roll(np.roll(arr, -1, 0), 0, 1) + np.roll(np.roll(arr, -1, 0), -1, 1)
+        )
+        new_arr = ((neighbors == 3) | ((arr == 1) & (neighbors == 2))).astype(int)
+        return jsonify({'grid': new_arr.tolist()})
+    except Exception as e:
+        logger.error(f"Game of Life step error: {str(e)}")
+        return jsonify({'error': 'Step failed'}), 500
+
 
 @app.route('/api/decision-tree', methods=['POST'])
 def train_decision_tree():

@@ -6,7 +6,7 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Random Projects</h1>
-        <p class="page-subtitle">Interactive demos and code examples</p>
+        <p class="page-subtitle">Interactive demos</p>
     </div>
 </section>
 
@@ -20,7 +20,7 @@
                     <h3>Handwriting Recognition</h3>
                     <p>
                         Draw digits (0-9) and watch as a neural network predicts what you wrote. 
-                        Trained on the MNIST dataset with 97.9% accuracy.
+                        Trained on the MNIST dataset.
                     </p>
                     <div class="demo-features">
                         <span class="feature-tag"><i class="fas fa-brain"></i> Neural Network</span>
@@ -183,6 +183,31 @@
                 <div class="demo-preview-visual">
                     <div class="demo-icon">
                         <i class="fas fa-vector-square"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conway's Game of Life. -->
+        <div class="demo-section">
+            <div class="demo-preview">
+                <div class="demo-preview-content">
+                    <h3>Conway's Game of Life</h3>
+                    <p>
+                        An interactive cellular automaton. Toggle cells, run the simulation,
+                        and experiment with patterns and emergent behavior.
+                    </p>
+                    <div class="demo-features">
+                        <span class="feature-tag"><i class="fas fa-th-large"></i> Simulation</span>
+                        <span class="feature-tag"><i class="fas fa-play-circle"></i> Interactive</span>
+                    </div>
+                    <a href="{{ url_for('game_of_life_demo') }}" class="btn btn-primary demo-btn">
+                        <i class="fas fa-play-circle"></i> Try Demo
+                    </a>
+                </div>
+                <div class="demo-preview-visual">
+                    <div class="demo-icon">
+                        <i class="fas fa-th-large"></i>
                     </div>
                 </div>
             </div>
