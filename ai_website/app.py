@@ -226,6 +226,16 @@ def game_of_life_demo():
     """
     return render_template('game_of_life.html')
 
+@app.route('/demos/pathfinding')
+def pathfinding_demo():
+    """Render the A* pathfinding demo page."""
+    return render_template('pathfinding.html')
+
+@app.route('/demos/monte-carlo-pi')
+def monte_carlo_pi_demo():
+    """Render the Monte Carlo Pi estimation demo page."""
+    return render_template('monte_carlo_pi.html')
+
 @app.route('/api/svm', methods=['POST'])
 def train_svm():
     """Train an SVM classifier and return decision boundary with support vectors.
@@ -399,6 +409,81 @@ def step_game_of_life():
         logger.error(f"Game of Life step error: {str(e)}")
         return jsonify({'error': 'Step failed'}), 500
 
+
+@app.route('/api/pathfinding', methods=['POST'])
+def solve_pathfinding():
+    """Solve a grid shortest path with A* (4-neighbor)."""
+    try:
+        import heapq
+        data = request.get_json(silent=True) or {}
+        grid = data.get('grid', [])
+        start = data.get('start')
+        goal = data.get('goal')
+        if not grid or start is None or goal is None:
+            return jsonify({'error': 'Missing grid, start, or goal.'}), 400
+        rows = len(grid)
+        cols = len(grid[0]) if rows else 0
+        sr, sc = int(start[0]), int(start[1])
+        gr, gc = int(goal[0]), int(goal[1])
+        if not (0 <= sr < rows and 0 <= sc < cols and 0 <= gr < rows and 0 <= gc < cols):
+            return jsonify({'error': 'Start or goal out of bounds.'}), 400
+        if grid[sr][sc] == 1 or grid[gr][gc] == 1:
+            return jsonify({'error': 'Start/goal cannot be on a wall.'}), 400
+        def h(r, c):
+            return abs(r - gr) + abs(c - gc)
+        open_heap = []
+        heapq.heappush(open_heap, (h(sr, sc), 0, (sr, sc)))
+        came_from = {}
+        g_score = {(sr, sc): 0}
+        closed = set()
+        while open_heap:
+            _, g, (r, c) = heapq.heappop(open_heap)
+            if (r, c) in closed:
+                continue
+            closed.add((r, c))
+            if (r, c) == (gr, gc):
+                path = [(gr, gc)]
+                while path[-1] != (sr, sc):
+                    path.append(came_from[path[-1]])
+                path.reverse()
+                return jsonify({'path': path})
+            for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)):
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 0:
+                    ng = g + 1
+                    if ng < g_score.get((nr, nc), 1e9):
+                        g_score[(nr, nc)] = ng
+                        came_from[(nr, nc)] = (r, c)
+                        heapq.heappush(open_heap, (ng + h(nr, nc), ng, (nr, nc)))
+        return jsonify({'path': []})
+    except Exception as e:
+        logger.error(f"Pathfinding error: {e}")
+        return jsonify({'error': 'Pathfinding failed.'}), 500
+
+@app.route('/api/monte-carlo-pi', methods=['POST'])
+def monte_carlo_pi():
+    """Estimate π using Monte Carlo sampling in a unit square."""
+    try:
+        data = request.get_json(silent=True) or {}
+        samples = int(data.get('samples', 10000))
+        if samples <= 0 or samples > 5_000_000:
+            return jsonify({'error': 'Invalid sample count.'}), 400
+        # Generate random points in [-1,1]x[-1,1].
+        xy = np.random.uniform(-1.0, 1.0, size=(samples, 2))
+        # Count points inside unit circle.
+        dist_sq = xy[:,0]*xy[:,0] + xy[:,1]*xy[:,1]
+        inside_mask = dist_sq <= 1.0
+        inside = int(np.sum(inside_mask))
+        pi_est = 4.0 * inside / float(samples)
+        # Return a subset of points for visualization (max 2000).
+        viz_count = min(samples, 2000)
+        viz_idx = np.random.choice(samples, viz_count, replace=False)
+        viz_points = xy[viz_idx].tolist()
+        viz_inside = inside_mask[viz_idx].tolist()
+        return jsonify({'pi': float(pi_est), 'inside': inside, 'total': samples, 'points': viz_points, 'points_inside': viz_inside})
+    except Exception as e:
+        logger.error(f"Monte Carlo error: {e}")
+        return jsonify({'error': 'Computation failed.'}), 500
 
 @app.route('/api/decision-tree', methods=['POST'])
 def train_decision_tree():

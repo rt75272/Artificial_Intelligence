@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Monte Carlo Pi - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-title">Monte Carlo π Estimation</h1>
+    <p class="page-subtitle">Estimate π by sampling random points in a square.</p>
+  </div>
+</section>
+
+<section class="info-section">
+  <div class="container">
+    <h2>What is Monte Carlo?</h2>
+    <p>
+      Monte Carlo methods use randomness to approximate answers to numerical problems. For π, we sample
+      random points in a square that encloses a quarter (or full) circle and estimate π from the fraction
+      of points that land inside the circle.
+    </p>
+    <h3>How this demo estimates π</h3>
+    <ol>
+      <li>Generate N random points uniformly in the square [−1, 1] × [−1, 1].</li>
+      <li>Count how many fall inside the unit circle x² + y² ≤ 1.</li>
+      <li>π is approximated by 4 × (inside / N).</li>
+    </ol>
+    <p>
+      Larger sample sizes reduce variance (by the law of large numbers), so the estimate tends to get closer
+      to the true π as N increases.
+    </p>
+  </div>
+  <style>
+  .info-section{padding:1rem 0 .5rem}
+  .info-section h2{margin-bottom:.5rem}
+  .info-section h3{margin-top:.75rem}
+  .info-section ol{margin-left:1.25rem}
+  </style>
+</section>
+
+<section class="demo-section">
+  <div class="container">
+    <div class="controls">
+      <label>Samples: <input id="samples" type="number" min="100" max="5000000" step="1000" value="10000"></label>
+      <button id="runBtn" class="btn btn-primary">Estimate</button>
+    </div>
+    <div class="result">
+      <div>π ≈ <span id="pi">—</span></div>
+      <div><small><span id="inside">0</span> inside of <span id="total">0</span> points.</small></div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="piChart" width="600" height="220"></canvas>
+    </div>
+    <div class="scatter-wrap">
+      <canvas id="scatterCanvas" width="400" height="400"></canvas>
+    </div>
+  </div>
+</section>
+
+<style>
+.controls{display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem}
+.result{text-align:center;font-size:1.25rem}
+.chart-wrap{display:flex;justify-content:center;margin-top:1rem}
+.scatter-wrap{display:flex;justify-content:center;margin-top:1rem}
+</style>
+
+<script>
+// Minimal Monte Carlo client.
+const samples=document.getElementById('samples');
+const runBtn=document.getElementById('runBtn');
+const piSpan=document.getElementById('pi');
+const insideSpan=document.getElementById('inside');
+const totalSpan=document.getElementById('total');
+const chart=document.getElementById('piChart');
+const ctx=chart.getContext('2d');
+const scatter=document.getElementById('scatterCanvas');
+const sctx=scatter.getContext('2d');
+let history=[]; // Array of {n, pi} for plotting.
+
+function drawScatter(points,inside){ // Draw scatter plot of sampled points.
+  const w=scatter.width, h=scatter.height; sctx.clearRect(0,0,w,h);
+  const margin=20; const iw=w-2*margin, ih=h-2*margin; const cx=margin+iw/2, cy=margin+ih/2; const rad=iw/2;
+  // Draw unit circle.
+  sctx.strokeStyle="#e5e7eb"; sctx.lineWidth=2; sctx.beginPath(); sctx.arc(cx,cy,rad,0,Math.PI*2); sctx.stroke();
+  // Draw square boundary.
+  sctx.strokeStyle="#d1d5db"; sctx.lineWidth=1; sctx.strokeRect(margin,margin,iw,ih);
+  // Plot points.
+  for(let i=0;i<points.length;i++){ const [x,y]=points[i]; const px=cx+x*rad, py=cy-y*rad; sctx.fillStyle=inside[i]?"#10b981":"#ef4444"; sctx.fillRect(px-1,py-1,2,2); }
+}
+function drawChart(){ // Draw simple line chart of π estimates.
+  const w=chart.width, h=chart.height; ctx.clearRect(0,0,w,h);
+  const margin={l:40,r:10,t:10,b:30}; const iw=w-margin.l-margin.r, ih=h-margin.t-margin.b;
+  ctx.strokeStyle="#e5e7eb"; ctx.lineWidth=1; ctx.strokeRect(margin.l,margin.t,iw,ih); // Border.
+  if(history.length===0){return;}
+  let minX=history[0].n, maxX=history[0].n; let minY=3.0, maxY=3.3; // Reasonable y-range around π.
+  for(const p of history){ if(p.n<minX)minX=p.n; if(p.n>maxX)maxX=p.n; if(p.pi<minY)minY=p.pi; if(p.pi>maxY)maxY=p.pi; }
+  if(maxX===minX){maxX=minX+1;}
+  const truePi=Math.PI; if(truePi<minY)minY=truePi; if(truePi>maxY)maxY=truePi;
+  const xScale=x=>margin.l + (x-minX)/(maxX-minX)*iw;
+  const yScale=y=>margin.t + (1-(y-minY)/(maxY-minY))*ih;
+  // Horizontal reference line at π.
+  ctx.strokeStyle="#f59e0b"; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(margin.l,yScale(truePi)); ctx.lineTo(margin.l+iw,yScale(truePi)); ctx.stroke(); ctx.setLineDash([]);
+  // Plot polyline of estimates.
+  ctx.strokeStyle="#3b82f6"; ctx.lineWidth=2; ctx.beginPath();
+  for(let i=0;i<history.length;i++){ const p=history[i]; const x=xScale(p.n), y=yScale(p.pi); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+  ctx.stroke();
+  // Draw last point.
+  const last=history[history.length-1]; ctx.fillStyle="#1d4ed8"; ctx.beginPath(); ctx.arc(xScale(last.n), yScale(last.pi), 3, 0, Math.PI*2); ctx.fill();
+  // Axes labels (minimal).
+  ctx.fillStyle="#6b7280"; ctx.font="12px sans-serif"; ctx.fillText("Samples", margin.l+iw-50, h-8); ctx.save(); ctx.translate(12, margin.t+10); ctx.rotate(-Math.PI/2); ctx.fillText("π estimate", 0,0); ctx.restore();
+}
+runBtn.addEventListener('click', async()=>{
+  try{
+    const n=parseInt(samples.value||'0',10);
+    const res=await fetch('/api/monte-carlo-pi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({samples:n})});
+    const data=await res.json();
+    if(data.pi!==undefined){piSpan.textContent=data.pi.toFixed(6);insideSpan.textContent=data.inside;totalSpan.textContent=data.total;}
+    else{piSpan.textContent='—';}
+    if(data.pi!==undefined){ history.push({n:data.total, pi:data.pi}); if(history.length>200){history=history.slice(-200);} drawChart(); }
+    if(data.points&&data.points_inside){drawScatter(data.points,data.points_inside);}
+  }catch(e){console.error('Estimation failed.',e);}
+});
+drawChart(); // Initial empty chart.
+</script>
+
+{% endblock %}

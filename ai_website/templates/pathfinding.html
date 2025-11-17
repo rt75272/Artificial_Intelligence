@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}A* Pathfinding - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">A* Pathfinding</h1>
+        <p class="page-subtitle">Click to add walls. Shift+click sets Start. Ctrl+click sets Goal. Press Solve.</p>
+    </div>
+</section>
+
+<section class="demo-section">
+    <div class="container">
+        <div class="controls">
+            <button id="solveBtn" class="btn btn-primary">Solve</button>
+            <button id="clearBtn" class="btn btn-secondary">Clear</button>
+        </div>
+        <div class="grid-wrapper">
+            <canvas id="pfCanvas" width="600" height="600"></canvas>
+        </div>
+    </div>
+</section>
+
+<style>
+.controls{display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem;}
+.grid-wrapper{display:flex;justify-content:center}
+#pfCanvas{border:2px solid #e5e7eb;background:#ffffff;box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.legend{font-size:.9rem;text-align:center;margin-top:.75rem;color:#6b7280}
+</style>
+
+<script>
+// Minimal A* pathfinding client.
+const canvas=document.getElementById('pfCanvas');
+const ctx=canvas.getContext('2d');
+const solveBtn=document.getElementById('solveBtn');
+const clearBtn=document.getElementById('clearBtn');
+const rows=40, cols=40; const cw=canvas.width/cols, ch=canvas.height/rows;
+let grid=Array.from({length:rows},()=>Array(cols).fill(0)); // 0 empty, 1 wall.
+let start=[0,0]; // Row,Col.
+let goal=[rows-1, cols-1]; // Row,Col.
+let path=[];
+
+function draw(){ // Draw grid.
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      if(grid[r][c]===1){ctx.fillStyle="#1f2937";} // Wall.
+      else{ctx.fillStyle="#f8fafc";} // Empty.
+      ctx.fillRect(c*cw,r*ch,cw-1,ch-1);
+    }
+  }
+  // Draw path.
+  ctx.fillStyle="#3b82f6";
+  for(const [r,c] of path){ctx.fillRect(c*cw,r*ch,cw-1,ch-1);} // Path cells.
+  // Draw start and goal.
+  ctx.fillStyle="#10b981"; ctx.fillRect(start[1]*cw,start[0]*ch,cw-1,ch-1); // Start.
+  ctx.fillStyle="#ef4444"; ctx.fillRect(goal[1]*cw,goal[0]*ch,cw-1,ch-1); // Goal.
+}
+
+canvas.addEventListener('click',e=>{ // Toggle wall or set start/goal.
+  const rect=canvas.getBoundingClientRect();
+  const x=e.clientX-rect.left, y=e.clientY-rect.top; const c=Math.floor(x/cw), r=Math.floor(y/ch);
+  if(e.shiftKey){start=[r,c];}
+  else if(e.ctrlKey||e.metaKey){goal=[r,c];}
+  else{grid[r][c]=grid[r][c]===1?0:1;}
+  path=[]; draw();
+});
+
+solveBtn.addEventListener('click',async()=>{ // Ask server to solve.
+  try{
+    const res=await fetch('/api/pathfinding',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({grid,start,goal})});
+    const data=await res.json();
+    path=(data.path||[]);
+    draw();
+  }catch(err){console.error('Solve failed.',err);}
+});
+
+clearBtn.addEventListener('click',()=>{ // Clear grid.
+  grid=Array.from({length:rows},()=>Array(cols).fill(0)); path=[]; start=[0,0]; goal=[rows-1,cols-1]; draw();
+});
+
+draw(); // Initial render.
+</script>
+
+{% endblock %}
