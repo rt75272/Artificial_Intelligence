@@ -236,6 +236,11 @@ def monte_carlo_pi_demo():
     """Render the Monte Carlo Pi estimation demo page."""
     return render_template('monte_carlo_pi.html')
 
+@app.route('/demos/password-strength')
+def password_strength_demo():
+    """Render the password strength prediction demo page."""
+    return render_template('password_strength.html')
+
 @app.route('/api/svm', methods=['POST'])
 def train_svm():
     """Train an SVM classifier and return decision boundary with support vectors.
@@ -484,6 +489,76 @@ def monte_carlo_pi():
     except Exception as e:
         logger.error(f"Monte Carlo error: {e}")
         return jsonify({'error': 'Computation failed.'}), 500
+
+@app.route('/api/password-strength', methods=['POST'])
+def predict_password_strength():
+    """Predict password strength using ML features and classify as weak/medium/strong."""
+    try:
+        import string
+        import random
+        from sklearn.ensemble import RandomForestClassifier
+        data = request.get_json(silent=True) or {}
+        action = data.get('action', 'predict')
+        if action == 'generate':
+            # Generate a random password.
+            length = int(data.get('length', 12))
+            if length < 4 or length > 64:
+                return jsonify({'error': 'Length must be 4-64.'}), 400
+            special_chars = '!#$%&'
+            chars = string.ascii_letters + string.digits + special_chars
+            password = ''.join(random.choice(chars) for _ in range(length))
+            return jsonify({'password': password})
+        # Extract password for prediction.
+        password = data.get('password', '')
+        if not password:
+            return jsonify({'error': 'No password provided.'}), 400
+        # Feature extraction.
+        length = len(password)
+        has_lower = any(c.islower() for c in password)
+        has_upper = any(c.isupper() for c in password)
+        has_digit = any(c.isdigit() for c in password)
+        has_special = any(c in string.punctuation for c in password)
+        unique_chars = len(set(password))
+        # Simple scoring-based classification.
+        score = 0
+        if length >= 8:
+            score += 1
+        if length >= 12:
+            score += 1
+        if has_lower:
+            score += 1
+        if has_upper:
+            score += 1
+        if has_digit:
+            score += 1
+        if has_special:
+            score += 1
+        if unique_chars >= length * 0.75:
+            score += 1
+        # Classify: 0-2=weak, 3-4=medium, 5+=strong.
+        if score <= 2:
+            strength = 'weak'
+            strength_label = 0
+        elif score <= 4:
+            strength = 'medium'
+            strength_label = 1
+        else:
+            strength = 'strong'
+            strength_label = 2
+        # Train a simple synthetic model for demonstration.
+        X_train = np.array([[8, 1, 1, 1, 1, 6], [6, 1, 0, 1, 0, 5], [12, 1, 1, 1, 1, 10], [5, 1, 0, 0, 0, 4], [15, 1, 1, 1, 1, 14]])
+        y_train = np.array([1, 0, 2, 0, 2])
+        clf = RandomForestClassifier(n_estimators=10, random_state=42, max_depth=3)
+        clf.fit(X_train, y_train)
+        # Predict using features.
+        features = np.array([[length, int(has_lower), int(has_upper), int(has_digit), int(has_special), unique_chars]])
+        pred = int(clf.predict(features)[0])
+        proba = clf.predict_proba(features)[0]
+        strength_map = {0: 'weak', 1: 'medium', 2: 'strong'}
+        return jsonify({'strength': strength_map[pred], 'score': score, 'probability': proba.tolist(), 'features': {'length': length, 'has_lower': has_lower, 'has_upper': has_upper, 'has_digit': has_digit, 'has_special': has_special, 'unique_chars': unique_chars}})
+    except Exception as e:
+        logger.error(f"Password strength error: {e}")
+        return jsonify({'error': 'Prediction failed.'}), 500
 
 @app.route('/api/decision-tree', methods=['POST'])
 def train_decision_tree():
