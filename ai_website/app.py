@@ -241,6 +241,11 @@ def password_strength_demo():
     """Render the password strength prediction demo page."""
     return render_template('password_strength.html')
 
+@app.route('/demos/chatbot')
+def chatbot_demo():
+    """Render the interactive chatbot demo page."""
+    return render_template('chatbot.html')
+
 @app.route('/api/svm', methods=['POST'])
 def train_svm():
     """Train an SVM classifier and return decision boundary with support vectors.
@@ -489,6 +494,95 @@ def monte_carlo_pi():
     except Exception as e:
         logger.error(f"Monte Carlo error: {e}")
         return jsonify({'error': 'Computation failed.'}), 500
+
+@app.route('/api/chatbot', methods=['POST'])
+def chatbot_response():
+    """Generate chatbot response using rule-based NLP."""
+    try:
+        import re
+        import random
+        data = request.get_json(silent=True) or {}
+        message = data.get('message', '').lower().strip()
+        if not message:
+            return jsonify({'response': 'Please say something!'})
+        # Greeting patterns.
+        if re.search(r'\b(hi|hello|hey|greetings|sup|howdy)\b', message):
+            responses = ['Hello! How can I help you today?', 'Hi there! What would you like to know?', 'Hey! Ask me anything about AI or machine learning.', 'Greetings! Ready to chat?', 'Hi! Great to see you here.', 'Hello! What brings you here today?']
+            return jsonify({'response': random.choice(responses)})
+        # Farewell patterns.
+        if re.search(r'\b(bye|goodbye|see you|farewell|later|cya)\b', message):
+            responses = ['Goodbye! Have a great day!', 'See you later!', 'Bye! Come back anytime.', 'Take care!', 'Until next time!', 'Farewell! Happy coding!']
+            return jsonify({'response': random.choice(responses)})
+        # Name query.
+        if re.search(r'\b(your name|who are you|what are you|introduce yourself)\b', message):
+            responses = ["I'm a simple rule-based chatbot created to demonstrate conversational AI. I use pattern matching and predefined responses.", "I'm an AI chatbot designed to chat about technology and answer questions!", "I'm a conversational bot that loves talking about AI, ML, and programming."]
+            return jsonify({'response': random.choice(responses)})
+        # Help query.
+        if re.search(r'\b(help|what can you do|commands|capabilities)\b', message):
+            responses = ['I can chat about AI, machine learning, answer basic questions, and have simple conversations. Try asking me about neural networks, Python, or just say hello!', 'I love discussing technology! Ask me about AI, ML, programming, or just have a casual chat.', 'I can help with questions about machine learning, Python, data science, and more. What interests you?']
+            return jsonify({'response': random.choice(responses)})
+        # Machine learning questions.
+        if re.search(r'\b(machine learning|ml|deep learning|supervised|unsupervised)\b', message):
+            responses = ['Machine learning is fascinating! It allows computers to learn from data without explicit programming.', 'ML has three main types: supervised learning (labeled data), unsupervised learning (patterns), and reinforcement learning (rewards)!', 'Machine learning powers everything from recommendation systems to self-driving cars!', 'Interesting ML fact: Neural networks can learn incredibly complex patterns that even humans struggle to define.']
+            return jsonify({'response': random.choice(responses)})
+        # Neural networks.
+        if re.search(r'\b(neural network|deep learning|cnn|rnn|transformer)\b', message):
+            responses = ['Neural networks are inspired by the human brain and excel at pattern recognition.', 'Deep learning uses multi-layer neural networks to learn hierarchical representations of data.', 'CNNs are great for images, RNNs for sequences, and Transformers have revolutionized NLP!', 'Neural networks learn by adjusting weights through backpropagation. Pretty cool, right?']
+            return jsonify({'response': random.choice(responses)})
+        # AI general.
+        if re.search(r'\b(artificial intelligence|ai|intelligent|robots)\b', message):
+            responses = ['AI and ML are transforming industries from healthcare to finance.', 'Artificial intelligence aims to create systems that can perform tasks requiring human-like intelligence.', 'AI is everywhere now - from voice assistants to recommendation engines!', 'The future of AI is exciting! We are seeing breakthroughs in natural language and computer vision.']
+            return jsonify({'response': random.choice(responses)})
+        # Python questions.
+        if re.search(r'\bpython\b', message):
+            responses = ['Python is an excellent language for AI and data science! Libraries like NumPy, scikit-learn, and TensorFlow make it powerful for ML tasks.', 'Python is popular because of its simplicity and powerful libraries. Great choice for beginners and experts alike!', 'Fun fact: Python is named after Monty Python, not the snake! 🐍', 'Python libraries like Pandas, NumPy, and Matplotlib make data analysis incredibly efficient.']
+            return jsonify({'response': random.choice(responses)})
+        # Programming.
+        if re.search(r'\b(code|coding|program|developer|software)\b', message):
+            responses = ['Programming is like solving puzzles - challenging but rewarding!', 'The best way to learn coding is by building projects. What are you working on?', 'Every expert programmer was once a beginner. Keep practicing!', 'Good code is readable code. Always write for humans, not just machines.']
+            return jsonify({'response': random.choice(responses)})
+        # Data science.
+        if re.search(r'\b(data science|data analysis|statistics|analytics)\b', message):
+            responses = ['Data science combines statistics, programming, and domain knowledge to extract insights from data.', 'The data science workflow: collect, clean, explore, model, and communicate findings!', 'Data is the new oil, but only if you can refine it into actionable insights.', 'Visualization is key in data science - a good chart tells a thousand words!']
+            return jsonify({'response': random.choice(responses)})
+        # Projects or demos.
+        if re.search(r'\b(project|demo|portfolio|website|build)\b', message):
+            responses = ['This website showcases several interactive ML demos. Have you tried them all?', 'Building projects is the best way to learn! What are you interested in creating?', 'Check out the demos on this site - from neural networks to pathfinding algorithms!', 'Portfolio projects demonstrate your skills to employers. What tech stack are you using?']
+            return jsonify({'response': random.choice(responses)})
+        # How are you.
+        if re.search(r'\b(how are you|how r u|whats up|wassup)\b', message):
+            responses = ["I'm doing well, thanks for asking!", "I'm great! Ready to chat about AI.", "Doing fantastic! How about you?", "I'm excellent! Always happy to talk tech.", "Pretty good! What can I help you with today?"]
+            return jsonify({'response': random.choice(responses)})
+        # Thank you.
+        if re.search(r'\b(thank|thanks|thx|appreciate)\b', message):
+            responses = ["You're welcome!", "Happy to help!", "Anytime!", "Glad I could assist!", "My pleasure!", "No problem at all!"]
+            return jsonify({'response': random.choice(responses)})
+        # Weather or time.
+        if re.search(r'\b(weather|temperature|time|date|day)\b', message):
+            responses = ["I'm a chatbot focused on tech topics, but I'd love to chat about AI instead!", "I don't have access to real-time data, but I can discuss machine learning algorithms!", "Time flies when you're learning ML! Want to know more about neural networks?"]
+            return jsonify({'response': random.choice(responses)})
+        # Jokes.
+        if re.search(r'\b(joke|funny|laugh|humor)\b', message):
+            responses = ["Why do programmers prefer dark mode? Because light attracts bugs! 😄", "Why did the neural network go to therapy? It had too many layers of issues!", "What's a machine learning engineer's favorite exercise? Training data! 💪", "I'd tell you a UDP joke, but you might not get it... 😅"]
+            return jsonify({'response': random.choice(responses)})
+        # Affirmative responses.
+        if re.search(r'\b(yes|yeah|yep|sure|ok|okay|definitely)\b', message):
+            responses = ["Great! What would you like to know?", "Awesome! How can I help?", "Perfect! What's on your mind?", "Cool! Let's chat.", "Nice! What topic interests you?"]
+            return jsonify({'response': random.choice(responses)})
+        # Negative responses.
+        if re.search(r'\b(no|nope|nah|not really)\b', message):
+            responses = ["No worries! Let me know if you change your mind.", "That's okay! Feel free to ask anything else.", "Understood! What else can I help with?", "Fair enough! Want to talk about something else?"]
+            return jsonify({'response': random.choice(responses)})
+        # Learning.
+        if re.search(r'\b(learn|study|tutorial|course|beginner)\b', message):
+            responses = ["Learning AI is a journey! Start with Python basics, then move to libraries like scikit-learn.", "Great resources for learning: Coursera, fast.ai, and hands-on Kaggle competitions!", "The best way to learn is by doing. Try building small projects first!", "Don't get overwhelmed - focus on fundamentals before diving into advanced topics."]
+            return jsonify({'response': random.choice(responses)})
+        # Default fallback.
+        fallbacks = ["That's interesting! Tell me more.", "I'm not sure I understand. Can you rephrase that?", "Hmm, I don't have a good answer for that. Try asking about AI or machine learning!", "Interesting question! I'm still learning. Ask me about neural networks or Python.", "I'd love to know more about that! Can you elaborate?", "That's a bit outside my expertise, but I'm always learning! Ask me about tech topics.", "Curious! Want to discuss AI, ML, or programming instead?", "I might not know that one, but I'm great with machine learning questions!"]
+        return jsonify({'response': random.choice(fallbacks)})
+    except Exception as e:
+        logger.error(f"Chatbot error: {e}")
+        return jsonify({'error': 'Chat failed.'}), 500
 
 @app.route('/api/password-strength', methods=['POST'])
 def predict_password_strength():
