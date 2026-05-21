@@ -65,6 +65,7 @@ const AIPortfolio = {
     initializeNavigation() {
         this.setupSmoothScrolling();
         this.setupActiveNavigation();
+        this.setupMobileMenu();
     },
 
     /**
@@ -89,6 +90,56 @@ const AIPortfolio = {
      */
     setupActiveNavigation() {
         window.addEventListener('scroll', this.updateActiveNavItem.bind(this));
+    },
+
+    /**
+     * Initialize the mobile hamburger menu toggle.
+     * Handles open/close, outside-click, Escape key, and resize.
+     */
+    setupMobileMenu() {
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.querySelector('.nav-menu');
+        if (!toggle || !menu) return;
+
+        // Toggle menu visibility on button click.
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = menu.classList.toggle('open');
+            toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        // Close menu when any nav link is clicked.
+        menu.querySelectorAll('.nav-link').forEach((link) => {
+            link.addEventListener('click', () => {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Close menu when clicking outside the navbar area.
+        document.addEventListener('click', (e) => {
+            if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Close menu on Escape key.
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.focus();
+            }
+        });
+
+        // Close and reset menu when viewport widens past mobile breakpoint.
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                menu.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
     },
 
     /**

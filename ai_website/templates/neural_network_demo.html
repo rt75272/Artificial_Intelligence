@@ -6,7 +6,64 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Neural Network Playground</h1>
-        <p class="page-subtitle">Watch neurons activate for submitted digits (0-9)</p>
+        <p class="page-subtitle">Draw a digit and watch neurons light up as your input flows through hidden layers to the output</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Neural Networks</span>
+            <span class="obj-tag">Forward Pass</span>
+            <span class="obj-tag">ReLU Activation</span>
+            <span class="obj-tag">Softmax Output</span>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 0 0 0.5rem;">
+    <div class="container">
+        <!-- Educational cards row -->
+        <div class="edu-cards-row">
+            <div class="edu-card">
+                <h3><i class="fas fa-network-wired"></i> Layers of the Network</h3>
+                <p>This model has four layers. Your drawing is transformed step-by-step as it passes through each one:</p>
+                <div class="edu-facts">
+                    <div class="edu-fact"><span class="fact-label">Input (Layer 0)</span><span class="fact-value">784 pixels (28×28)</span></div>
+                    <div class="edu-fact"><span class="fact-label">Hidden 1</span><span class="fact-value">256 neurons + ReLU</span></div>
+                    <div class="edu-fact"><span class="fact-label">Hidden 2</span><span class="fact-value">256 neurons + ReLU</span></div>
+                    <div class="edu-fact"><span class="fact-label">Output (Layer 3)</span><span class="fact-value">10 neurons + Softmax</span></div>
+                </div>
+                <p style="font-size:0.82rem;margin-top:0.65rem;color:#6b7280;">Each neuron computes a weighted sum of its inputs, then applies a nonlinear activation function.</p>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-bolt"></i> Activation Functions</h3>
+                <p>Without nonlinearity, stacking layers would be equivalent to a single linear transformation. Activation functions break this linearity and allow the network to learn complex patterns.</p>
+                <div class="edu-formula">ReLU(x) = max(0, x)</div>
+                <p style="margin-top:0.65rem;">ReLU simply zeroes out negative values, leaving positive values unchanged. It's fast to compute and avoids the vanishing gradient problem of older activations like sigmoid.</p>
+                <div class="edu-formula" style="margin-top:0.5rem;">Softmax(xᵢ) = eˣⁱ / Σ eˣʲ</div>
+                <p style="margin-top:0.5rem;font-size:0.82rem;color:#6b7280;">The output layer uses softmax, converting raw scores into probabilities that sum to 1.</p>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-eye"></i> Reading the Visualization</h3>
+                <p>The neuron grids show activation values after each layer. A <strong>bright/white cell</strong> means a strongly activated neuron; a <strong>dark cell</strong> means near-zero or zero.</p>
+                <div class="edu-steps">
+                    <div class="edu-step">
+                        <span class="step-num">1</span>
+                        <span class="step-text">Draw a digit (0–9) on the canvas on the left.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">2</span>
+                        <span class="step-text">Click <strong>Analyze</strong> to run the forward pass.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">3</span>
+                        <span class="step-text">Watch activations light up in Layers 1 and 2, and see the confidence scores in Layer 3.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">4</span>
+                        <span class="step-text">Try drawing ambiguous digits to see the network become uncertain (multiple bright outputs).</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -456,5 +513,16 @@ for (let i = 0; i < 10; i++) {
     outputLayerDiv.appendChild(n);
 }
 </script>
+
+<!-- Takeaways -->
+<div class="edu-takeaways" style="margin: 2rem auto; max-width: 1200px; padding: 0 1.5rem 3rem;">
+    <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+    <div class="takeaway-grid">
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Depth enables abstraction</strong> — Early layers learn low-level features (edges, strokes), while deeper layers combine these into higher-level concepts (digit shapes). This hierarchical learning is why depth matters.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>ReLU solves vanishing gradients</strong> — Older activations like sigmoid saturate (output near 0 or 1) and produce nearly-zero gradients, making deep networks hard to train. ReLU avoids this in its positive region.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Softmax gives probabilities</strong> — The final softmax layer converts raw scores into a proper probability distribution. The network is confident when one class has a value near 1 and the rest are near 0.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>784 input features</strong> — Each 28×28 pixel image is flattened into a 784-dimensional vector. The model never "sees" the 2D structure — that's why convolutional networks (CNNs) perform better on images by explicitly modeling spatial locality.</span></div>
+    </div>
+</div>
 
 {% endblock %}

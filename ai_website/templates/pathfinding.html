@@ -6,28 +6,103 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">A* Pathfinding</h1>
-        <p class="page-subtitle">Click to add walls. Shift+click sets Start. Ctrl+click sets Goal. Press Solve.</p>
+        <p class="page-subtitle">Draw walls on a grid and watch the A* algorithm find the shortest route around them</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Graph Search</span>
+            <span class="obj-tag">Heuristic Functions</span>
+            <span class="obj-tag">A* Algorithm</span>
+            <span class="obj-tag">Optimal Pathfinding</span>
+        </div>
     </div>
 </section>
 
-<section class="demo-section">
+<section style="padding: 0 0 3rem;">
     <div class="container">
-        <div class="controls">
-            <button id="solveBtn" class="btn btn-primary">Solve</button>
-            <button id="clearBtn" class="btn btn-secondary">Clear</button>
+
+        <!-- Educational cards row -->
+        <div class="edu-cards-row">
+            <div class="edu-card">
+                <h3><i class="fas fa-route"></i> What is A*?</h3>
+                <p>A* (pronounced "A-star") is a graph search algorithm that finds the shortest path from a start node to a goal node. It combines the advantages of Dijkstra's algorithm (guaranteed shortest path) with a heuristic that guides the search toward the goal efficiently.</p>
+                <p>Unlike BFS which expands all neighbors equally, A* prioritizes nodes that look most promising according to the formula below.</p>
+                <div class="edu-formula">f(n) = g(n) + h(n)</div>
+                <div class="edu-tags">
+                    <span class="edu-tag">Informed Search</span>
+                    <span class="edu-tag">Optimal</span>
+                    <span class="edu-tag">Complete</span>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-list-ol"></i> The Algorithm Step-by-Step</h3>
+                <div class="edu-steps">
+                    <div class="edu-step">
+                        <span class="step-num">1</span>
+                        <span class="step-text"><strong>Open list:</strong> Start with just the start node. Each node stores g(n) — actual cost from start — and h(n) — estimated cost to goal.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">2</span>
+                        <span class="step-text"><strong>Pick best:</strong> Pop the node with the lowest f(n) = g(n) + h(n) from the open list.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">3</span>
+                        <span class="step-text"><strong>Expand:</strong> Add its walkable neighbors to the open list with updated g-costs.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">4</span>
+                        <span class="step-text"><strong>Closed list:</strong> Move the current node to the closed list so it's not re-expanded.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">5</span>
+                        <span class="step-text"><strong>Repeat</strong> until the goal is popped from the open list (path found!) or the list is empty (no path).</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-compass"></i> The Heuristic h(n)</h3>
+                <p>The heuristic estimates how far node n is from the goal. For this grid demo, we use the <strong>Manhattan distance</strong> — the sum of horizontal and vertical steps needed if there were no walls.</p>
+                <div class="edu-formula">h(n) = |x_goal − x_n| + |y_goal − y_n|</div>
+                <p style="margin-top:0.65rem;">A heuristic must be <em>admissible</em> (never overestimates the true cost) to guarantee an optimal path. Manhattan distance is admissible because diagonal shortcuts don't exist in a 4-directional grid.</p>
+                <div class="edu-facts">
+                    <div class="edu-fact"><span class="fact-label">Grid size</span><span class="fact-value">40 × 40</span></div>
+                    <div class="edu-fact"><span class="fact-label">Click</span><span class="fact-value">Toggle wall</span></div>
+                    <div class="edu-fact"><span class="fact-label">Shift+click</span><span class="fact-value">Set start (green)</span></div>
+                    <div class="edu-fact"><span class="fact-label">Ctrl+click</span><span class="fact-value">Set goal (red)</span></div>
+                </div>
+            </div>
         </div>
-        <div class="grid-wrapper">
-            <canvas id="pfCanvas" width="600" height="600"></canvas>
+
+        <!-- Interactive demo -->
+        <div class="edu-demo-panel">
+            <h3><i class="fas fa-play-circle"></i> Try It — Draw Walls and Find a Path</h3>
+            <div class="controls" style="display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem;">
+                <button id="solveBtn" class="btn btn-primary"><i class="fas fa-route"></i> Solve</button>
+                <button id="clearBtn" class="btn btn-secondary"><i class="fas fa-trash"></i> Clear</button>
+            </div>
+            <div style="display:flex;justify-content:center;">
+                <canvas id="pfCanvas" width="600" height="600" style="border:2px solid #e5e7eb;background:#ffffff;box-shadow:0 6px 20px rgba(0,0,0,.08);max-width:100%;height:auto;"></canvas>
+            </div>
+            <div style="text-align:center;margin-top:0.75rem;font-size:0.82rem;color:#6b7280;">
+                <span style="display:inline-block;width:12px;height:12px;background:#10b981;border-radius:2px;margin-right:4px;"></span>Start &nbsp;
+                <span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:2px;margin-right:4px;"></span>Goal &nbsp;
+                <span style="display:inline-block;width:12px;height:12px;background:#1f2937;border-radius:2px;margin-right:4px;"></span>Wall &nbsp;
+                <span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:2px;margin-right:4px;"></span>Path
+            </div>
+        </div>
+
+        <!-- Takeaways -->
+        <div class="edu-takeaways">
+            <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+            <div class="takeaway-grid">
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Heuristic quality matters</strong> — A better heuristic means fewer nodes are expanded, making the search faster. A perfect heuristic would go directly to the goal.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Admissibility guarantees optimality</strong> — If the heuristic never overestimates, A* is guaranteed to find the shortest possible path.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>BFS is a special case</strong> — When h(n) = 0, A* becomes identical to Dijkstra's algorithm; when g(n) = 0, it becomes a greedy best-first search.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Real-world use</strong> — A* powers GPS navigation, game AI movement, and robot motion planning where finding the shortest path is critical.</span></div>
+            </div>
         </div>
     </div>
 </section>
-
-<style>
-.controls{display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem;}
-.grid-wrapper{display:flex;justify-content:center}
-#pfCanvas{border:2px solid #e5e7eb;background:#ffffff;box-shadow:0 6px 20px rgba(0,0,0,.08)}
-.legend{font-size:.9rem;text-align:center;margin-top:.75rem;color:#6b7280}
-</style>
 
 <script>
 // Minimal A* pathfinding client.

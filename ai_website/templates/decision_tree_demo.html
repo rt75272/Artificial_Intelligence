@@ -6,7 +6,64 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Decision Tree Classifier</h1>
-        <p class="page-subtitle">Interactive binary classification demo</p>
+        <p class="page-subtitle">Draw two classes of points and watch a decision tree carve up the space with straight-line splits</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Decision Trees</span>
+            <span class="obj-tag">Decision Boundaries</span>
+            <span class="obj-tag">Gini Impurity</span>
+            <span class="obj-tag">Overfitting</span>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 0 0 0.5rem;">
+    <div class="container">
+        <!-- Educational cards row -->
+        <div class="edu-cards-row">
+            <div class="edu-card">
+                <h3><i class="fas fa-sitemap"></i> How Decision Trees Work</h3>
+                <p>A decision tree makes predictions by asking a sequence of yes/no questions about the input features. Each question (a "split") divides the data into two groups, recursively, until each leaf is mostly one class.</p>
+                <p>The tree learns which feature and threshold to split on by choosing the split that most reduces <em>impurity</em> — how mixed the classes are in each resulting group.</p>
+                <div class="edu-tags">
+                    <span class="edu-tag">Supervised Learning</span>
+                    <span class="edu-tag">Axis-Aligned Splits</span>
+                    <span class="edu-tag">White-Box Model</span>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-calculator"></i> Gini Impurity</h3>
+                <p>The most common split criterion is the Gini impurity, which measures how often a randomly chosen element would be incorrectly labeled:</p>
+                <div class="edu-formula">Gini = 1 − Σ pᵢ²</div>
+                <p style="margin-top:0.65rem;">A pure node (all one class) has Gini = 0. A maximally mixed node (50/50) has Gini = 0.5. The tree picks the split that minimizes the weighted average Gini of the two children.</p>
+                <div class="edu-facts">
+                    <div class="edu-fact"><span class="fact-label">Pure node</span><span class="fact-value">Gini = 0</span></div>
+                    <div class="edu-fact"><span class="fact-label">50/50 split</span><span class="fact-value">Gini = 0.5</span></div>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-list-ol"></i> How to Use This Demo</h3>
+                <div class="edu-steps">
+                    <div class="edu-step">
+                        <span class="step-num">1</span>
+                        <span class="step-text">Click the canvas to add points in the current class (blue).</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">2</span>
+                        <span class="step-text">Toggle <strong>Class</strong> to switch to the red class, then add more points.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">3</span>
+                        <span class="step-text">Click <strong>Train Model</strong> to fit the decision tree and see the colored decision boundary.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">4</span>
+                        <span class="step-text">Add more points and retrain to watch the boundary adapt.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -242,5 +299,16 @@ function showStatus(message, type) {
 // Initial draw.
 draw();
 </script>
+
+<!-- Takeaways -->
+<div class="edu-takeaways" style="margin: 2rem auto; max-width: 1200px; padding: 0 1.5rem 3rem;">
+    <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+    <div class="takeaway-grid">
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Splits are axis-aligned</strong> — Standard decision trees only split along one feature at a time, creating rectangular decision regions. This means they can struggle with diagonal boundaries.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Depth controls overfitting</strong> — A very deep tree will perfectly memorize training data (overfitting). Limiting <code>max_depth</code> forces the tree to generalize rather than memorize.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Decision trees are interpretable</strong> — Unlike neural networks, you can trace exactly why a prediction was made by following the yes/no path from root to leaf.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Random Forests extend this</strong> — By averaging many randomized decision trees, Random Forests dramatically reduce variance while preserving the decision tree's ability to capture nonlinear patterns.</span></div>
+    </div>
+</div>
 
 {% endblock %}

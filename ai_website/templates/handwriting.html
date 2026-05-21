@@ -5,112 +5,113 @@
 {% block content %}
 <section class="page-header">
     <div class="container">
-        <h1 class="page-title">Handwriting Recognition Demo</h1>
-        <p class="page-subtitle">Draw a digit (0-9) and watch AI predict what you wrote</p>
+        <h1 class="page-title">Handwriting Recognition</h1>
+        <p class="page-subtitle">Draw a digit (0–9) and watch a neural network classify it in real time</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Neural Networks</span>
+            <span class="obj-tag">MNIST Dataset</span>
+            <span class="obj-tag">Image Classification</span>
+            <span class="obj-tag">Softmax Probabilities</span>
+        </div>
     </div>
 </section>
 
-<section class="handwriting-demo">
+<section style="padding: 0 0 3rem;">
     <div class="container">
-        <div class="demo-intro">
-            <div class="demo-description">
-                <h2>How It Works</h2>
-                <p>
-                    This interactive demo uses a machine learning model trained on the MNIST dataset to recognize handwritten digits. 
-                    Simply draw a digit (0-9) in the canvas below and click "Predict" to see the AI's prediction with confidence scores.
-                </p>
-                <div class="demo-features">
-                    <div class="feature-item">
-                        <i class="fas fa-brain"></i>
-                        <span>Enhanced Neural Network with 97.9% accuracy</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Real-time predictions with confidence scores</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-mobile-alt"></i>
-                        <span>Works on desktop and mobile devices</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="edu-demo-layout">
 
-        <div class="demo-container">
-            <div class="demo-card">
-                <div class="demo-header">
-                    <h3>Draw a Digit</h3>
-                    <p>Use your mouse or finger to draw a digit in the box below</p>
+            <!-- Educational sidebar -->
+            <aside class="edu-sidebar">
+                <div class="edu-card">
+                    <h3><i class="fas fa-brain"></i> What is MNIST?</h3>
+                    <p>MNIST is a benchmark dataset of 70,000 handwritten digits (0–9), each stored as a 28×28 grayscale image. It has been used to train and test machine learning models since 1998 and remains one of the most studied datasets in AI.</p>
+                    <p>The model here achieved <strong>97.9% accuracy</strong> by learning patterns across 120,000 augmented training samples.</p>
+                    <div class="edu-tags">
+                        <span class="edu-tag">Supervised Learning</span>
+                        <span class="edu-tag">Classification</span>
+                        <span class="edu-tag">Image Processing</span>
+                    </div>
                 </div>
-                
+
+                <div class="edu-card">
+                    <h3><i class="fas fa-list-ol"></i> How It Works</h3>
+                    <div class="edu-steps">
+                        <div class="edu-step">
+                            <span class="step-num">1</span>
+                            <span class="step-text"><strong>Draw:</strong> Your sketch is captured on a 280×280 canvas and scaled to 28×28 pixels.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">2</span>
+                            <span class="step-text"><strong>Flatten:</strong> The 28×28 image becomes a vector of 784 pixel brightness values (0–255).</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">3</span>
+                            <span class="step-text"><strong>Forward pass:</strong> Values travel through two hidden layers of 256 neurons each, with ReLU activations.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">4</span>
+                            <span class="step-text"><strong>Softmax:</strong> The output layer produces 10 probabilities — one per digit — that sum to 100%.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">5</span>
+                            <span class="step-text"><strong>Predict:</strong> The digit with the highest probability is returned as the prediction.</span>
+                        </div>
+                    </div>
+                    <div class="edu-formula">Input (784) → Hidden (256) → Hidden (256) → Output (10)</div>
+                </div>
+
+                <div class="edu-card">
+                    <h3><i class="fas fa-table"></i> Model Facts</h3>
+                    <div class="edu-facts">
+                        <div class="edu-fact"><span class="fact-label">Architecture</span><span class="fact-value">MLPClassifier</span></div>
+                        <div class="edu-fact"><span class="fact-label">Training samples</span><span class="fact-value">120,000</span></div>
+                        <div class="edu-fact"><span class="fact-label">Test accuracy</span><span class="fact-value">97.9%</span></div>
+                        <div class="edu-fact"><span class="fact-label">Input features</span><span class="fact-value">784 pixels</span></div>
+                        <div class="edu-fact"><span class="fact-label">Output classes</span><span class="fact-value">10 digits</span></div>
+                        <div class="edu-fact"><span class="fact-label">Backend</span><span class="fact-value">scikit-learn</span></div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Interactive demo -->
+            <div class="edu-demo-panel">
+                <h3><i class="fas fa-play-circle"></i> Try It — Draw a Digit</h3>
+
                 <div class="canvas-section">
                     <div class="canvas-container">
                         <canvas id="canvas" width="280" height="280"></canvas>
                     </div>
-                    
                     <div class="canvas-instructions">
                         <p><i class="fas fa-info-circle"></i> Draw clearly and fill most of the canvas for best results</p>
                     </div>
                 </div>
-                
+
                 <div class="demo-controls">
                     <button id="predictBtn" class="btn btn-primary" onclick="predictDigit()">
-                        <i class="fas fa-brain"></i>
-                        Predict Digit
+                        <i class="fas fa-brain"></i> Predict Digit
                     </button>
                     <button id="clearBtn" class="btn btn-secondary" onclick="clearCanvas()">
-                        <i class="fas fa-eraser"></i>
-                        Clear Canvas
+                        <i class="fas fa-eraser"></i> Clear Canvas
                     </button>
                 </div>
-                
+
                 <div id="result" class="demo-result"></div>
                 <div id="topPredictions" class="top-predictions"></div>
-            </div>
-        </div>
 
-        <div class="demo-info">
-            <div class="info-grid">
-                <div class="info-card">
-                    <h3><i class="fas fa-cogs"></i> Model Details</h3>
-                    <ul>
-                        <li><strong>Architecture:</strong> Enhanced Neural Network (MLPClassifier)</li>
-                        <li><strong>Training Data:</strong> MNIST + Data Augmentation (120K samples)</li>
-                        <li><strong>Accuracy:</strong> 97.9% on test set</li>
-                        <li><strong>Model Size:</strong> Ultra-lightweight at 5.7MB</li>
-                    </ul>
-                </div>
-                <div class="info-card">
-                    <h3><i class="fas fa-tools"></i> Technology Stack</h3>
-                    <ul>
-                        <li><strong>Backend:</strong> Python Flask with scikit-learn</li>
-                        <li><strong>Frontend:</strong> HTML5 Canvas with JavaScript</li>
-                        <li><strong>Preprocessing:</strong> Multi-stage image processing pipeline</li>
-                        <li><strong>Deployment:</strong> Cloud-optimized for fast startup</li>
-                    </ul>
+                <div style="margin-top:1.5rem; padding: 1rem; background:#f8fafc; border-radius:8px; border:1px solid #e5e7eb;">
+                    <p style="font-size:0.82rem; color:#6b7280; margin:0;"><strong>Tips:</strong> Draw thick, connected strokes and center your digit. If the prediction seems off, clear and try again with a bigger, bolder stroke.</p>
                 </div>
             </div>
         </div>
 
-        <div class="demo-tips">
-            <h3>Tips for Best Results</h3>
-            <div class="tips-grid">
-                <div class="tip-item">
-                    <i class="fas fa-pencil-alt"></i>
-                    <span>Draw digits clearly with thick, connected strokes</span>
-                </div>
-                <div class="tip-item">
-                    <i class="fas fa-expand-arrows-alt"></i>
-                    <span>Use most of the canvas area for your digit</span>
-                </div>
-                <div class="tip-item">
-                    <i class="fas fa-align-center"></i>
-                    <span>Center your digit in the drawing area</span>
-                </div>
-                <div class="tip-item">
-                    <i class="fas fa-redo"></i>
-                    <span>Clear and redraw if the prediction seems off</span>
-                </div>
+        <!-- Takeaways -->
+        <div class="edu-takeaways">
+            <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+            <div class="takeaway-grid">
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Training vs. inference</strong> — The model was trained once on 120K images; now it just runs a fast forward pass on your drawing.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Confidence matters</strong> — A 99% confident prediction is very different from a 55% one. Always look at the top-3 scores.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Data augmentation</strong> — The training set was expanded with small rotations and shifts so the model handles messy handwriting better.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Softmax outputs</strong> — The 10 output probabilities always sum to 1, making them directly interpretable as confidence percentages.</span></div>
             </div>
         </div>
     </div>

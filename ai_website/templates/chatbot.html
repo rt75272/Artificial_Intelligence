@@ -4,57 +4,109 @@
 
 {% block content %}
 <section class="page-header">
-  <div class="container">
-    <h1 class="page-title">AI Chatbot</h1>
-    <p class="page-subtitle">Chat with a rule-based conversational AI.</p>
-  </div>
-</section>
-
-<section class="info-section">
-  <div class="container">
-    <h2>How it works</h2>
-    <p>
-      This chatbot uses rule-based natural language processing with pattern matching and regular expressions.
-      It recognizes common patterns in your messages and responds with predefined answers.
-    </p>
-    <h3>Try asking about:</h3>
-    <ul>
-      <li>Greetings: "Hello", "Hi", "Hey"</li>
-      <li>AI topics: "What is machine learning?", "Tell me about neural networks"</li>
-      <li>Python programming</li>
-      <li>Or just have a casual conversation!</li>
-    </ul>
-  </div>
-  <style>
-  .info-section{padding:1rem 0 .5rem}
-  .info-section h2{margin-bottom:.5rem}
-  .info-section h3{margin-top:.75rem}
-  .info-section ul{margin-left:1.25rem}
-  </style>
-</section>
-
-<section class="demo-section">
-  <div class="container">
-    <div class="chat-container">
-      <div id="chatMessages" class="chat-messages"></div>
-      <div class="chat-input-container">
-        <input id="userInput" type="text" placeholder="Type your message..." class="chat-input">
-        <button id="sendBtn" class="btn btn-primary">Send</button>
-      </div>
+    <div class="container">
+        <h1 class="page-title">Rule-Based AI Chatbot</h1>
+        <p class="page-subtitle">Chat with an NLP bot and learn how pattern matching drives conversational AI</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Rule-Based NLP</span>
+            <span class="obj-tag">Pattern Matching</span>
+            <span class="obj-tag">Tokenization</span>
+            <span class="obj-tag">Intent Recognition</span>
+        </div>
     </div>
-  </div>
+</section>
+
+<section style="padding: 0 0 3rem;">
+    <div class="container">
+        <div class="edu-demo-layout">
+
+            <!-- Educational sidebar -->
+            <aside class="edu-sidebar">
+                <div class="edu-card">
+                    <h3><i class="fas fa-comment-dots"></i> Rule-Based vs ML NLP</h3>
+                    <p>This chatbot uses <em>handcrafted rules</em> — not learned weights. When you send a message, the bot matches your text against a library of regular expressions to find the closest intent, then returns a pre-written response.</p>
+                    <p>This is 100% deterministic: the same input always gives the same output. Modern LLMs (like ChatGPT) use neural networks instead, enabling generalization.</p>
+                    <div class="edu-tags">
+                        <span class="edu-tag">Deterministic</span>
+                        <span class="edu-tag">No Training</span>
+                        <span class="edu-tag">Regex Patterns</span>
+                    </div>
+                </div>
+
+                <div class="edu-card">
+                    <h3><i class="fas fa-list-ol"></i> How a Message is Processed</h3>
+                    <div class="edu-steps">
+                        <div class="edu-step">
+                            <span class="step-num">1</span>
+                            <span class="step-text"><strong>Normalize:</strong> Input is lowercased and stripped of punctuation.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">2</span>
+                            <span class="step-text"><strong>Tokenize:</strong> The sentence is split into individual word tokens.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">3</span>
+                            <span class="step-text"><strong>Match:</strong> Each pattern (regex) in the rule set is tested against the input.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">4</span>
+                            <span class="step-text"><strong>Respond:</strong> The best matching rule's response is returned.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">5</span>
+                            <span class="step-text"><strong>Fallback:</strong> If no rule matches, a default "I don't understand" reply is sent.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edu-card">
+                    <h3><i class="fas fa-lightbulb"></i> Try These Topics</h3>
+                    <div class="edu-facts">
+                        <div class="edu-fact"><span class="fact-label">Greetings</span><span class="fact-value">"Hello", "Hi"</span></div>
+                        <div class="edu-fact"><span class="fact-label">ML topics</span><span class="fact-value">"neural networks"</span></div>
+                        <div class="edu-fact"><span class="fact-label">Programming</span><span class="fact-value">"Python"</span></div>
+                        <div class="edu-fact"><span class="fact-label">General</span><span class="fact-value">"What can you do?"</span></div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Interactive demo -->
+            <div class="edu-demo-panel">
+                <h3><i class="fas fa-play-circle"></i> Try It — Chat with the Bot</h3>
+
+                <div class="chat-container">
+                    <div id="chatMessages" class="chat-messages"></div>
+                    <div class="chat-input-container">
+                        <input id="userInput" type="text" placeholder="Type your message…" class="chat-input">
+                        <button id="sendBtn" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Takeaways -->
+        <div class="edu-takeaways">
+            <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+            <div class="takeaway-grid">
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Rules are brittle</strong> — A small typo or unusual phrasing can break pattern matching, while ML models can handle variation gracefully.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Determinism is a feature</strong> — In safety-critical applications (banking, medical), predictable, auditable responses are preferred over probabilistic ones.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Tokenization first</strong> — Breaking text into tokens is the foundation of virtually all NLP pipelines, whether rule-based or neural.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Intent ≠ semantics</strong> — Matching "hi" to a greeting intent is intent recognition. Understanding the full meaning of a sentence requires much deeper models.</span></div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <style>
-.chat-container{max-width:700px;margin:0 auto;border:2px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.1)}
-.chat-messages{height:400px;overflow-y:auto;padding:1rem;background:#f9fafb;display:flex;flex-direction:column;gap:.75rem}
-.chat-input-container{display:flex;gap:.5rem;padding:1rem;background:#fff;border-top:1px solid #e5e7eb}
-.chat-input{flex:1;padding:0.75rem;font-size:1rem;border:1px solid #d1d5db;border-radius:6px}
+.chat-container{border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.chat-messages{height:380px;overflow-y:auto;padding:1rem;background:#f9fafb;display:flex;flex-direction:column;gap:.75rem}
+.chat-input-container{display:flex;gap:.5rem;padding:0.75rem 1rem;background:#fff;border-top:1px solid #e5e7eb}
+.chat-input{flex:1;padding:0.65rem 0.9rem;font-size:0.95rem;border:1px solid #d1d5db;border-radius:6px}
 .chat-input:focus{outline:none;border-color:#3b82f6}
-.message{padding:0.75rem 1rem;border-radius:12px;max-width:75%;word-wrap:break-word;animation:fadeIn .3s ease-in}
+.message{padding:0.65rem 0.9rem;border-radius:12px;max-width:75%;word-wrap:break-word;font-size:0.9rem;animation:fadeIn .3s ease-in}
 .user-message{background:#3b82f6;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
 .bot-message{background:#fff;color:#1f2937;align-self:flex-start;border:1px solid #e5e7eb;border-bottom-left-radius:4px}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 
 <script>

@@ -3,10 +3,52 @@
 {% block title %}Linear Regression Demo - Ryan Thompson{% endblock %}
 
 {% block content %}
-<section class="demo-header">
+<section class="page-header">
     <div class="container">
-        <h1>Interactive Linear Regression Demo</h1>
-        <p class="demo-description">Click on the graph to add data points and watch the line of best fit update in real-time. This demo shows how linear regression finds the optimal line through your data using least squares optimization.</p>
+        <h1 class="page-title">Linear Regression</h1>
+        <p class="page-subtitle">Click the graph to add points and watch the least-squares line of best fit update in real time</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Least Squares</span>
+            <span class="obj-tag">R² Score</span>
+            <span class="obj-tag">Slope & Intercept</span>
+            <span class="obj-tag">Continuous Prediction</span>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 0 0 0.5rem;">
+    <div class="container">
+        <div class="edu-cards-row">
+            <div class="edu-card">
+                <h3><i class="fas fa-chart-line"></i> What is Linear Regression?</h3>
+                <p>Linear regression models the relationship between a dependent variable (y) and one or more independent variables (x) by fitting a straight line through the data.</p>
+                <p>It belongs to the class of <em>supervised learning</em> algorithms that predict a continuous numeric output — as opposed to classification, which predicts a category.</p>
+                <div class="edu-tags">
+                    <span class="edu-tag">Supervised Learning</span>
+                    <span class="edu-tag">Regression</span>
+                    <span class="edu-tag">Continuous Output</span>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-calculator"></i> Least Squares Method</h3>
+                <p>The algorithm finds the line that minimizes the sum of <em>squared</em> vertical distances between each point and the line. Squaring means large errors are penalized much more than small ones.</p>
+                <div class="edu-formula">m = Σ[(xᵢ − x̄)(yᵢ − ȳ)] / Σ[(xᵢ − x̄)²]</div>
+                <div class="edu-formula" style="margin-top:0.5rem;">b = ȳ − m · x̄</div>
+                <p style="font-size:0.82rem;margin-top:0.65rem;color:#6b7280;">These closed-form formulas mean linear regression has no iterative training loop — the optimal parameters can be computed directly.</p>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-percentage"></i> R² — Goodness of Fit</h3>
+                <p>R² (coefficient of determination) measures the proportion of variance in y that is explained by x. It ranges from 0 (no fit) to 1 (perfect fit).</p>
+                <div class="edu-formula">R² = 1 − SS_res / SS_tot</div>
+                <div class="edu-facts" style="margin-top:0.75rem;">
+                    <div class="edu-fact"><span class="fact-label">R² = 1.0</span><span class="fact-value">Perfect fit</span></div>
+                    <div class="edu-fact"><span class="fact-label">R² = 0.7</span><span class="fact-value">Good fit</span></div>
+                    <div class="edu-fact"><span class="fact-label">R² = 0.0</span><span class="fact-value">No linear relationship</span></div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -131,4 +173,16 @@ class LinearRegressionDemo {
 }
 document.addEventListener('DOMContentLoaded', () => { new LinearRegressionDemo(); });
 </script>
+
+<!-- Takeaways -->
+<div class="edu-takeaways" style="margin: 2rem auto; max-width: 1200px; padding: 0 1.5rem 3rem;">
+    <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+    <div class="takeaway-grid">
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Least squares minimizes squared error</strong> — Squaring the residuals means outliers have a disproportionately large effect on the regression line. Try adding a single extreme point and watch the line shift dramatically.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>R² measures explanatory power</strong> — An R² of 0.85 means 85% of the variation in y is explained by x. The remaining 15% is due to other factors not captured in the model.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Correlation ≠ causation</strong> — A high R² tells you the variables are strongly correlated, but it says nothing about which causes which, or whether a third variable is driving both.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Assumptions matter</strong> — Linear regression assumes a linear relationship, normally distributed residuals, and constant variance (homoscedasticity). Violations can invalidate predictions and confidence intervals.</span></div>
+    </div>
+</div>
+
 {% endblock %}

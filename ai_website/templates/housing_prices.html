@@ -1,100 +1,146 @@
 {% extends "base.html" %}
 
-{% block title %}Housing Price Prediction - Ryan Thompson{% endblock %}
+{% block title %}Housing Price Predictor - Ryan Thompson{% endblock %}
 
 {% block content %}
 <section class="page-header">
     <div class="container">
-        <h1 class="page-title">Housing Price Prediction</h1>
-        <p class="page-subtitle">Use a simple machine learning model to estimate home prices from key features.</p>
+        <h1 class="page-title">Housing Price Predictor</h1>
+        <p class="page-subtitle">Enter home details and see how a linear regression model estimates market value</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Linear Regression</span>
+            <span class="obj-tag">Feature Engineering</span>
+            <span class="obj-tag">Feature Scaling</span>
+            <span class="obj-tag">Regression vs Classification</span>
+        </div>
     </div>
 </section>
 
-<section class="handwriting-demo">
+<section style="padding: 0 0 3rem;">
     <div class="container">
-        <div class="demo-container">
-            <div class="demo-card">
-                <div class="demo-header">
-                    <h3>Enter Home Details</h3>
-                    <p>Fill in the fields and click Predict to estimate the price.</p>
-                </div>
+        <div class="edu-demo-layout">
 
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h3><i class="fas fa-home"></i> Property</h3>
-                        <ul>
-                            <li>Square footage includes finished living space.</li>
-                            <li>Bathrooms accept half baths (e.g., 1.5).</li>
-                            <li>Year built should be a four-digit year.</li>
-                        </ul>
-                    </div>
-                    <div class="info-card">
-                        <h3><i class="fas fa-lightbulb"></i> Tip</h3>
-                        <ul>
-                            <li>Numbers are normalized internally for the model.</li>
-                            <li>Prediction is illustrative and not market advice.</li>
-                        </ul>
+            <!-- Educational sidebar -->
+            <aside class="edu-sidebar">
+                <div class="edu-card">
+                    <h3><i class="fas fa-home"></i> What is Regression?</h3>
+                    <p>Unlike <em>classification</em> (predicting a category), <em>regression</em> predicts a continuous number — like a price. Linear regression fits a weighted equation to historical data so that predictions minimize overall error.</p>
+                    <div class="edu-formula">price = w₁·sqft + w₂·beds + w₃·baths + w₄·year + b</div>
+                    <div class="edu-tags">
+                        <span class="edu-tag">Supervised Learning</span>
+                        <span class="edu-tag">Continuous Output</span>
                     </div>
                 </div>
 
-                <div class="interactive-demo" style="margin-top:1rem;">
-                    <div class="parameter-controls">
-                        <label>Square Feet:<input type="number" id="sqftInput" min="200" max="10000" value="1800" step="10"></label>
-                        <label>Bedrooms:<input type="number" id="bedroomsInput" min="0" max="10" value="3" step="1"></label>
-                        <label>Bathrooms:<input type="number" id="bathroomsInput" min="0" max="10" value="2" step="0.5"></label>
-                        <label>Year Built:<input type="number" id="yearBuiltInput" min="1900" max="2025" value="2005" step="1"></label>
-                    </div>
-                    <div class="demo-controls">
-                        <button class="btn btn-primary" id="predictBtn"><i class="fas fa-calculator"></i> Predict Price</button>
-                        <button class="btn btn-secondary" id="resetBtn"><i class="fas fa-undo"></i> Reset</button>
+                <div class="edu-card">
+                    <h3><i class="fas fa-list-ol"></i> How the Model Works</h3>
+                    <div class="edu-steps">
+                        <div class="edu-step">
+                            <span class="step-num">1</span>
+                            <span class="step-text"><strong>Features:</strong> Four input variables (sqft, bedrooms, bathrooms, year built) are collected.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">2</span>
+                            <span class="step-text"><strong>Scaling:</strong> Features are standardized (mean=0, std=1) so no single variable dominates due to scale differences.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">3</span>
+                            <span class="step-text"><strong>Weights:</strong> The model multiplies each scaled feature by a learned coefficient.</span>
+                        </div>
+                        <div class="edu-step">
+                            <span class="step-num">4</span>
+                            <span class="step-text"><strong>Sum:</strong> Weighted features are added with a bias term to produce the price estimate.</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="demo-result" id="priceResult">
-                    <div class="prediction-main">
-                        <h4>Predicted Price</h4>
-                        <div class="predicted-digit" id="predictedPrice">—</div>
-                        <div class="confidence-score" id="echoInputs"></div>
+                <div class="edu-card">
+                    <h3><i class="fas fa-sliders-h"></i> Feature Influence</h3>
+                    <p style="font-size:0.82rem;margin-bottom:0.65rem;">Roughly how each feature shifts the price:</p>
+                    <div class="edu-facts">
+                        <div class="edu-fact"><span class="fact-label">+100 sq ft</span><span class="fact-value">+~$15,000</span></div>
+                        <div class="edu-fact"><span class="fact-label">+1 bedroom</span><span class="fact-value">+~$12,000</span></div>
+                        <div class="edu-fact"><span class="fact-label">+1 bathroom</span><span class="fact-value">+~$18,000</span></div>
+                        <div class="edu-fact"><span class="fact-label">+10 newer years</span><span class="fact-value">+~$8,000</span></div>
                     </div>
+                </div>
+            </aside>
+
+            <!-- Interactive demo -->
+            <div class="edu-demo-panel">
+                <h3><i class="fas fa-play-circle"></i> Try It — Estimate a Price</h3>
+
+                <div style="display:flex; flex-direction:column; gap:0.85rem; margin-bottom:1.25rem;">
+                    <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;">
+                        <span><strong>Square Footage</strong></span>
+                        <input type="number" id="sqft" value="1500" min="200" max="10000" step="100"
+                               style="width:120px; padding:0.45rem; border:1px solid #d1d5db; border-radius:6px;">
+                    </label>
+                    <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;">
+                        <span><strong>Bedrooms</strong></span>
+                        <input type="number" id="bedrooms" value="3" min="1" max="10"
+                               style="width:120px; padding:0.45rem; border:1px solid #d1d5db; border-radius:6px;">
+                    </label>
+                    <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;">
+                        <span><strong>Bathrooms</strong></span>
+                        <input type="number" id="bathrooms" value="2" min="1" max="8" step="0.5"
+                               style="width:120px; padding:0.45rem; border:1px solid #d1d5db; border-radius:6px;">
+                    </label>
+                    <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;">
+                        <span><strong>Year Built</strong></span>
+                        <input type="number" id="year_built" value="2000" min="1900" max="2024"
+                               style="width:120px; padding:0.45rem; border:1px solid #d1d5db; border-radius:6px;">
+                    </label>
+                    <button id="predictBtn" class="btn btn-primary" style="margin-top:0.5rem;">
+                        <i class="fas fa-calculator"></i> Estimate Price
+                    </button>
                 </div>
 
-                <div class="demo-info">
-                    <div class="tips-grid">
-                        <div class="tip-item"><i class="fas fa-chart-line"></i><span>Model retrains on synthetic data at startup for demonstration purposes.</span></div>
-                        <div class="tip-item"><i class="fas fa-balance-scale"></i><span>Standardization helps linear models handle different feature scales.</span></div>
-                        <div class="tip-item"><i class="fas fa-exclamation-circle"></i><span>Estimates are educational and may not reflect real market conditions.</span></div>
-                    </div>
+                <div id="result" style="text-align:center; font-size:1.5rem; font-weight:700; color:#1f2937; min-height:2rem;"></div>
+
+                <div style="margin-top:1.5rem; padding:0.85rem; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0; font-size:0.82rem; color:#065f46;">
+                    <i class="fas fa-info-circle"></i> This model uses <strong>synthetic data</strong> for educational purposes. Real estate prices also depend on location, condition, and market trends.
                 </div>
+            </div>
+        </div>
+
+        <!-- Takeaways -->
+        <div class="edu-takeaways">
+            <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+            <div class="takeaway-grid">
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Feature scaling is essential</strong> — Without standardization, a large-valued feature like sqft would overshadow year_built in weight optimization.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Weights encode importance</strong> — The model learns which features matter most. Inspecting coefficients makes the model explainable.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Linear models are interpretable</strong> — Unlike neural networks, every prediction can be fully explained by the weighted sum formula.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>More features ≠ better model</strong> — Adding irrelevant or correlated features can hurt accuracy through multicollinearity.</span></div>
             </div>
         </div>
     </div>
 </section>
 
 <script>
-// Utility to format currency.
-function formatUSD(value) { try { return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0}).format(value); } catch (e) { return `$${Math.round(value).toLocaleString()}`; } }
-
-// Read inputs safely.
-function readInputs() { const sqft = parseFloat(document.getElementById('sqftInput').value); const bedrooms = parseFloat(document.getElementById('bedroomsInput').value); const bathrooms = parseFloat(document.getElementById('bathroomsInput').value); const year_built = parseFloat(document.getElementById('yearBuiltInput').value); return {sqft, bedrooms, bathrooms, year_built}; }
-
-// Basic validation to avoid NaNs.
-function validateInputs(data) { return Number.isFinite(data.sqft) && Number.isFinite(data.bedrooms) && Number.isFinite(data.bathrooms) && Number.isFinite(data.year_built); }
-
-// Set loading state.
-function setLoading(isLoading) { const res = document.getElementById('priceResult'); const price = document.getElementById('predictedPrice'); const echo = document.getElementById('echoInputs'); if (isLoading) { res.classList.add('loading'); price.textContent = 'Estimating…'; echo.textContent = ''; } else { res.classList.remove('loading'); } }
-
-// Show result or error.
-function showResult(prediction, inputs) { const res = document.getElementById('priceResult'); const price = document.getElementById('predictedPrice'); const echo = document.getElementById('echoInputs'); res.classList.remove('error'); res.classList.add('success'); price.textContent = formatUSD(prediction); echo.textContent = `${inputs.bedrooms} bd · ${inputs.bathrooms} ba · ${Math.round(inputs.sqft)} sqft · built ${Math.round(inputs.year_built)}`; }
-
-function showError(message) { const res = document.getElementById('priceResult'); const price = document.getElementById('predictedPrice'); const echo = document.getElementById('echoInputs'); res.classList.remove('success'); res.classList.add('error'); price.textContent = 'Error'; echo.textContent = message; }
-
-// Predict handler.
-async function onPredict() { const data = readInputs(); if (!validateInputs(data)) { showError('Please provide valid numeric inputs.'); return; } setLoading(true); try { const response = await fetch('/api/house-price', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)}); const json = await response.json(); if (!response.ok || json.error) { throw new Error(json.error || `Request failed (${response.status}).`); } showResult(json.prediction, json.inputs); } catch (e) { showError(e.message || 'Prediction failed.'); } finally { setLoading(false); } }
-
-// Reset handler.
-function onReset() { document.getElementById('sqftInput').value = 1800; document.getElementById('bedroomsInput').value = 3; document.getElementById('bathroomsInput').value = 2; document.getElementById('yearBuiltInput').value = 2005; document.getElementById('predictedPrice').textContent = '—'; document.getElementById('echoInputs').textContent = ''; const res = document.getElementById('priceResult'); res.classList.remove('success'); res.classList.remove('error'); }
-
-// Wire up events.
-document.addEventListener('DOMContentLoaded', function() { document.getElementById('predictBtn').addEventListener('click', onPredict); document.getElementById('resetBtn').addEventListener('click', onReset); });
+document.getElementById('predictBtn').addEventListener('click', async () => {
+    const sqft = parseFloat(document.getElementById('sqft').value);
+    const bedrooms = parseInt(document.getElementById('bedrooms').value);
+    const bathrooms = parseFloat(document.getElementById('bathrooms').value);
+    const year_built = parseInt(document.getElementById('year_built').value);
+    const resultDiv = document.getElementById('result');
+    resultDiv.textContent = 'Estimating…';
+    try {
+        const res = await fetch('/api/house-price', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sqft, bedrooms, bathrooms, year_built })
+        });
+        const data = await res.json();
+        if (data.price) {
+            resultDiv.textContent = `Estimated Price: ${data.price}`;
+        } else {
+            resultDiv.textContent = 'Error: ' + (data.error || 'Unknown');
+        }
+    } catch (e) {
+        resultDiv.textContent = 'Request failed.';
+    }
+});
 </script>
+
 {% endblock %}

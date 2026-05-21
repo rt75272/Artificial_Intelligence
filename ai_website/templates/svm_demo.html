@@ -6,7 +6,65 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Support Vector Machine</h1>
-        <p class="page-subtitle">Visualize support vectors and decision margins</p>
+        <p class="page-subtitle">See how SVMs find the widest possible margin between classes using only the most critical points</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Support Vectors</span>
+            <span class="obj-tag">Margin Maximization</span>
+            <span class="obj-tag">Hyperplane</span>
+            <span class="obj-tag">Kernel Trick</span>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 0 0 0.5rem;">
+    <div class="container">
+        <!-- Educational cards row -->
+        <div class="edu-cards-row">
+            <div class="edu-card">
+                <h3><i class="fas fa-ruler-combined"></i> The Big Idea: Maximum Margin</h3>
+                <p>An SVM finds the <em>hyperplane</em> that separates two classes with the <strong>largest possible margin</strong> — the distance between the two closest points from each class to the boundary.</p>
+                <p>Maximizing the margin is not just aesthetic. Larger margins generalize better to unseen data, providing a natural form of regularization against overfitting.</p>
+                <div class="edu-formula">margin = 2 / ‖w‖</div>
+                <div class="edu-tags">
+                    <span class="edu-tag">Max-Margin Classifier</span>
+                    <span class="edu-tag">Convex Optimization</span>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-star"></i> Support Vectors</h3>
+                <p>The boundary is defined entirely by the <em>support vectors</em> — the training points that lie exactly on the margin edges. All other points can be removed without changing the model.</p>
+                <div class="edu-steps">
+                    <div class="edu-step">
+                        <span class="step-num">1</span>
+                        <span class="step-text">Add points from both classes to the canvas.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">2</span>
+                        <span class="step-text">Click <strong>Train SVM</strong> to find the optimal hyperplane.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">3</span>
+                        <span class="step-text">Watch the pulsing circles — those are the support vectors that define the margin.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">4</span>
+                        <span class="step-text">Add a new outlier point and retrain to see how the boundary shifts.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-cube"></i> The Kernel Trick</h3>
+                <p>When data is not linearly separable, SVMs use a <em>kernel function</em> to implicitly map data into a higher-dimensional space where a linear separator exists. This is done without ever explicitly computing the high-dimensional coordinates.</p>
+                <div class="edu-facts">
+                    <div class="edu-fact"><span class="fact-label">Linear kernel</span><span class="fact-value">Standard hyperplane</span></div>
+                    <div class="edu-fact"><span class="fact-label">RBF kernel</span><span class="fact-value">Infinite dimensions</span></div>
+                    <div class="edu-fact"><span class="fact-label">Poly kernel</span><span class="fact-value">Polynomial boundary</span></div>
+                    <div class="edu-fact"><span class="fact-label">C parameter</span><span class="fact-value">Soft-margin tradeoff</span></div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -465,5 +523,16 @@ function showStatus(message, type) {
 // Initial draw.
 draw();
 </script>
+
+<!-- Takeaways -->
+<div class="edu-takeaways" style="margin: 2rem auto; max-width: 1200px; padding: 0 1.5rem 3rem;">
+    <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+    <div class="takeaway-grid">
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Support vectors define everything</strong> — The entire SVM decision boundary is determined by a small subset of training points (the support vectors). Interior points are irrelevant once trained.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Margin = generalization</strong> — Maximizing the margin is equivalent to minimizing the norm of the weight vector, which provides a form of L2 regularization and reduces overfitting.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Soft margin (C parameter)</strong> — Real data is rarely perfectly separable. The C parameter controls the tradeoff between maximizing margin and allowing some misclassifications — small C = wider margin, more errors allowed.</span></div>
+        <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Kernel trick</strong> — Using kernels like RBF, SVMs can learn highly nonlinear boundaries efficiently in the original space by working in a high-dimensional feature space implicitly.</span></div>
+    </div>
+</div>
 
 {% endblock %}

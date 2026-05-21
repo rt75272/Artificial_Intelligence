@@ -4,64 +4,90 @@
 
 {% block content %}
 <section class="page-header">
-  <div class="container">
-    <h1 class="page-title">Monte Carlo π Estimation</h1>
-    <p class="page-subtitle">Estimate π by sampling random points in a square.</p>
-  </div>
+    <div class="container">
+        <h1 class="page-title">Monte Carlo π Estimation</h1>
+        <p class="page-subtitle">Use random sampling to approximate π and see the law of large numbers in action</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Monte Carlo Methods</span>
+            <span class="obj-tag">Probability</span>
+            <span class="obj-tag">Law of Large Numbers</span>
+            <span class="obj-tag">Numerical Approximation</span>
+        </div>
+    </div>
 </section>
 
-<section class="info-section">
-  <div class="container">
-    <h2>What is Monte Carlo?</h2>
-    <p>
-      Monte Carlo methods use randomness to approximate answers to numerical problems. For π, we sample
-      random points in a square that encloses a quarter (or full) circle and estimate π from the fraction
-      of points that land inside the circle.
-    </p>
-    <h3>How this demo estimates π</h3>
-    <ol>
-      <li>Generate N random points uniformly in the square [−1, 1] × [−1, 1].</li>
-      <li>Count how many fall inside the unit circle x² + y² ≤ 1.</li>
-      <li>π is approximated by 4 × (inside / N).</li>
-    </ol>
-    <p>
-      Larger sample sizes reduce variance (by the law of large numbers), so the estimate tends to get closer
-      to the true π as N increases.
-    </p>
-  </div>
-  <style>
-  .info-section{padding:1rem 0 .5rem}
-  .info-section h2{margin-bottom:.5rem}
-  .info-section h3{margin-top:.75rem}
-  .info-section ol{margin-left:1.25rem}
-  </style>
-</section>
+<section style="padding: 0 0 3rem;">
+    <div class="container">
 
-<section class="demo-section">
-  <div class="container">
-    <div class="controls">
-      <label>Samples: <input id="samples" type="number" min="100" max="5000000" step="1000" value="10000"></label>
-      <button id="runBtn" class="btn btn-primary">Estimate</button>
-    </div>
-    <div class="result">
-      <div>π ≈ <span id="pi">—</span></div>
-      <div><small><span id="inside">0</span> inside of <span id="total">0</span> points.</small></div>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="piChart" width="600" height="220"></canvas>
-    </div>
-    <div class="scatter-wrap">
-      <canvas id="scatterCanvas" width="400" height="400"></canvas>
-    </div>
-  </div>
-</section>
+        <!-- Educational cards row -->
+        <div class="edu-cards-row">
+            <div class="edu-card">
+                <h3><i class="fas fa-random"></i> What are Monte Carlo Methods?</h3>
+                <p>Monte Carlo methods use random sampling to approximate solutions to problems that are too complex to solve analytically. Named after the famous casino, they were popularized in the 1940s during the Manhattan Project to simulate neutron diffusion.</p>
+                <p>The key insight: if you can describe a problem geometrically, you can estimate the answer by throwing random "darts" at it.</p>
+                <div class="edu-tags">
+                    <span class="edu-tag">Randomized Algorithm</span>
+                    <span class="edu-tag">Statistical Method</span>
+                </div>
+            </div>
 
-<style>
-.controls{display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem}
-.result{text-align:center;font-size:1.25rem}
-.chart-wrap{display:flex;justify-content:center;margin-top:1rem}
-.scatter-wrap{display:flex;justify-content:center;margin-top:1rem}
-</style>
+            <div class="edu-card">
+                <h3><i class="fas fa-circle"></i> The Geometry Behind π</h3>
+                <p>A unit circle (radius = 1) has area π. A square from −1 to 1 on each axis has area 4. So a random point in the square falls inside the circle with probability π/4.</p>
+                <div class="edu-formula">π ≈ 4 × (points inside circle) / (total points)</div>
+                <div class="edu-steps" style="margin-top:0.75rem;">
+                    <div class="edu-step"><span class="step-num">1</span><span class="step-text">Sample a random point (x, y) in [−1,1]×[−1,1].</span></div>
+                    <div class="edu-step"><span class="step-num">2</span><span class="step-text">Check if x² + y² ≤ 1 (inside the circle).</span></div>
+                    <div class="edu-step"><span class="step-num">3</span><span class="step-text">Count the ratio and multiply by 4.</span></div>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-chart-line"></i> Convergence Rate</h3>
+                <p>The estimate error decreases as the <strong>square root of N</strong>, meaning you need 100× more samples to gain 10× more accuracy. This is the fundamental limitation of Monte Carlo methods.</p>
+                <div class="edu-formula">error ∝ 1 / √N</div>
+                <div class="edu-facts" style="margin-top:0.75rem;">
+                    <div class="edu-fact"><span class="fact-label">100 samples</span><span class="fact-value">±0.3 typical error</span></div>
+                    <div class="edu-fact"><span class="fact-label">10,000 samples</span><span class="fact-value">±0.03 typical</span></div>
+                    <div class="edu-fact"><span class="fact-label">1,000,000 samples</span><span class="fact-value">±0.003 typical</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive demo -->
+        <div class="edu-demo-panel">
+            <h3><i class="fas fa-play-circle"></i> Try It — Estimate π with Random Points</h3>
+            <div style="display:flex;gap:.5rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+                <label style="font-size:0.9rem;">Samples: <input id="samples" type="number" min="100" max="5000000" step="1000" value="10000" style="padding:0.4rem;border:1px solid #d1d5db;border-radius:6px;width:110px;"></label>
+                <button id="runBtn" class="btn btn-primary"><i class="fas fa-play"></i> Estimate</button>
+            </div>
+            <div style="text-align:center;font-size:1.25rem;margin-bottom:0.5rem;">
+                π ≈ <span id="pi" style="font-weight:700;color:#3b82f6;">—</span>
+                &nbsp;&nbsp;<small style="color:#6b7280;font-size:0.9rem;"><span id="inside">0</span> inside / <span id="total">0</span> total</small>
+            </div>
+            <div style="display:flex;justify-content:center;margin-top:0.75rem;">
+                <canvas id="piChart" width="600" height="220" style="max-width:100%;border:1px solid #e5e7eb;border-radius:8px;"></canvas>
+            </div>
+            <div style="display:flex;justify-content:center;margin-top:0.75rem;">
+                <canvas id="scatterCanvas" width="400" height="400" style="max-width:100%;border:1px solid #e5e7eb;border-radius:8px;"></canvas>
+            </div>
+            <div style="text-align:center;margin-top:0.65rem;font-size:0.82rem;color:#6b7280;">
+                <span style="color:#10b981;">●</span> Inside circle &nbsp; <span style="color:#ef4444;">●</span> Outside circle &nbsp; <span style="color:#f59e0b;">- -</span> True π value
+            </div>
+        </div>
+
+        <!-- Takeaways -->
+        <div class="edu-takeaways">
+            <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+            <div class="takeaway-grid">
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Randomness solves hard problems</strong> — Monte Carlo methods work wherever you can express a problem as a probability or area ratio, even in hundreds of dimensions.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Law of large numbers</strong> — As N → ∞, the sample mean converges to the true expected value. This is why more samples always helps (just slowly).</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Slow convergence</strong> — The O(1/√N) convergence rate is why Monte Carlo is used for high-dimensional problems where other methods fail entirely, not for simple 2D integrals.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Real-world uses</strong> — Monte Carlo drives risk modeling in finance, radiation transport in physics, option pricing, and drug discovery simulations.</span></div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script>
 // Minimal Monte Carlo client.

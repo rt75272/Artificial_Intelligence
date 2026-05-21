@@ -6,71 +6,99 @@
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Conway's Game of Life</h1>
-        <p class="page-subtitle">Interactive cellular automaton sandbox.</p>
-    </div>
-</section>
-
-<section class="info-section">
-    <div class="container">
-        <h2>What is the Game of Life?</h2>
-        <p>
-            Conway's Game of Life is a classic cellular automaton—a grid of cells that evolve over time
-            based on simple rules. Each cell is either alive or dead. Once you set an initial pattern,
-            the system progresses automatically: no further input is required.
-        </p>
-        <h3>Rules</h3>
-        <ul>
-            <li><strong>Birth:</strong> A dead cell with exactly 3 live neighbors becomes alive.</li>
-            <li><strong>Survival:</strong> A live cell with exactly 2 live neighbors stays alive.</li>
-            <li><strong>Death:</strong> Otherwise, a live cell dies (from isolation or overcrowding).</li>
-            <li><strong>Edges wrap:</strong> In this demo the grid wraps around, so neighbors across an edge count.</li>
-        </ul>
-        <p>
-            Try drawing classic patterns like a <em>glider</em> (moves diagonally), a <em>blinker</em> (oscillates),
-            or a <em>block</em> (stable). Use Randomize to explore emergent behavior.
-        </p>
-    </div>
-    <style>
-    .info-section { padding: 1rem 0 0.5rem; }
-    .info-section h2 { margin-bottom: 0.5rem; }
-    .info-section h3 { margin-top: 0.75rem; }
-    .info-section ul { margin-left: 1.25rem; }
-    </style>
-</section>
-
-<section class="demo-section">
-    <div class="container">
-        <div class="game-controls">
-            <button id="stepBtn" class="btn btn-primary">Step</button>
-            <button id="runBtn" class="btn btn-success">Run</button>
-            <button id="stopBtn" class="btn btn-secondary">Stop</button>
-            <button id="clearBtn" class="btn btn-secondary">Clear</button>
-            <button id="randBtn" class="btn btn-primary">Randomize</button>
-            <label>Speed: <input id="speed" type="range" min="50" max="1000" value="300"></label>
-        </div>
-        <div class="grid-wrapper">
-            <canvas id="lifeCanvas" width="600" height="600"></canvas>
+        <p class="page-subtitle">Explore emergence: complex behavior arising from just four simple rules</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Cellular Automata</span>
+            <span class="obj-tag">Emergence</span>
+            <span class="obj-tag">Turing Completeness</span>
+            <span class="obj-tag">Self-Organization</span>
         </div>
     </div>
 </section>
 
-<style>
-.game-controls {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-bottom: 1rem;
-}
-.grid-wrapper {
-    display: flex;
-    justify-content: center;
-}
-#lifeCanvas {
-    border: 2px solid #e5e7eb;
-    background: #ffffff;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-}
-</style>
+<section style="padding: 0 0 3rem;">
+    <div class="container">
+
+        <!-- Educational cards row -->
+        <div class="edu-cards-row">
+            <div class="edu-card">
+                <h3><i class="fas fa-th"></i> What are Cellular Automata?</h3>
+                <p>A cellular automaton is a grid of cells, each in one of a finite set of states, that evolves over discrete time steps according to local rules. The Game of Life, invented by mathematician John Conway in 1970, uses a 2D grid of <em>alive</em> (1) or <em>dead</em> (0) cells.</p>
+                <p>The remarkable thing is that its four rules are so simple a child can learn them — yet the patterns they generate can be infinitely complex.</p>
+                <div class="edu-tags">
+                    <span class="edu-tag">Zero-Player Game</span>
+                    <span class="edu-tag">Discrete Time</span>
+                    <span class="edu-tag">Local Rules</span>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-list-ol"></i> The Four Rules</h3>
+                <div class="edu-steps">
+                    <div class="edu-step">
+                        <span class="step-num">1</span>
+                        <span class="step-text"><strong>Underpopulation:</strong> A live cell with fewer than 2 live neighbors dies.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">2</span>
+                        <span class="step-text"><strong>Survival:</strong> A live cell with 2 or 3 live neighbors survives to the next generation.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">3</span>
+                        <span class="step-text"><strong>Overpopulation:</strong> A live cell with more than 3 live neighbors dies.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">4</span>
+                        <span class="step-text"><strong>Birth:</strong> A dead cell with exactly 3 live neighbors becomes alive.</span>
+                    </div>
+                </div>
+                <p style="font-size:0.82rem;color:#6b7280;margin-top:0.65rem;">Grid edges wrap around, so neighbors across an edge count.</p>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-star"></i> Classic Patterns to Try</h3>
+                <div class="edu-facts">
+                    <div class="edu-fact"><span class="fact-label">Glider</span><span class="fact-value">Moves diagonally</span></div>
+                    <div class="edu-fact"><span class="fact-label">Blinker</span><span class="fact-value">Period-2 oscillator</span></div>
+                    <div class="edu-fact"><span class="fact-label">Block</span><span class="fact-value">Still life (stable)</span></div>
+                    <div class="edu-fact"><span class="fact-label">Glider gun</span><span class="fact-value">Spawns gliders</span></div>
+                    <div class="edu-fact"><span class="fact-label">R-pentomino</span><span class="fact-value">Chaotic methuselah</span></div>
+                </div>
+                <p style="font-size:0.82rem;color:#6b7280;margin-top:0.65rem;">The Game of Life is <em>Turing complete</em> — meaning any computation that a computer can perform can in principle be carried out inside it.</p>
+            </div>
+        </div>
+
+        <!-- Interactive demo -->
+        <div class="edu-demo-panel">
+            <h3><i class="fas fa-play-circle"></i> Try It — Draw Cells and Watch Life Evolve</h3>
+            <div class="game-controls" style="display:flex;gap:0.5rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;">
+                <button id="stepBtn" class="btn btn-primary">Step</button>
+                <button id="runBtn" class="btn btn-success">Run</button>
+                <button id="stopBtn" class="btn btn-secondary">Stop</button>
+                <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                <button id="randBtn" class="btn btn-primary">Randomize</button>
+                <label style="font-size:0.88rem;display:flex;align-items:center;gap:0.35rem;">Speed: <input id="speed" type="range" min="50" max="1000" value="300" style="width:80px;"></label>
+            </div>
+            <div style="display:flex;justify-content:center;">
+                <canvas id="lifeCanvas" width="600" height="600" style="border:2px solid #e5e7eb;background:#ffffff;box-shadow:0 6px 20px rgba(0,0,0,.08);max-width:100%;height:auto;"></canvas>
+            </div>
+            <div style="text-align:center;margin-top:0.65rem;font-size:0.82rem;color:#6b7280;">
+                Click cells to toggle alive/dead &bull; Randomize to see emergent behavior &bull; Step through generations one at a time
+            </div>
+        </div>
+
+        <!-- Takeaways -->
+        <div class="edu-takeaways">
+            <h3><i class="fas fa-lightbulb"></i> Key Takeaways</h3>
+            <div class="takeaway-grid">
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Emergence</strong> — Complex, ordered behavior (gliders, oscillators, guns) arises from four local rules with no global coordination. This mirrors phenomena in physics, biology, and economics.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Sensitivity to initial conditions</strong> — A single changed cell can lead to a completely different eventual state, echoing chaotic systems in nature.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Turing completeness</strong> — The Game of Life can simulate any computation, including simulating itself. This is proven using glider-gun based logic gates.</span></div>
+                <div class="takeaway-item"><i class="fas fa-check-circle"></i><span><strong>Parallel computation</strong> — All cells update simultaneously each generation. This "massively parallel" structure is why cellular automata are studied in parallel computing research.</span></div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script>
 // Minimal Game of Life client with server-step support.
