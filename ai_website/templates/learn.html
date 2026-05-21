@@ -1,0 +1,1406 @@
+{% extends "base.html" %}
+
+{% block title %}Learn CS - Ryan Thompson{% endblock %}
+
+{% block content %}
+
+<!-- Highlight.js CDN must load before the inline script below. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-graduation-cap"></i> Learn Computer Science</h1>
+        <p class="page-subtitle">Interactive lessons covering the fundamentals of programming</p>
+    </div>
+</section>
+
+<div class="learn-layout">
+
+    <!-- ── Sidebar ────────────────────────────────────────── -->
+    <aside class="lesson-sidebar">
+        <div class="sidebar-header">
+            <h3>Curriculum</h3>
+            <div class="progress-tracker">
+                <span id="progressText">0 / 6 complete</span>
+                <div class="progress-bar-outer">
+                    <div class="progress-bar-inner" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+        <ul class="lesson-nav-list" id="lessonNavList"></ul>
+    </aside>
+
+    <!-- ── Main content ───────────────────────────────────── -->
+    <main class="lesson-main">
+        <div class="lesson-content">
+            <div class="lesson-breadcrumb" id="lessonBreadcrumb"></div>
+            <h2 class="lesson-title"   id="lessonTitle"></h2>
+
+            <div class="lesson-explanation" id="lessonExplanation"></div>
+
+            <!-- IDE window -->
+            <div class="ide-window">
+                <div class="ide-titlebar">
+                    <div class="ide-dots">
+                        <span class="ide-dot dot-red"></span>
+                        <span class="ide-dot dot-yellow"></span>
+                        <span class="ide-dot dot-green"></span>
+                    </div>
+                    <span class="ide-tab" id="ideTab">example.py</span>
+                    <span class="ide-spacer"></span>
+                </div>
+                <div class="ide-code-area">
+                    <pre><code id="ideCode" class="language-python"></code></pre>
+                </div>
+                <div class="ide-footer">
+                    <button class="btn-run" id="runBtn"><i class="fas fa-play"></i> Run</button>
+                    <span class="ide-lang-badge">Python 3</span>
+                </div>
+                <div class="ide-output-area" id="outputArea" style="display:none;">
+                    <div class="output-title"><i class="fas fa-terminal"></i> Output</div>
+                    <pre class="output-text" id="outputText"></pre>
+                </div>
+            </div>
+
+            <!-- Interactive zone -->
+            <div class="interactive-zone">
+                <h3 class="zone-title"><i class="fas fa-hand-pointer"></i> Try It</h3>
+                <div id="interactiveContent"></div>
+            </div>
+
+            <!-- Knowledge check -->
+            <div class="quiz-zone">
+                <h3 class="zone-title"><i class="fas fa-question-circle"></i> Knowledge Check</h3>
+                <div id="quizContent"></div>
+            </div>
+
+            <!-- Lesson navigation buttons -->
+            <div class="lesson-nav-buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="changeLesson(-1)">
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn btn-primary" id="nextBtn" onclick="changeLesson(1)">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Completion banner (hidden until all lessons done) -->
+<div class="completion-banner" id="completionBanner" style="display:none;">
+    <i class="fas fa-trophy"></i>
+    <strong>Congratulations!</strong> You've completed all 6 lessons. Keep building and stay curious!
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     Styles
+     ════════════════════════════════════════════════════════ -->
+<style>
+/* ---------- Layout ---------- */
+.learn-layout {
+    display: grid;
+    grid-template-columns: 270px 1fr;
+    min-height: calc(100vh - 200px);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ---------- Sidebar ---------- */
+.lesson-sidebar {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 96px;
+    height: calc(100vh - 96px);
+    overflow-y: auto;
+    border-right: 1px solid #334155;
+    scrollbar-width: thin;
+    scrollbar-color: #334155 #1e293b;
+}
+.sidebar-header {
+    padding: 0 1.25rem 1.25rem;
+    border-bottom: 1px solid #334155;
+}
+.sidebar-header h3 {
+    color: #f1f5f9;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.85rem;
+}
+.progress-tracker { display: flex; flex-direction: column; gap: 0.45rem; }
+.progress-tracker span { font-size: 0.75rem; color: #94a3b8; }
+.progress-bar-outer {
+    width: 100%; height: 4px;
+    background: #334155; border-radius: 2px; overflow: hidden;
+}
+.progress-bar-inner {
+    height: 100%; background: var(--gradient);
+    border-radius: 2px; transition: width 0.4s ease; width: 0%;
+}
+.lesson-nav-list { list-style: none; padding: 0.6rem 0; margin: 0; }
+.lesson-nav-item {
+    display: flex; align-items: center; gap: 0.65rem;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    color: #94a3b8; font-size: 0.88rem;
+}
+.lesson-nav-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+.lesson-nav-item.active {
+    background: rgba(59,130,246,0.15);
+    border-left-color: var(--primary-color);
+    color: #60a5fa;
+}
+.lesson-nav-item.completed { color: #4ade80; }
+.lesson-nav-item .nav-icon { width: 18px; text-align: center; flex-shrink: 0; }
+.lesson-nav-item .nav-num  { margin-left: auto; font-size: 0.7rem; color: #475569; }
+.lesson-nav-item .nav-check { margin-left: auto; color: #4ade80; font-size: 0.75rem; }
+
+/* ---------- Main content ---------- */
+.lesson-main { background: #f8fafc; padding: 2.5rem; overflow-y: auto; }
+.lesson-content { max-width: 860px; }
+.lesson-breadcrumb {
+    font-size: 0.75rem; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;
+}
+.lesson-title {
+    font-size: 1.9rem; font-weight: 700;
+    color: var(--text-primary); margin-bottom: 1.5rem;
+}
+
+/* ---------- Explanation card ---------- */
+.lesson-explanation {
+    background: white; border-radius: 12px;
+    padding: 1.75rem; margin-bottom: 1.75rem;
+    border: 1px solid var(--border-color);
+    line-height: 1.75; color: var(--text-primary);
+}
+.lesson-explanation p { margin-bottom: 0.8rem; }
+.lesson-explanation p:last-child { margin-bottom: 0; }
+.lesson-explanation ul { margin: 0.4rem 0 0.8rem 1.4rem; }
+.lesson-explanation li { margin-bottom: 0.3rem; }
+.lesson-explanation code {
+    background: #f1f5f9; color: #3b82f6;
+    padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em;
+}
+.concept-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+.concept-tag {
+    background: rgba(59,130,246,0.1); color: var(--primary-color);
+    font-size: 0.75rem; font-weight: 600;
+    padding: 0.15rem 0.6rem; border-radius: 20px;
+    border: 1px solid rgba(59,130,246,0.25);
+}
+
+/* ---------- IDE window ---------- */
+.ide-window {
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    margin-bottom: 1.75rem; border: 1px solid #111827;
+}
+.ide-titlebar {
+    background: #21252b;
+    display: flex; align-items: center;
+    padding: 0.55rem 1rem; gap: 0.75rem;
+}
+.ide-dots { display: flex; gap: 6px; }
+.ide-dot  { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.dot-red    { background: #ff5f57; }
+.dot-yellow { background: #febc2e; }
+.dot-green  { background: #28c840; }
+.ide-tab {
+    background: #282c34; color: #abb2bf;
+    font-size: 0.8rem; padding: 0.2rem 1rem;
+    border-radius: 4px 4px 0 0;
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+}
+.ide-spacer { flex: 1; }
+.ide-code-area { background: #282c34; }
+.ide-code-area pre { margin: 0; padding: 1.5rem; overflow-x: auto; }
+.ide-code-area code {
+    font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+    font-size: 0.88rem; line-height: 1.65;
+}
+.ide-footer {
+    background: #21252b;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.45rem 1rem; border-top: 1px solid #181a1f;
+}
+.btn-run {
+    display: flex; align-items: center; gap: 0.4rem;
+    background: #4ade80; color: #14532d;
+    border: none; border-radius: 6px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.82rem; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+}
+.btn-run:hover { background: #22c55e; }
+.ide-lang-badge { color: #64748b; font-size: 0.75rem; }
+.ide-output-area {
+    background: #1a1a1a; border-top: 1px solid #333;
+    padding: 0.85rem 1.5rem;
+}
+.output-title {
+    color: #64748b; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+    display: flex; align-items: center; gap: 0.35rem;
+}
+.output-text {
+    color: #4ade80; font-family: 'Fira Code', monospace;
+    font-size: 0.83rem; margin: 0; white-space: pre-wrap;
+}
+
+/* ---------- Interactive & quiz zones ---------- */
+.interactive-zone, .quiz-zone {
+    background: white; border-radius: 12px;
+    padding: 1.75rem; margin-bottom: 1.75rem;
+    border: 1px solid var(--border-color);
+}
+.zone-title {
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--text-primary); margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* ---------- Type Inspector ---------- */
+.type-inspector { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.type-var-list  { display: flex; flex-direction: column; gap: 0.45rem; }
+.type-var-btn {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--border-color); border-radius: 8px;
+    background: white; cursor: pointer; text-align: left;
+    font-family: 'Fira Code', monospace; font-size: 0.85rem;
+    transition: all 0.2s; color: var(--text-primary);
+}
+.type-var-btn:hover { border-color: var(--primary-color); background: rgba(59,130,246,0.04); }
+.type-var-btn.active { border-color: var(--primary-color); background: rgba(59,130,246,0.08); }
+.tvar-name { color: #61afef; font-weight: 700; }
+.tvar-eq   { color: #abb2bf; }
+.tvar-val  { color: #98c379; }
+.type-info-panel {
+    background: #1e293b; border-radius: 10px;
+    padding: 1.25rem; color: #e2e8f0;
+}
+.type-info-panel h4 {
+    color: #94a3b8; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem;
+}
+.type-info-row {
+    display: flex; justify-content: space-between;
+    padding: 0.35rem 0; border-bottom: 1px solid #334155; font-size: 0.84rem;
+}
+.type-info-row:last-child { border-bottom: none; }
+.info-label { color: #94a3b8; }
+.info-type  { font-family: monospace; font-weight: 700; color: #c678dd; }
+.info-val   { font-family: monospace; font-weight: 700; color: #98c379; }
+.info-plain { font-family: monospace; font-weight: 700; }
+.type-placeholder {
+    color: #475569; font-style: italic; font-size: 0.85rem;
+    text-align: center; padding: 2rem 0;
+}
+
+/* ---------- Slider (Conditionals) ---------- */
+.slider-demo { display: flex; flex-direction: column; gap: 1rem; }
+.slider-row  { display: flex; align-items: center; gap: 0.85rem; }
+.slider-row label { font-weight: 600; min-width: 130px; color: var(--text-primary); }
+input[type="range"] { flex: 1; accent-color: var(--primary-color); cursor: pointer; }
+.slider-val {
+    font-family: monospace; font-weight: 700; font-size: 1.05rem;
+    min-width: 48px; color: var(--primary-color);
+}
+.branch-display { display: flex; flex-direction: column; gap: 0.4rem; }
+.branch-item {
+    padding: 0.5rem 1rem; border-radius: 6px;
+    background: #f1f5f9; border-left: 3px solid transparent;
+    font-family: 'Fira Code', monospace; font-size: 0.85rem;
+    transition: all 0.25s; color: #94a3b8;
+}
+.branch-item.active-branch {
+    background: rgba(59,130,246,0.1);
+    border-left-color: var(--primary-color);
+    color: var(--text-primary); font-weight: 700;
+}
+.branch-output-box {
+    margin-top: 0.5rem; background: #1e293b; border-radius: 8px;
+    padding: 0.65rem 1rem;
+}
+.branch-output-box .out-label {
+    color: #64748b; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.branch-output-val {
+    font-family: 'Fira Code', monospace; color: #4ade80;
+    font-size: 0.9rem; min-height: 1.2em;
+}
+
+/* ---------- Step-through (Loops) ---------- */
+.step-controls {
+    display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1rem;
+}
+.step-btn {
+    padding: 0.4rem 1rem; border: 2px solid var(--border-color);
+    border-radius: 6px; background: white; cursor: pointer;
+    font-size: 0.84rem; font-weight: 600; transition: all 0.2s; color: var(--text-primary);
+}
+.step-btn:hover:not(:disabled) { border-color: var(--primary-color); color: var(--primary-color); }
+.step-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.step-info { color: var(--text-secondary); font-size: 0.84rem; }
+.step-display { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.var-state { background: #1e293b; border-radius: 8px; padding: 1rem; font-family: monospace; }
+.var-state h4 {
+    color: #94a3b8; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.75rem;
+}
+.var-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.3rem 0; border-bottom: 1px solid #334155; font-size: 0.85rem;
+}
+.var-row:last-child { border-bottom: none; }
+.var-name-span  { color: #61afef; }
+.var-value-span { color: #98c379; }
+.loop-trace { background: #f8fafc; border-radius: 8px; padding: 1rem; border: 1px solid var(--border-color); }
+.loop-trace h4 { font-size: 0.84rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-secondary); }
+.trace-item {
+    font-family: monospace; font-size: 0.83rem;
+    padding: 0.2rem 0.5rem; color: #94a3b8; border-radius: 4px;
+}
+.trace-item.current { background: rgba(59,130,246,0.1); color: var(--primary-color); font-weight: 700; }
+
+/* ---------- Function demo ---------- */
+.fn-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+.fn-inputs { display: flex; flex-direction: column; gap: 0.85rem; }
+.fn-input-group label {
+    display: block; font-size: 0.82rem; font-weight: 600;
+    color: var(--text-secondary); margin-bottom: 0.25rem;
+}
+.fn-input-group input {
+    width: 100%; padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-color); border-radius: 6px;
+    font-size: 0.9rem; transition: border-color 0.2s; outline: none;
+    font-family: 'Fira Code', monospace;
+}
+.fn-input-group input:focus { border-color: var(--primary-color); }
+.call-sig {
+    font-family: 'Fira Code', monospace; font-size: 0.8rem;
+    color: #94a3b8; margin-top: 0.25rem; line-height: 1.5;
+}
+.call-sig .sig-fn   { color: #61afef; }
+.call-sig .sig-args { color: #c678dd; }
+.fn-output { background: #282c34; border-radius: 8px; padding: 1.25rem; }
+.fn-output label {
+    display: block; color: #64748b; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;
+}
+.fn-result { font-family: 'Fira Code', monospace; font-size: 1.05rem; color: #4ade80; min-height: 1.5em; }
+
+/* ---------- Data structure visualizer ---------- */
+.ds-vis { display: flex; flex-direction: column; gap: 1.5rem; }
+.ds-section h4 {
+    font-size: 0.82rem; font-weight: 700; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem;
+}
+.list-boxes { display: flex; overflow-x: auto; }
+.list-box { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.15s; }
+.list-box:hover { transform: translateY(-3px); }
+.list-cell {
+    min-width: 80px; padding: 0.55rem 0.5rem; text-align: center;
+    border: 2px solid #cbd5e1; font-family: monospace; font-size: 0.85rem;
+    background: white; transition: all 0.2s; color: var(--text-primary);
+}
+.list-box:not(:first-child) .list-cell { border-left: none; }
+.list-box.active .list-cell {
+    background: rgba(59,130,246,0.12);
+    border-color: var(--primary-color); color: var(--primary-color); font-weight: 700;
+}
+.list-index { font-size: 0.68rem; color: #94a3b8; padding-top: 0.25rem; font-family: monospace; }
+.dict-pairs { display: flex; flex-direction: column; gap: 0.35rem; }
+.dict-pair {
+    display: flex; align-items: center; gap: 0.5rem;
+    cursor: pointer; border-radius: 6px; padding: 0.3rem;
+    transition: background 0.15s;
+}
+.dict-pair:hover  { background: #f1f5f9; }
+.dict-pair.active { background: rgba(59,130,246,0.08); }
+.dict-key {
+    background: #3b82f6; color: white;
+    padding: 0.3rem 0.75rem; border-radius: 4px;
+    font-family: monospace; font-size: 0.83rem; min-width: 80px;
+    text-align: center; font-weight: 600;
+}
+.dict-arrow { color: #94a3b8; font-size: 1rem; }
+.dict-val {
+    background: #e0f2fe; color: #0369a1;
+    padding: 0.3rem 0.75rem; border-radius: 4px;
+    font-family: monospace; font-size: 0.83rem; font-weight: 600;
+}
+.ds-tooltip {
+    margin-top: 0.5rem; font-size: 0.84rem; color: var(--primary-color);
+    font-weight: 500; min-height: 1.2em;
+}
+
+/* ---------- Sort visualizer ---------- */
+.sort-vis { display: flex; flex-direction: column; gap: 1rem; }
+.sort-bars {
+    display: flex; align-items: flex-end; gap: 5px;
+    height: 160px; background: #1e293b; border-radius: 8px; padding: 0.85rem;
+}
+.sort-legend {
+    display: flex; gap: 1.25rem; font-size: 0.74rem; color: #94a3b8;
+}
+.sort-controls { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
+.sort-btn {
+    padding: 0.4rem 0.9rem; border: 2px solid var(--border-color);
+    border-radius: 6px; background: white; cursor: pointer;
+    font-size: 0.83rem; font-weight: 600; transition: all 0.2s; color: var(--text-primary);
+}
+.sort-btn:hover:not(:disabled) { border-color: var(--primary-color); color: var(--primary-color); }
+.sort-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.sort-step-info { color: var(--text-secondary); font-size: 0.83rem; }
+.sort-desc {
+    font-family: monospace; font-size: 0.84rem;
+    color: var(--text-secondary); min-height: 1.2em;
+}
+
+/* ---------- Quiz ---------- */
+.quiz-question { margin-bottom: 1.5rem; }
+.quiz-question p { font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary); }
+.quiz-question p code {
+    background: #f1f5f9; color: #3b82f6;
+    padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 0.45rem; }
+.quiz-option {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.65rem 1rem; border: 2px solid var(--border-color);
+    border-radius: 8px; cursor: pointer; transition: all 0.2s;
+    font-size: 0.88rem; background: #f8fafc; user-select: none;
+}
+.quiz-option:hover { border-color: var(--primary-color); background: rgba(59,130,246,0.04); }
+.quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.08); color: #166534; }
+.quiz-option.wrong   { border-color: #ef4444; background: rgba(239,68,68,0.08);  color: #991b1b; }
+.opt-letter {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: white; border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.73rem; font-weight: 700; flex-shrink: 0;
+}
+.quiz-feedback { margin-top: 0.45rem; font-size: 0.84rem; font-weight: 500; min-height: 1.2em; }
+.quiz-feedback.correct { color: #16a34a; }
+.quiz-feedback.wrong   { color: #dc2626; }
+
+/* ---------- Lesson navigation buttons ---------- */
+.lesson-nav-buttons {
+    display: flex; justify-content: space-between;
+    margin-top: 0.5rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ---------- Completion banner ---------- */
+.completion-banner {
+    max-width: 860px; margin: 0 auto 2rem;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white; border-radius: 12px; padding: 1.25rem 1.75rem;
+    display: flex; align-items: center; gap: 0.85rem;
+    font-size: 1rem; box-shadow: 0 4px 16px rgba(22,163,74,0.3);
+}
+.completion-banner i { font-size: 1.5rem; color: #fbbf24; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .learn-layout { grid-template-columns: 1fr; }
+    .lesson-sidebar { position: static; height: auto; }
+    .fn-demo, .type-inspector, .step-display { grid-template-columns: 1fr; }
+}
+</style>
+
+<!-- ════════════════════════════════════════════════════════
+     JavaScript
+     ════════════════════════════════════════════════════════ -->
+<script>
+/* ============================================================
+   Lesson data
+   ============================================================ */
+const LESSONS = [
+  /* ── 0: Variables & Data Types ─────────────────────────── */
+  {
+    title: "Variables & Data Types",
+    icon: "fas fa-box",
+    tag: "Lesson 1 of 6",
+    filename: "variables.py",
+    explanation: `
+      <p>A <strong>variable</strong> is a named location in memory that stores a value. Think of it as a labeled box — you give it a name, put something inside, and can read or update it later.</p>
+      <p>Python's four fundamental data types:</p>
+      <ul>
+        <li><strong>str</strong> — text, wrapped in quotes: <code>"hello"</code></li>
+        <li><strong>int</strong> — whole numbers: <code>42</code></li>
+        <li><strong>float</strong> — decimal numbers: <code>3.14</code></li>
+        <li><strong>bool</strong> — <code>True</code> or <code>False</code></li>
+      </ul>
+      <p>Python is <em>dynamically typed</em> — you never declare a type explicitly; Python infers it from the value you assign.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">Variables</span>
+        <span class="concept-tag">Data Types</span>
+        <span class="concept-tag">Assignment</span>
+        <span class="concept-tag">print()</span>
+        <span class="concept-tag">type()</span>
+      </div>`,
+    code: `# Variables store data for later use
+name       = "Alice"   # str   — text
+age        = 25        # int   — whole number
+height     = 5.7       # float — decimal number
+is_student = True      # bool  — True or False
+
+# Python infers the type automatically
+print(f"Name:       {name}       → {type(name).__name__}")
+print(f"Age:        {age}         → {type(age).__name__}")
+print(f"Height:     {height}     → {type(height).__name__}")
+print(f"Is student: {is_student} → {type(is_student).__name__}")`,
+    output: `Name:       Alice       → str
+Age:        25          → int
+Height:     5.7         → float
+Is student: True        → bool`,
+    interactive: {
+      type: "type-inspector",
+      vars: [
+        { name: "name",       value: '"Alice"', pytype: "str",   desc: "A sequence of characters (text). Always wrapped in single or double quotes.",           size: "50 bytes" },
+        { name: "age",        value: "25",      pytype: "int",   desc: "A whole number with no decimal. Can be positive, negative, or zero.",                  size: "28 bytes" },
+        { name: "height",     value: "5.7",     pytype: "float", desc: "A number with a decimal point, stored as IEEE 754 double precision.",                  size: "24 bytes" },
+        { name: "is_student", value: "True",    pytype: "bool",  desc: "Either True or False. Internally a subclass of int (True == 1, False == 0).",          size: "28 bytes" },
+      ]
+    },
+    quiz: [
+      {
+        q: "What data type would you use to store a person's name?",
+        opts: ["int", "str", "bool", "float"], answer: 1,
+        ok:  "✓ Correct! Names are text, so we use str (string).",
+        bad: "✗ Not quite. A name is text — use str (string)."
+      },
+      {
+        q: 'What is the Python type of the value <code>3.14</code>?',
+        opts: ["int", "str", "bool", "float"], answer: 3,
+        ok:  "✓ Correct! Any number with a decimal point is a float.",
+        bad: "✗ Not quite. 3.14 has a decimal point, making it a float."
+      }
+    ]
+  },
+
+  /* ── 1: Conditionals ────────────────────────────────────── */
+  {
+    title: "Conditional Logic",
+    icon: "fas fa-code-branch",
+    tag: "Lesson 2 of 6",
+    filename: "conditionals.py",
+    explanation: `
+      <p>Programs need to make decisions. <strong>Conditional statements</strong> let your code take different paths based on whether a condition evaluates to <code>True</code> or <code>False</code>.</p>
+      <ul>
+        <li><strong>if</strong> — executes its block when the condition is <code>True</code></li>
+        <li><strong>elif</strong> (else-if) — checked only when all earlier conditions were <code>False</code></li>
+        <li><strong>else</strong> — runs if no prior condition matched</li>
+      </ul>
+      <p>Python uses <strong>indentation</strong> (4 spaces or a tab) to delimit code blocks — there are no curly braces.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">if / elif / else</span>
+        <span class="concept-tag">Comparison Operators</span>
+        <span class="concept-tag">Boolean Logic</span>
+        <span class="concept-tag">Indentation</span>
+      </div>`,
+    code: `temperature = 72   # degrees Fahrenheit — try changing me!
+
+if temperature > 90:
+    print("Scorching hot! Stay hydrated.")
+elif temperature > 70:
+    print("Perfect weather — go for a walk!")
+elif temperature > 50:
+    print("A bit cool, bring a light jacket.")
+elif temperature > 32:
+    print("It's cold — bundle up!")
+else:
+    print("Freezing! Stay inside.")`,
+    output: `Perfect weather — go for a walk!`,
+    interactive: {
+      type: "slider",
+      label: "Temperature (°F)",
+      min: 0, max: 110, step: 1, value: 72,
+      branches: [
+        { range: [91, 110], cond: "if temperature > 90",   out: "Scorching hot! Stay hydrated." },
+        { range: [71,  90], cond: "elif temperature > 70", out: "Perfect weather — go for a walk!" },
+        { range: [51,  70], cond: "elif temperature > 50", out: "A bit cool, bring a light jacket." },
+        { range: [33,  50], cond: "elif temperature > 32", out: "It's cold — bundle up!" },
+        { range: [0,   32], cond: "else",                  out: "Freezing! Stay inside." },
+      ]
+    },
+    quiz: [
+      {
+        q: "What keyword checks an additional condition when the first <code>if</code> was False?",
+        opts: ["else", "elif", "then", "elseif"], answer: 1,
+        ok:  "✓ Correct! <code>elif</code> is Python's way of saying 'else if'.",
+        bad: "✗ Not quite. Python uses <code>elif</code> (not elseif or then)."
+      },
+      {
+        q: "Which comparison operator means 'greater than or equal to'?",
+        opts: [">=", ">", "=>", "=="], answer: 0,
+        ok:  "✓ Correct! >= checks if the left side is greater than or equal to the right.",
+        bad: "✗ Not quite. >= means 'greater than or equal to' (note: > comes before =)."
+      }
+    ]
+  },
+
+  /* ── 2: Loops ───────────────────────────────────────────── */
+  {
+    title: "Loops",
+    icon: "fas fa-repeat",
+    tag: "Lesson 3 of 6",
+    filename: "loops.py",
+    explanation: `
+      <p><strong>Loops</strong> let you repeat a block of code without copying and pasting it. Python has two loop types:</p>
+      <ul>
+        <li><strong>for loop</strong> — iterates over each item in a sequence (list, string, range, etc.)</li>
+        <li><strong>while loop</strong> — repeats as long as a condition remains <code>True</code></li>
+      </ul>
+      <p>Use <code>for</code> when you know how many times to repeat. Use <code>while</code> when the stopping condition depends on what happens at runtime.</p>
+      <p><code>range(n)</code> generates the integers 0, 1, 2 … n-1 — ideal for counting loops.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">for loop</span>
+        <span class="concept-tag">while loop</span>
+        <span class="concept-tag">range()</span>
+        <span class="concept-tag">Iteration</span>
+      </div>`,
+    code: `# For loop — iterate over a list
+fruits = ["apple", "banana", "cherry", "date"]
+
+for fruit in fruits:
+    print(f"  Fruit: {fruit}")
+
+print()
+
+# While loop — repeat until a condition is False
+count = 0
+while count < 4:
+    print(f"  count = {count}")
+    count += 1      # same as: count = count + 1
+
+print("Done!")`,
+    output: `  Fruit: apple
+  Fruit: banana
+  Fruit: cherry
+  Fruit: date
+
+  count = 0
+  count = 1
+  count = 2
+  count = 3
+Done!`,
+    interactive: {
+      type: "step-through",
+      steps: [
+        { iter: 1, fruit: '"apple"',  count: "—", out: 'print(f"  Fruit: apple")' },
+        { iter: 2, fruit: '"banana"', count: "—", out: 'print(f"  Fruit: banana")' },
+        { iter: 3, fruit: '"cherry"', count: "—", out: 'print(f"  Fruit: cherry")' },
+        { iter: 4, fruit: '"date"',   count: "—", out: 'print(f"  Fruit: date")' },
+      ]
+    },
+    quiz: [
+      {
+        q: "What does <code>range(5)</code> generate?",
+        opts: ["1, 2, 3, 4, 5", "0, 1, 2, 3, 4", "0, 1, 2, 3, 4, 5", "1, 2, 3, 4"],
+        answer: 1,
+        ok:  "✓ Correct! range(5) yields 0 through 4 — five values starting from 0.",
+        bad: "✗ Not quite. range(5) starts at 0 and goes up to (but not including) 5."
+      },
+      {
+        q: "Which loop type is best when you don't know in advance how many repetitions are needed?",
+        opts: ["for loop", "while loop", "do-while loop", "repeat loop"],
+        answer: 1,
+        ok:  "✓ Correct! A while loop runs based on a condition checked each iteration.",
+        bad: "✗ Not quite. A while loop is ideal when the stop condition depends on runtime state."
+      }
+    ]
+  },
+
+  /* ── 3: Functions ───────────────────────────────────────── */
+  {
+    title: "Functions",
+    icon: "fas fa-terminal",
+    tag: "Lesson 4 of 6",
+    filename: "functions.py",
+    explanation: `
+      <p>A <strong>function</strong> is a named, reusable block of code that performs one task. Functions are the fundamental unit of code organisation — they reduce repetition and make code easier to test and understand.</p>
+      <ul>
+        <li><strong>def</strong> — keyword that begins the function definition</li>
+        <li><strong>Parameters</strong> — variables listed inside the parentheses that receive the caller's values</li>
+        <li><strong>Default arguments</strong> — fallback values used when the caller omits that argument</li>
+        <li><strong>return</strong> — sends a value back to the caller and exits the function</li>
+        <li><strong>Docstring</strong> — the string on the first line of the body; documents what the function does</li>
+      </ul>
+      <div class="concept-tags">
+        <span class="concept-tag">def</span>
+        <span class="concept-tag">Parameters</span>
+        <span class="concept-tag">return</span>
+        <span class="concept-tag">Default Arguments</span>
+        <span class="concept-tag">Docstrings</span>
+        <span class="concept-tag">DRY Principle</span>
+      </div>`,
+    code: `def greet(name, greeting="Hello"):
+    """Return a personalised greeting message."""
+    message = f"{greeting}, {name}!"
+    return message
+
+
+# Call with default greeting
+result1 = greet("Alice")
+print(result1)             # Hello, Alice!
+
+# Override the default
+result2 = greet("Bob", "Hey there")
+print(result2)             # Hey there, Bob!
+
+# Functions are reusable
+for person in ["Carol", "Dave", "Eve"]:
+    print(greet(person, "Hi"))`,
+    output: `Hello, Alice!
+Hey there, Bob!
+Hi, Carol!
+Hi, Dave!
+Hi, Eve!`,
+    interactive: { type: "fn-demo" },
+    quiz: [
+      {
+        q: "What keyword sends a value back from a function to its caller?",
+        opts: ["send", "yield", "return", "output"], answer: 2,
+        ok:  "✓ Correct! return exits the function and passes the value back to the caller.",
+        bad: "✗ Not quite. Python uses the return keyword to send values back."
+      },
+      {
+        q: 'In <code>def add(a, b=10)</code>, what is <code>b=10</code> called?',
+        opts: ["A return value", "A default argument", "A global variable", "A docstring"],
+        answer: 1,
+        ok:  "✓ Correct! b=10 is a default argument — used when the caller doesn't provide b.",
+        bad: "✗ Not quite. b=10 gives parameter b a default value of 10 when not provided."
+      }
+    ]
+  },
+
+  /* ── 4: Data Structures ─────────────────────────────────── */
+  {
+    title: "Data Structures",
+    icon: "fas fa-layer-group",
+    tag: "Lesson 5 of 6",
+    filename: "data_structures.py",
+    explanation: `
+      <p><strong>Data structures</strong> organise collections of related data. Python's two most essential built-in structures are:</p>
+      <ul>
+        <li><strong>list</strong> — an ordered, changeable sequence accessed by numeric index (starting at <strong>0</strong>)</li>
+        <li><strong>dict</strong> (dictionary) — an unordered collection of <strong>key → value</strong> pairs; values are looked up by their unique key</li>
+      </ul>
+      <p>Lists excel at ordered sequences of similar items. Dictionaries are perfect for mapping descriptive labels to values — like a real dictionary maps words to definitions.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">list</span>
+        <span class="concept-tag">dict</span>
+        <span class="concept-tag">0-based Index</span>
+        <span class="concept-tag">Key-Value Pairs</span>
+        <span class="concept-tag">.append()</span>
+      </div>`,
+    code: `# List — ordered, index-based collection
+shopping = ["milk", "eggs", "bread"]
+shopping.append("butter")       # add to end
+
+print(shopping)                 # full list
+print(shopping[0])              # first item  → milk
+print(shopping[-1])             # last item   → butter
+
+# Dictionary — key → value mapping
+person = {
+    "name": "Alice",
+    "age":  25,
+    "city": "Denver"
+}
+print(person["name"])           # access by key
+person["job"] = "Engineer"      # add new entry
+print(person)`,
+    output: `['milk', 'eggs', 'bread', 'butter']
+milk
+butter
+Alice
+{'name': 'Alice', 'age': 25, 'city': 'Denver', 'job': 'Engineer'}`,
+    interactive: {
+      type: "ds-visual",
+      list: ["milk", "eggs", "bread", "butter"],
+      dict: [
+        { key: "name", val: '"Alice"'    },
+        { key: "age",  val: "25"         },
+        { key: "city", val: '"Denver"'   },
+        { key: "job",  val: '"Engineer"' },
+      ]
+    },
+    quiz: [
+      {
+        q: "What index holds the <em>first</em> element in a Python list?",
+        opts: ["1", "0", "-1", "None"], answer: 1,
+        ok:  "✓ Correct! Python uses 0-based indexing — the first element is at index 0.",
+        bad: "✗ Not quite. Python lists are 0-indexed — the first element is at index 0."
+      },
+      {
+        q: "Which method adds an element to the <em>end</em> of a list?",
+        opts: [".add()", ".insert()", ".append()", ".push()"], answer: 2,
+        ok:  "✓ Correct! list.append(item) adds an item to the end of the list.",
+        bad: "✗ Not quite. Use .append() for the end. .add() is for sets; .push() doesn't exist."
+      }
+    ]
+  },
+
+  /* ── 5: Algorithms & Big O ──────────────────────────────── */
+  {
+    title: "Algorithms & Big O",
+    icon: "fas fa-sort",
+    tag: "Lesson 6 of 6",
+    filename: "algorithms.py",
+    explanation: `
+      <p>An <strong>algorithm</strong> is a step-by-step procedure for solving a problem. <strong>Big O notation</strong> describes how the time (or space) an algorithm needs grows as the input size <em>n</em> increases.</p>
+      <ul>
+        <li><strong>O(1)</strong> — constant time, regardless of input size (e.g. array lookup by index)</li>
+        <li><strong>O(n)</strong> — linear: doubles input → twice as slow (e.g. linear search)</li>
+        <li><strong>O(n log n)</strong> — Merge Sort, Quick Sort</li>
+        <li><strong>O(n²)</strong> — quadratic: doubles input → four times slower (e.g. Bubble Sort)</li>
+      </ul>
+      <p>Bubble Sort is the classic teaching example — simple to understand but slow for large inputs. Use the visualiser below to step through every comparison and swap.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">Bubble Sort</span>
+        <span class="concept-tag">Big O Notation</span>
+        <span class="concept-tag">O(n²)</span>
+        <span class="concept-tag">Comparisons &amp; Swaps</span>
+      </div>`,
+    code: `def bubble_sort(arr):
+    n = len(arr)
+    comparisons, swaps = 0, 0
+
+    for i in range(n):
+        for j in range(n - i - 1):
+            comparisons += 1
+            if arr[j] > arr[j + 1]:         # compare neighbours
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]  # swap
+                swaps += 1
+
+    return arr, comparisons, swaps
+
+
+numbers = [64, 34, 25, 12, 22, 11, 90]
+sorted_nums, comps, swaps = bubble_sort(numbers[:])
+
+print(f"Unsorted: [64, 34, 25, 12, 22, 11, 90]")
+print(f"Sorted:   {sorted_nums}")
+print(f"Comparisons: {comps}  |  Swaps: {swaps}")`,
+    output: `Unsorted: [64, 34, 25, 12, 22, 11, 90]
+Sorted:   [11, 12, 22, 25, 34, 64, 90]
+Comparisons: 21  |  Swaps: 11`,
+    interactive: {
+      type: "sort-vis",
+      data: [64, 34, 25, 12, 22, 11, 90]
+    },
+    quiz: [
+      {
+        q: "What is the Big O time complexity of Bubble Sort?",
+        opts: ["O(n)", "O(log n)", "O(n²)", "O(n log n)"], answer: 2,
+        ok:  "✓ Correct! Bubble Sort has O(n²) due to its nested loops over the array.",
+        bad: "✗ Not quite. The nested loops over n elements give Bubble Sort O(n²) complexity."
+      },
+      {
+        q: "Which sorting algorithm uses a divide-and-conquer approach for O(n log n) performance?",
+        opts: ["Bubble Sort", "Selection Sort", "Insertion Sort", "Merge Sort"], answer: 3,
+        ok:  "✓ Correct! Merge Sort recursively splits the array and merges sorted halves.",
+        bad: "✗ Not quite. Merge Sort (and Quick Sort) use divide-and-conquer for O(n log n)."
+      }
+    ]
+  }
+];
+
+/* ============================================================
+   App state
+   ============================================================ */
+let currentIdx = 0;
+const completed = new Set();
+
+/* ============================================================
+   Sidebar rendering
+   ============================================================ */
+function renderNav() {
+  const list = document.getElementById('lessonNavList');
+  list.innerHTML = LESSONS.map((l, i) => `
+    <li class="lesson-nav-item ${i === currentIdx ? 'active' : ''} ${completed.has(i) ? 'completed' : ''}"
+        onclick="gotoLesson(${i})">
+      <span class="nav-icon"><i class="${l.icon}"></i></span>
+      <span>${l.title}</span>
+      ${completed.has(i)
+        ? '<span class="nav-check"><i class="fas fa-check-circle"></i></span>'
+        : `<span class="nav-num">${i + 1}</span>`}
+    </li>`).join('');
+
+  document.getElementById('progressText').textContent =
+    `${completed.size} / ${LESSONS.length} complete`;
+  document.getElementById('progressBar').style.width =
+    (completed.size / LESSONS.length * 100) + '%';
+}
+
+/* ============================================================
+   Main lesson rendering
+   ============================================================ */
+function renderLesson(idx) {
+  const l = LESSONS[idx];
+
+  document.getElementById('lessonBreadcrumb').textContent = l.tag;
+  document.getElementById('lessonTitle').innerHTML =
+    `<i class="${l.icon}"></i> ${l.title}`;
+  document.getElementById('lessonExplanation').innerHTML = l.explanation;
+
+  // IDE code
+  document.getElementById('ideTab').textContent = l.filename;
+  const codeEl = document.getElementById('ideCode');
+  codeEl.className = 'language-python';
+  codeEl.textContent = l.code;
+  hljs.highlightElement(codeEl);
+
+  // Output area — hide until Run is clicked
+  const outputArea = document.getElementById('outputArea');
+  outputArea.style.display = 'none';
+  document.getElementById('outputText').textContent = '';
+  document.getElementById('runBtn').onclick = () => {
+    document.getElementById('outputText').textContent = l.output;
+    outputArea.style.display = 'block';
+    outputArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+
+  // Interactive element
+  renderInteractive(l.interactive);
+
+  // Quiz
+  renderQuiz(l.quiz);
+
+  // Nav button states
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').textContent =
+    idx === LESSONS.length - 1 ? 'Finish ✓' : 'Next ';
+  if (idx < LESSONS.length - 1) {
+    document.getElementById('nextBtn').innerHTML =
+      'Next <i class="fas fa-arrow-right"></i>';
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   Interactive element dispatcher
+   ============================================================ */
+function renderInteractive(cfg) {
+  const zone = document.getElementById('interactiveContent');
+  const handlers = {
+    'type-inspector': renderTypeInspector,
+    'slider':         renderSlider,
+    'step-through':   renderStepThrough,
+    'fn-demo':        renderFnDemo,
+    'ds-visual':      renderDsVisual,
+    'sort-vis':       renderSortVis,
+  };
+  const fn = handlers[cfg.type];
+  if (fn) fn(zone, cfg);
+}
+
+/* ──────────────────────────────────────────────────────────
+   Type Inspector (Lesson 1)
+   ────────────────────────────────────────────────────────── */
+function renderTypeInspector(zone, cfg) {
+  zone.innerHTML = `
+    <p style="color:var(--text-secondary);font-size:.87rem;margin-bottom:1rem;">
+      Click a variable to inspect its type, value, and memory usage.
+    </p>
+    <div class="type-inspector">
+      <div class="type-var-list">
+        ${cfg.vars.map((v, i) => `
+          <button class="type-var-btn" id="tvb-${i}" onclick="inspectVar(${i})">
+            <span class="tvar-name">${v.name}</span>
+            <span class="tvar-eq">&nbsp;=&nbsp;</span>
+            <span class="tvar-val">${v.value}</span>
+          </button>`).join('')}
+      </div>
+      <div class="type-info-panel" id="typeInfoPanel">
+        <div class="type-placeholder">← Click a variable to inspect it</div>
+      </div>
+    </div>`;
+  window._typeVars = cfg.vars;
+}
+
+window.inspectVar = function (i) {
+  const v = window._typeVars[i];
+  document.querySelectorAll('.type-var-btn').forEach((b, j) => {
+    b.classList.toggle('active', j === i);
+  });
+  document.getElementById('typeInfoPanel').innerHTML = `
+    <h4>Variable Inspector</h4>
+    <div class="type-info-row">
+      <span class="info-label">Name</span>
+      <span class="info-plain">${v.name}</span>
+    </div>
+    <div class="type-info-row">
+      <span class="info-label">Value</span>
+      <span class="info-val">${v.value}</span>
+    </div>
+    <div class="type-info-row">
+      <span class="info-label">Type</span>
+      <span class="info-type">${v.pytype}</span>
+    </div>
+    <div class="type-info-row">
+      <span class="info-label">Size (approx.)</span>
+      <span class="info-plain">${v.size}</span>
+    </div>
+    <div style="margin-top:.75rem;color:#94a3b8;font-size:.8rem;line-height:1.5;">${v.desc}</div>`;
+};
+
+/* ──────────────────────────────────────────────────────────
+   Slider — Conditionals (Lesson 2)
+   ────────────────────────────────────────────────────────── */
+function renderSlider(zone, cfg) {
+  zone.innerHTML = `
+    <div class="slider-demo">
+      <div class="slider-row">
+        <label>${cfg.label}:</label>
+        <input type="range" id="condSlider"
+               min="${cfg.min}" max="${cfg.max}"
+               step="${cfg.step}" value="${cfg.value}">
+        <span class="slider-val" id="sliderVal">${cfg.value}°F</span>
+      </div>
+      <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .5rem;">
+        Drag the slider — the active branch highlights automatically.
+      </p>
+      <div class="branch-display">
+        ${cfg.branches.map((b, i) =>
+          `<div class="branch-item" id="br-${i}">${b.cond}</div>`).join('')}
+      </div>
+      <div class="branch-output-box">
+        <div class="out-label">prints:</div>
+        <div class="branch-output-val" id="branchOut"></div>
+      </div>
+    </div>`;
+
+  function update(val) {
+    document.getElementById('sliderVal').textContent = val + '°F';
+    let active = null;
+    cfg.branches.forEach((b, i) => {
+      const el = document.getElementById(`br-${i}`);
+      const on = val >= b.range[0] && val <= b.range[1];
+      el.classList.toggle('active-branch', on);
+      if (on) active = b;
+    });
+    document.getElementById('branchOut').textContent =
+      active ? `"${active.out}"` : '';
+  }
+
+  document.getElementById('condSlider')
+    .addEventListener('input', e => update(+e.target.value));
+  update(cfg.value);
+}
+
+/* ──────────────────────────────────────────────────────────
+   Step-through — Loops (Lesson 3)
+   ────────────────────────────────────────────────────────── */
+function renderStepThrough(zone, cfg) {
+  const steps = cfg.steps;
+  let idx = 0;
+
+  zone.innerHTML = `
+    <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .85rem;">
+      Step through the <code>for</code> loop iteration by iteration.
+      Watch the loop variable change with each step.
+    </p>
+    <div class="step-controls">
+      <button class="step-btn" id="stpPrev" onclick="loopPrev()" disabled>← Prev</button>
+      <button class="step-btn" id="stpNext" onclick="loopNext()">Next →</button>
+      <span class="step-info" id="stpInfo">Iteration 1 of ${steps.length}</span>
+    </div>
+    <div class="step-display">
+      <div class="var-state">
+        <h4>Variable State</h4>
+        <div class="var-row">
+          <span class="var-name-span">fruit</span>
+          <span class="var-value-span" id="sv-fruit">—</span>
+        </div>
+        <div class="var-row">
+          <span class="var-name-span">iteration</span>
+          <span class="var-value-span" id="sv-iter">—</span>
+        </div>
+      </div>
+      <div class="loop-trace">
+        <h4>Execution Trace</h4>
+        ${steps.map((s, i) =>
+          `<div class="trace-item" id="tr-${i}">
+             iter ${s.iter}: ${s.out}
+           </div>`).join('')}
+      </div>
+    </div>`;
+
+  function draw() {
+    const s = steps[idx];
+    document.getElementById('sv-fruit').textContent = s.fruit;
+    document.getElementById('sv-iter').textContent  = `${s.iter} of ${steps.length}`;
+    document.getElementById('stpInfo').textContent  = `Iteration ${s.iter} of ${steps.length}`;
+    document.getElementById('stpPrev').disabled = idx === 0;
+    document.getElementById('stpNext').disabled = idx === steps.length - 1;
+    steps.forEach((_, i) => {
+      document.getElementById(`tr-${i}`).classList.toggle('current', i === idx);
+    });
+  }
+
+  window.loopNext = () => { if (idx < steps.length - 1) { idx++; draw(); } };
+  window.loopPrev = () => { if (idx > 0) { idx--; draw(); } };
+  draw();
+}
+
+/* ──────────────────────────────────────────────────────────
+   Function demo (Lesson 4)
+   ────────────────────────────────────────────────────────── */
+function renderFnDemo(zone) {
+  zone.innerHTML = `
+    <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .85rem;">
+      Change the arguments below and watch the function's return value update live.
+    </p>
+    <div class="fn-demo">
+      <div class="fn-inputs">
+        <div class="fn-input-group">
+          <label>name <span style="color:#94a3b8;">(str)</span></label>
+          <input type="text" id="fnName"     value="Alice"   maxlength="40"
+                 placeholder="e.g. Alice">
+        </div>
+        <div class="fn-input-group">
+          <label>greeting <span style="color:#94a3b8;">(str, default="Hello")</span></label>
+          <input type="text" id="fnGreeting" value="Hello"   maxlength="40"
+                 placeholder="e.g. Hello">
+        </div>
+        <div class="call-sig">
+          <span class="sig-fn">greet</span>(<span class="sig-args" id="fnCallSig"></span>)
+        </div>
+      </div>
+      <div class="fn-output">
+        <label>return value</label>
+        <div class="fn-result" id="fnResult"></div>
+      </div>
+    </div>`;
+
+  function update() {
+    const name     = document.getElementById('fnName').value;
+    const greeting = document.getElementById('fnGreeting').value;
+    document.getElementById('fnResult').textContent  = `"${greeting}, ${name}!"`;
+    document.getElementById('fnCallSig').textContent = `"${name}", "${greeting}"`;
+  }
+
+  document.getElementById('fnName').addEventListener('input', update);
+  document.getElementById('fnGreeting').addEventListener('input', update);
+  update();
+}
+
+/* ──────────────────────────────────────────────────────────
+   Data structure visualiser (Lesson 5)
+   ────────────────────────────────────────────────────────── */
+function renderDsVisual(zone, cfg) {
+  zone.innerHTML = `
+    <div class="ds-vis">
+      <div class="ds-section">
+        <h4>List — shopping</h4>
+        <div class="list-boxes">
+          ${cfg.list.map((item, i) => `
+            <div class="list-box" id="lb-${i}" onclick="pickList(${i})">
+              <div class="list-cell">"${item}"</div>
+              <div class="list-index">[${i}]</div>
+            </div>`).join('')}
+        </div>
+        <div class="ds-tooltip" id="listTip">← Click an item to inspect it</div>
+      </div>
+      <div class="ds-section" style="margin-top:1.5rem;">
+        <h4>Dictionary — person</h4>
+        <div class="dict-pairs">
+          ${cfg.dict.map((p, i) => `
+            <div class="dict-pair" id="dp-${i}" onclick="pickDict(${i})">
+              <span class="dict-key">"${p.key}"</span>
+              <span class="dict-arrow">→</span>
+              <span class="dict-val">${p.val}</span>
+            </div>`).join('')}
+        </div>
+        <div class="ds-tooltip" id="dictTip">← Click a key to inspect it</div>
+      </div>
+    </div>`;
+
+  window._dsList = cfg.list;
+  window._dsDict = cfg.dict;
+
+  window.pickList = function (i) {
+    document.querySelectorAll('.list-box').forEach((b, j) => b.classList.toggle('active', j === i));
+    document.getElementById('listTip').textContent =
+      `shopping[${i}] = "${cfg.list[i]}"  (index: ${i}, type: str)`;
+  };
+
+  window.pickDict = function (i) {
+    document.querySelectorAll('.dict-pair').forEach((p, j) => p.classList.toggle('active', j === i));
+    const pair = cfg.dict[i];
+    const vtype = pair.val.startsWith('"') ? 'str' : 'int';
+    document.getElementById('dictTip').textContent =
+      `person["${pair.key}"] = ${pair.val}  (key type: str, value type: ${vtype})`;
+  };
+}
+
+/* ──────────────────────────────────────────────────────────
+   Bubble Sort visualiser (Lesson 6)
+   ────────────────────────────────────────────────────────── */
+function renderSortVis(zone, cfg) {
+  const original = [...cfg.data];
+  const maxVal   = Math.max(...original);
+
+  // Pre-compute every step of bubble sort
+  function buildSteps(arr) {
+    const a = [...arr], steps = [];
+    steps.push({ arr: [...a], hi: [], swapped: false, desc: 'Initial unsorted array.' });
+    const n = a.length;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n - i - 1; j++) {
+        const l = a[j], r = a[j + 1];
+        const swap = l > r;
+        if (swap) [a[j], a[j + 1]] = [a[j + 1], a[j]];
+        steps.push({
+          arr: [...a], hi: [j, j + 1], swapped: swap,
+          desc: swap
+            ? `Swapped ${l} and ${r} at positions [${j}] and [${j + 1}].`
+            : `Compared [${j}]=${l} and [${j + 1}]=${r} — no swap needed.`
+        });
+      }
+    }
+    steps.push({ arr: [...a], hi: [], swapped: false, desc: '✓ Array fully sorted!' });
+    return steps;
+  }
+
+  const steps = buildSteps(original);
+  let stepIdx = 0;
+
+  zone.innerHTML = `
+    <div class="sort-vis">
+      <div class="sort-bars" id="sortBars"></div>
+      <div class="sort-legend">
+        <span><span style="color:#3b82f6">■</span> Normal</span>
+        <span><span style="color:#fbbf24">■</span> Comparing</span>
+        <span><span style="color:#f87171">■</span> Swapping</span>
+        <span><span style="color:#4ade80">■</span> Sorted</span>
+      </div>
+      <div class="sort-controls">
+        <button class="sort-btn" id="sPrev" onclick="sortPrev()" disabled>← Prev</button>
+        <button class="sort-btn" id="sNext" onclick="sortNext()">Next →</button>
+        <button class="sort-btn" onclick="sortReset()">↺ Reset</button>
+        <span class="sort-step-info" id="sortInfo">Step 0 of ${steps.length - 1}</span>
+      </div>
+      <div class="sort-desc" id="sortDesc">Press Next to begin stepping through the sort.</div>
+    </div>`;
+
+  function draw(si) {
+    const s = steps[si];
+    const done = si === steps.length - 1;
+    document.getElementById('sortBars').innerHTML = s.arr.map((v, i) => {
+      const h   = Math.max(6, Math.round((v / maxVal) * 100));
+      const col = done ? '#4ade80'
+        : s.hi.includes(i) ? (s.swapped ? '#f87171' : '#fbbf24')
+        : '#3b82f6';
+      return `
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;
+                    justify-content:flex-end;gap:3px;">
+          <span style="font-size:.6rem;color:#94a3b8;font-family:monospace;">${v}</span>
+          <div style="width:100%;height:${h}%;background:${col};
+                      border-radius:3px 3px 0 0;transition:height .25s,background .25s;"></div>
+        </div>`;
+    }).join('');
+    document.getElementById('sortDesc').textContent = s.desc;
+    document.getElementById('sortInfo').textContent = `Step ${si} of ${steps.length - 1}`;
+    document.getElementById('sPrev').disabled = si === 0;
+    document.getElementById('sNext').disabled = si === steps.length - 1;
+  }
+
+  window.sortNext  = () => { if (stepIdx < steps.length - 1) draw(++stepIdx); };
+  window.sortPrev  = () => { if (stepIdx > 0) draw(--stepIdx); };
+  window.sortReset = () => { draw(stepIdx = 0); };
+
+  draw(0);
+}
+
+/* ============================================================
+   Quiz rendering
+   ============================================================ */
+function renderQuiz(questions) {
+  document.getElementById('quizContent').innerHTML = questions.map((q, qi) => `
+    <div class="quiz-question" id="qq-${qi}">
+      <p>${qi + 1}. ${q.q}</p>
+      <div class="quiz-options">
+        ${q.opts.map((opt, oi) => `
+          <div class="quiz-option" id="qo-${qi}-${oi}" onclick="answerQuiz(${qi},${oi})">
+            <span class="opt-letter">${String.fromCharCode(65 + oi)}</span>
+            ${opt}
+          </div>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="qf-${qi}"></div>
+    </div>`).join('');
+
+  window._quizData     = questions;
+  window._quizAnswered = {};
+}
+
+window.answerQuiz = function (qi, oi) {
+  if (window._quizAnswered[qi]) return;
+  window._quizAnswered[qi] = true;
+
+  const q = window._quizData[qi];
+  const ok = oi === q.answer;
+
+  document.querySelectorAll(`[id^="qo-${qi}-"]`)
+    .forEach(el => { el.style.pointerEvents = 'none'; });
+
+  document.getElementById(`qo-${qi}-${oi}`).classList.add(ok ? 'correct' : 'wrong');
+  if (!ok) document.getElementById(`qo-${qi}-${q.answer}`).classList.add('correct');
+
+  const fb = document.getElementById(`qf-${qi}`);
+  fb.className = `quiz-feedback ${ok ? 'correct' : 'wrong'}`;
+  fb.innerHTML = ok ? q.ok : q.bad;
+};
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+window.gotoLesson = function (idx) {
+  currentIdx = idx;
+  renderNav();
+  renderLesson(idx);
+};
+
+window.changeLesson = function (dir) {
+  if (dir > 0) completed.add(currentIdx);   // mark complete when going forward
+
+  const next = currentIdx + dir;
+  if (next < 0) return;
+
+  if (next >= LESSONS.length) {
+    // All done — update nav/progress and show banner
+    renderNav();
+    document.getElementById('completionBanner').style.display = 'flex';
+    document.getElementById('completionBanner')
+      .scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  window.gotoLesson(next);
+};
+
+/* ============================================================
+   Bootstrap
+   ============================================================ */
+(function init() {
+  renderNav();
+  renderLesson(0);
+})();
+</script>
+
+{% endblock %}

@@ -17,7 +17,7 @@ A modern, responsive Flask-based personal portfolio website showcasing Ryan Thom
 ```
 ai_website/
 ├── app.py                  # Main Flask application with route handlers
-├── requirements.txt        # Python dependencies with version pinning
+├── pyproject.toml          # Project metadata and dependencies (uv)
 ├── README.md              # Project documentation (this file)
 ├── templates/             # Jinja2 HTML templates
 │   ├── base.html          # Base template with navigation and layout
@@ -37,9 +37,8 @@ ai_website/
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- pip (Python package manager)
-- Virtual environment (recommended)
+- Python 3.12 or higher
+- [uv](https://docs.astral.sh/uv/) (fast Python package manager)
 
 ### Development Setup
 
@@ -49,21 +48,9 @@ ai_website/
    cd ai_website
    ```
 
-2. **Create and activate virtual environment**:
+2. **Install dependencies**:
    ```bash
-   # Create virtual environment
-   python -m venv AI
-   
-   # Activate on Linux/Mac
-   source AI/bin/activate
-   
-   # Activate on Windows
-   AI\Scripts\activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 
 4. **Set environment variables** (optional):
@@ -72,27 +59,27 @@ ai_website/
    export SECRET_KEY=your-secret-key-here
    ```
 
-5. **Run the development server**:
+4. **Run the development server**:
    ```bash
-   python app.py
+   uv run python app.py
    ```
 
-6. **Open your browser** and navigate to: `http://localhost:5000`
+5. **Open your browser** and navigate to: `http://localhost:5000`
 
 ### Production Deployment
 
 For production deployment using Gunicorn:
 
 ```bash
-# Install production dependencies
-pip install -r requirements.txt
+# Install dependencies
+uv sync
 
 # Set production environment variables
 export FLASK_ENV=production
 export SECRET_KEY=your-secure-secret-key
 
 # Run with Gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
+uv run gunicorn -w 4 -b 0.0.0.0:5000 app:app
 ```
 
 ## 🛠️ Development

@@ -1,0 +1,16 @@
+[project]
+name = "ai-website"
+version = "0.1.0"
+description = "Personal portfolio website showcasing AI projects and interactive demonstrations."
+requires-python = ">=3.12"
+dependencies = [
+    "flask",
+    "gunicorn",
+    "werkzeug",
+    "numpy",
+    "scikit-learn",
+    "pillow",
+]
+
+[tool.uv]
+dev-dependencies = []

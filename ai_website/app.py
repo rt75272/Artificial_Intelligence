@@ -246,6 +246,11 @@ def chatbot_demo():
     """Render the interactive chatbot demo page."""
     return render_template('chatbot.html')
 
+@app.route('/learn')
+def learn():
+    """Render the interactive CS basics learning page."""
+    return render_template('learn.html')
+
 @app.route('/api/svm', methods=['POST'])
 def train_svm():
     """Train an SVM classifier and return decision boundary with support vectors.

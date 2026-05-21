@@ -33,6 +33,9 @@
                 <a href="{{ url_for('projects') }}" class="nav-link {% if request.endpoint == 'projects' or 'demo' in request.endpoint %}active{% endif %}">
                     <i class="fas fa-flask"></i> Demos
                 </a>
+                <a href="{{ url_for('learn') }}" class="nav-link {% if request.endpoint == 'learn' %}active{% endif %}">
+                    <i class="fas fa-graduation-cap"></i> Learn
+                </a>
             </div>
         </div>
     </nav>
