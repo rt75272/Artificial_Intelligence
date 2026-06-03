@@ -91,7 +91,7 @@
 <!-- Completion banner (hidden until all lessons done) -->
 <div class="completion-banner" id="completionBanner" style="display:none;">
     <i class="fas fa-trophy"></i>
-    <strong>Congratulations!</strong> You've completed all 6 lessons. Keep building and stay curious!
+    <strong>Congratulations!</strong> You've completed all 11 lessons. Keep building and stay curious!
 </div>
 
 <!-- ════════════════════════════════════════════════════════
@@ -517,6 +517,140 @@ input[type="range"] { flex: 1; accent-color: var(--primary-color); cursor: point
     .lesson-sidebar { position: static; height: auto; }
     .fn-demo, .type-inspector, .step-display { grid-template-columns: 1fr; }
 }
+
+/* ---------- Operator Explorer ---------- */
+.op-explorer { display: flex; flex-direction: column; gap: 1rem; }
+.op-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.op-num-input {
+    width: 80px; padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-color); border-radius: 8px;
+    font-size: 1rem; font-family: monospace; text-align: center;
+}
+.op-select {
+    padding: 0.5rem 0.85rem; border: 2px solid var(--border-color);
+    border-radius: 8px; font-size: 1.1rem; font-weight: 700;
+    background: white; cursor: pointer; color: var(--primary-color);
+}
+.op-equals { font-size: 1.5rem; font-weight: 700; color: #94a3b8; }
+.op-result-val {
+    font-size: 1.6rem; font-weight: 800; color: var(--primary-color);
+    font-family: monospace; min-width: 90px;
+}
+.op-ref-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin-top: 0.5rem; }
+.op-ref-table th {
+    background: #f1f5f9; padding: 0.4rem 0.75rem; text-align: left;
+    border-bottom: 2px solid var(--border-color);
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.op-ref-table td { padding: 0.35rem 0.75rem; border-bottom: 1px solid #f1f5f9; font-family: monospace; }
+.op-ref-table tr.op-active { background: rgba(59,130,246,0.08); font-weight: 700; }
+.op-ref-table tr.op-active td { color: var(--primary-color); }
+
+/* ---------- String Lab ---------- */
+.string-lab { display: flex; flex-direction: column; gap: 0.85rem; }
+.str-input-row { display: flex; align-items: center; gap: 0.65rem; }
+.str-input-row label { font-family: monospace; white-space: nowrap; font-weight: 700; color: #3b82f6; }
+.str-input-row input {
+    flex: 1; padding: 0.5rem 0.85rem;
+    border: 2px solid var(--border-color); border-radius: 8px;
+    font-size: 0.95rem; font-family: monospace;
+}
+.str-ops-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; }
+.str-op-card {
+    background: #f8fafc; border: 1.5px solid var(--border-color);
+    border-radius: 8px; padding: 0.55rem 0.85rem;
+}
+.str-op-name { font-size: 0.74rem; color: #3b82f6; font-family: monospace; font-weight: 700; margin-bottom: 0.2rem; }
+.str-op-val { font-size: 0.85rem; font-family: monospace; color: var(--text-primary); word-break: break-all; }
+@media (max-width: 600px) { .str-ops-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Class Visualizer ---------- */
+.class-vis-wrap { display: flex; flex-direction: column; gap: 1.1rem; }
+.class-hierarchy { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.class-diagram-box {
+    width: 100%; max-width: 400px; border: 2px solid var(--border-color);
+    border-radius: 10px; overflow: hidden; cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.class-diagram-box:hover { border-color: var(--primary-color); }
+.class-diagram-box.active { border-color: var(--primary-color); box-shadow: 0 2px 16px rgba(59,130,246,0.18); }
+.class-diagram-hdr {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white;
+    padding: 0.55rem 1rem; font-weight: 700; font-family: monospace; font-size: 0.92rem;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.class-diagram-hdr .class-label { font-size: 0.7rem; opacity: 0.85; font-weight: 400; font-family: sans-serif; }
+.class-diagram-body {
+    padding: 0.65rem 1rem; background: #f8fafc;
+    font-family: monospace; font-size: 0.8rem; color: var(--text-secondary);
+}
+.cattr { color: #16a34a; margin: 0.12rem 0; }
+.cmeth { color: #3b82f6; margin: 0.12rem 0; }
+.inherit-connector { font-size: 1.25rem; color: #94a3b8; text-align: center; line-height: 1.8; }
+.class-detail-panel {
+    background: white; border: 1.5px solid var(--border-color);
+    border-radius: 10px; padding: 0.9rem 1.1rem;
+}
+.class-detail-panel h4 { margin: 0 0 0.4rem; color: var(--primary-color); font-size: 0.95rem; }
+.class-detail-panel p { font-size: 0.83rem; color: var(--text-secondary); margin: 0 0 0.6rem; line-height: 1.5; }
+.class-detail-list { list-style: none; padding: 0; margin: 0; font-size: 0.83rem; }
+.class-detail-list .cdl-section {
+    font-weight: 700; color: #64748b; margin: 0.4rem 0 0.2rem;
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.class-detail-list li span { font-family: monospace; color: var(--text-primary); }
+
+/* ---------- Search Visualizer ---------- */
+.search-vis { display: flex; flex-direction: column; gap: 0.9rem; }
+.search-ptrs-row { display: flex; gap: 4px; min-height: 20px; }
+.search-ptr-cell { width: 42px; font-size: 0.62rem; text-align: center; font-weight: 700; line-height: 1.1; }
+.search-arr-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.search-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.s-val {
+    width: 38px; height: 38px; display: flex; align-items: center;
+    justify-content: center; border-radius: 7px; font-family: monospace;
+    font-size: 0.78rem; font-weight: 700; background: #e2e8f0; color: #334155;
+    transition: background 0.25s, color 0.25s; border: 2px solid transparent;
+}
+.s-val.s-mid   { background: #fbbf24; color: #78350f; }
+.s-val.s-found { background: #22c55e; color: white; }
+.s-val.s-gone  { background: #f1f5f9; color: #cbd5e1; }
+.s-idx { font-size: 0.62rem; color: #94a3b8; font-family: monospace; }
+.search-legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.74rem; color: #94a3b8; }
+.search-controls { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
+.s-btn {
+    padding: 0.4rem 0.9rem; border: 2px solid var(--border-color);
+    border-radius: 6px; background: white; cursor: pointer;
+    font-size: 0.83rem; font-weight: 600; transition: all 0.2s; color: var(--text-primary);
+}
+.s-btn:hover:not(:disabled) { border-color: var(--primary-color); color: var(--primary-color); }
+.s-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.search-step-desc { font-size: 0.84rem; color: var(--text-secondary); min-height: 1.2em; font-family: monospace; }
+
+/* ---------- Practical Visualizer ---------- */
+.practical-vis { display: flex; flex-direction: column; gap: 0.75rem; }
+.stat-pills { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+.stat-pill {
+    background: #f1f5f9; border-radius: 8px;
+    padding: 0.4rem 0.85rem; font-size: 0.82rem; color: var(--text-secondary);
+}
+.stat-pill strong { color: var(--primary-color); font-weight: 700; }
+.prac-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.prac-table th {
+    background: #1e293b; color: white; padding: 0.5rem 0.85rem;
+    text-align: left; font-size: 0.77rem; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.prac-table td { padding: 0.5rem 0.85rem; border-bottom: 1px solid #f1f5f9; }
+.prac-table tr:hover td { background: rgba(59,130,246,0.04); }
+.prac-table tr.prac-top td { background: rgba(34,197,94,0.08); font-weight: 600; }
+.grade-pill {
+    display: inline-block; padding: 0.15rem 0.5rem;
+    border-radius: 4px; font-size: 0.75rem; font-weight: 700; font-family: monospace;
+}
+.gA { background: #dcfce7; color: #166534; }
+.gB { background: #dbeafe; color: #1d4ed8; }
+.gC { background: #fef9c3; color: #854d0e; }
+.gD { background: #fee2e2; color: #991b1b; }
 </style>
 
 <!-- ════════════════════════════════════════════════════════
@@ -531,7 +665,7 @@ const LESSONS = [
   {
     title: "Variables & Data Types",
     icon: "fas fa-box",
-    tag: "Lesson 1 of 6",
+    tag: "Lesson 1 of 11",
     filename: "variables.py",
     explanation: `
       <p>A <strong>variable</strong> is a named location in memory that stores a value. Think of it as a labeled box — you give it a name, put something inside, and can read or update it later.</p>
@@ -594,7 +728,7 @@ Is student: True        → bool`,
   {
     title: "Conditional Logic",
     icon: "fas fa-code-branch",
-    tag: "Lesson 2 of 6",
+    tag: "Lesson 2 of 11",
     filename: "conditionals.py",
     explanation: `
       <p>Programs need to make decisions. <strong>Conditional statements</strong> let your code take different paths based on whether a condition evaluates to <code>True</code> or <code>False</code>.</p>
@@ -655,7 +789,7 @@ else:
   {
     title: "Loops",
     icon: "fas fa-repeat",
-    tag: "Lesson 3 of 6",
+    tag: "Lesson 3 of 11",
     filename: "loops.py",
     explanation: `
       <p><strong>Loops</strong> let you repeat a block of code without copying and pasting it. Python has two loop types:</p>
@@ -727,7 +861,7 @@ Done!`,
   {
     title: "Functions",
     icon: "fas fa-terminal",
-    tag: "Lesson 4 of 6",
+    tag: "Lesson 4 of 11",
     filename: "functions.py",
     explanation: `
       <p>A <strong>function</strong> is a named, reusable block of code that performs one task. Functions are the fundamental unit of code organisation — they reduce repetition and make code easier to test and understand.</p>
@@ -790,7 +924,7 @@ Hi, Eve!`,
   {
     title: "Data Structures",
     icon: "fas fa-layer-group",
-    tag: "Lesson 5 of 6",
+    tag: "Lesson 5 of 11",
     filename: "data_structures.py",
     explanation: `
       <p><strong>Data structures</strong> organise collections of related data. Python's two most essential built-in structures are:</p>
@@ -858,7 +992,7 @@ Alice
   {
     title: "Algorithms & Big O",
     icon: "fas fa-sort",
-    tag: "Lesson 6 of 6",
+    tag: "Lesson 6 of 11",
     filename: "algorithms.py",
     explanation: `
       <p>An <strong>algorithm</strong> is a step-by-step procedure for solving a problem. <strong>Big O notation</strong> describes how the time (or space) an algorithm needs grows as the input size <em>n</em> increases.</p>
@@ -914,6 +1048,402 @@ Comparisons: 21  |  Swaps: 11`,
         opts: ["Bubble Sort", "Selection Sort", "Insertion Sort", "Merge Sort"], answer: 3,
         ok:  "✓ Correct! Merge Sort recursively splits the array and merges sorted halves.",
         bad: "✗ Not quite. Merge Sort (and Quick Sort) use divide-and-conquer for O(n log n)."
+      }
+    ]
+  },
+
+  /* ── 6: Basic Operators & I/O ───────────────────────────── */
+  {
+    title: "Operators & I/O",
+    icon: "fas fa-calculator",
+    tag: "Lesson 7 of 11",
+    filename: "operators_io.py",
+    explanation: `
+      <p>Python's <strong>operators</strong> let you compute values, compare them, and combine conditions. Together with <strong>I/O</strong> (input/output), they form the language's interactive backbone.</p>
+      <ul>
+        <li><strong>Arithmetic</strong>: <code>+&nbsp;&nbsp;-&nbsp;&nbsp;*&nbsp;&nbsp;/&nbsp;&nbsp;//&nbsp;&nbsp;%&nbsp;&nbsp;**</code></li>
+        <li><strong>Comparison</strong>: <code>==&nbsp;&nbsp;!=&nbsp;&nbsp;&gt;&nbsp;&nbsp;&lt;&nbsp;&nbsp;&gt;=&nbsp;&nbsp;&lt;=</code> — always return <code>True</code> or <code>False</code></li>
+        <li><strong>Logical</strong>: <code>and&nbsp;&nbsp;or&nbsp;&nbsp;not</code> — combine boolean conditions</li>
+        <li><strong>print()</strong> — writes output to the console</li>
+        <li><strong>input()</strong> — reads a line typed by the user; <em>always returns a string</em></li>
+      </ul>
+      <p>Key distinctions: <code>//</code> is floor (integer) division, <code>%</code> gives the remainder, and <code>**</code> raises to a power. Always cast <code>input()</code> with <code>int()</code> or <code>float()</code> before doing arithmetic.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">Arithmetic Operators</span>
+        <span class="concept-tag">Comparison Operators</span>
+        <span class="concept-tag">Logical Operators</span>
+        <span class="concept-tag">print()</span>
+        <span class="concept-tag">input()</span>
+      </div>`,
+    code: `# Arithmetic operators
+a, b = 17, 5
+print(f"{a} +  {b} = {a + b}")    # addition
+print(f"{a} -  {b} = {a - b}")    # subtraction
+print(f"{a} *  {b} = {a * b}")    # multiplication
+print(f"{a} /  {b} = {a / b}")    # true division → float
+print(f"{a} // {b} = {a // b}")   # floor division → int
+print(f"{a} %  {b} = {a % b}")    # modulo (remainder)
+print(f"{a} ** {b} = {a ** b}")   # exponentiation
+
+# Comparison operators return booleans
+print(f"a > b  → {a > b}")    # True
+print(f"a == b → {a == b}")   # False
+
+# I/O — input() always returns str!
+name = input("Enter your name: ")
+age  = int(input("Enter your age: "))   # cast to int
+print(f"Hi {name}! Next year you'll be {age + 1}.")`,
+    output: `17 +  5 = 22
+17 -  5 = 12
+17 *  5 = 85
+17 /  5 = 3.4
+17 // 5 = 3
+17 %  5 = 2
+17 ** 5 = 1419857
+a > b  → True
+a == b → False
+Enter your name: Alice
+Enter your age: 20
+Hi Alice! Next year you'll be 21.`,
+    interactive: { type: "op-explorer" },
+    quiz: [
+      {
+        q: "What does <code>17 % 5</code> evaluate to?",
+        opts: ["3", "2", "3.4", "85"], answer: 1,
+        ok:  "✓ Correct! 17 = 5×3 + 2, so the remainder (modulo) is 2.",
+        bad: "✗ Not quite. % returns the remainder. 17 = 5×3 + 2, so 17 % 5 = 2."
+      },
+      {
+        q: "What type does <code>input()</code> always return, regardless of what the user types?",
+        opts: ["int", "str", "float", "bool"], answer: 1,
+        ok:  "✓ Correct! input() always returns str — cast with int() or float() for arithmetic.",
+        bad: "✗ Not quite. input() always returns str. Cast it: int(input(\"Enter a number: \"))."
+      }
+    ]
+  },
+
+  /* ── 7: Scope & String Manipulation ─────────────────────── */
+  {
+    title: "Scope & Strings",
+    icon: "fas fa-text-width",
+    tag: "Lesson 8 of 11",
+    filename: "scope_strings.py",
+    explanation: `
+      <p><strong>Scope</strong> controls where a variable can be read or changed. Python uses the <em>LEGB</em> rule: Local → Enclosing → Global → Built-in.</p>
+      <ul>
+        <li><strong>Local scope</strong>: a variable created inside a function exists only inside that function</li>
+        <li><strong>Global scope</strong>: a variable created at module level is accessible everywhere</li>
+        <li>Use the <strong>global</strong> keyword inside a function to modify a global variable</li>
+      </ul>
+      <p><strong>String manipulation</strong> is one of Python's strengths:</p>
+      <ul>
+        <li><strong>Slicing</strong>: <code>s[start:end]</code>, negative indices count from the end (<code>s[-3:]</code>)</li>
+        <li><strong>Case conversion</strong>: <code>.upper()</code>, <code>.lower()</code>, <code>.title()</code></li>
+        <li><strong>Search</strong>: <code>"word" in s</code>, <code>s.find("word")</code></li>
+        <li><strong>Modify</strong>: <code>s.replace(old, new)</code>, <code>s.split(sep)</code></li>
+      </ul>
+      <div class="concept-tags">
+        <span class="concept-tag">Local Scope</span>
+        <span class="concept-tag">Global Scope</span>
+        <span class="concept-tag">String Slicing</span>
+        <span class="concept-tag">.upper() / .lower()</span>
+        <span class="concept-tag">.split() / .replace()</span>
+      </div>`,
+    code: `# ── Scope ──────────────────────────────────────────
+counter = 0          # global variable
+
+def increment():
+    global counter   # declare we want the global
+    counter += 1
+
+increment()
+increment()
+print(f"counter = {counter}")   # 2
+
+def show_local():
+    x = 99           # x only exists inside here
+    print(f"local x = {x}")
+
+show_local()
+# print(x)  ← NameError: x is not defined outside!
+
+# ── String manipulation ─────────────────────────────
+msg = "Hello, World!"
+print(msg[0:5])                      # "Hello"
+print(msg[-6:])                      # "World!"
+print(msg.upper())                   # "HELLO, WORLD!"
+print(msg.lower())                   # "hello, world!"
+print("World" in msg)                # True
+print(msg.replace("World", "Python"))  # "Hello, Python!"
+print(msg.split(", "))               # ['Hello', 'World!']`,
+    output: `counter = 2
+local x = 99
+Hello
+World!
+HELLO, WORLD!
+hello, world!
+True
+Hello, Python!
+['Hello', 'World!']`,
+    interactive: { type: "string-lab" },
+    quiz: [
+      {
+        q: "What is the output of <code>'Python'[1:4]</code>?",
+        opts: ['"Pyt"', '"yth"', '"ytho"', '"Pyth"'], answer: 1,
+        ok:  "✓ Correct! [1:4] takes indices 1, 2, 3 → 'y', 't', 'h' = \"yth\".",
+        bad: "✗ Not quite. [1:4] starts at index 1 and ends before index 4 → \"yth\"."
+      },
+      {
+        q: "What keyword lets a function write to a variable defined outside it?",
+        opts: ["local", "extern", "global", "public"], answer: 2,
+        ok:  "✓ Correct! The global keyword tells Python you want to write to the global variable.",
+        bad: "✗ Not quite. Python uses the global keyword to grant write access to a global variable."
+      }
+    ]
+  },
+
+  /* ── 8: Object-Oriented Programming ────────────────────── */
+  {
+    title: "Object-Oriented Programming",
+    icon: "fas fa-cubes",
+    tag: "Lesson 9 of 11",
+    filename: "oop.py",
+    explanation: `
+      <p><strong>Object-Oriented Programming (OOP)</strong> models the world as <em>objects</em> — entities that bundle state (attributes) and behaviour (methods). Four core pillars:</p>
+      <ul>
+        <li><strong>Encapsulation</strong>: hide internal state behind methods. Use a single underscore prefix (<code>_attr</code>) as a convention for "private" attributes.</li>
+        <li><strong>Abstraction</strong>: expose a clean interface; callers don't need to know internal details.</li>
+        <li><strong>Inheritance</strong>: a child class automatically receives all attributes and methods of its parent and can add or override them.</li>
+        <li><strong>Polymorphism</strong>: different classes share the same method name but behave differently — you can call <code>describe()</code> on any Car-like object the same way.</li>
+      </ul>
+      <div class="concept-tags">
+        <span class="concept-tag">class</span>
+        <span class="concept-tag">__init__</span>
+        <span class="concept-tag">Encapsulation</span>
+        <span class="concept-tag">Inheritance</span>
+        <span class="concept-tag">Polymorphism</span>
+        <span class="concept-tag">super()</span>
+      </div>`,
+    code: `class Car:
+    def __init__(self, make, model, year):
+        self.make     = make
+        self.model    = model
+        self.year     = year
+        self._mileage = 0    # _prefix = "private" by convention
+
+    def drive(self, miles):
+        self._mileage += miles
+        print(f"Drove {miles} mi. Total: {self._mileage}")
+
+    def describe(self):
+        return f"{self.year} {self.make} {self.model}"
+
+
+class ElectricCar(Car):         # inherits Car
+    def __init__(self, make, model, year, battery_kwh):
+        super().__init__(make, model, year)  # call parent
+        self.battery_kwh = battery_kwh
+
+    def describe(self):         # override → polymorphism
+        return f"{super().describe()} [EV, {self.battery_kwh} kWh]"
+
+
+my_car = Car("Toyota", "Corolla", 2022)
+print(my_car.describe())
+my_car.drive(120)
+
+ev = ElectricCar("Tesla", "Model 3", 2023, 75)
+print(ev.describe())
+ev.drive(200)`,
+    output: `2022 Toyota Corolla
+Drove 120 mi. Total: 120
+2023 Tesla Model 3 [EV, 75 kWh]
+Drove 200 mi. Total: 200`,
+    interactive: { type: "class-vis" },
+    quiz: [
+      {
+        q: "In Python OOP, what is <code>__init__</code> called?",
+        opts: ["A destructor", "A constructor (initializer)", "A class method", "An inherited method"],
+        answer: 1,
+        ok:  "✓ Correct! __init__ is Python's constructor — it runs automatically when an object is created.",
+        bad: "✗ Not quite. __init__ is the constructor (initializer) called when you do MyClass(...)."
+      },
+      {
+        q: "What OOP principle allows a child class to redefine a method inherited from its parent?",
+        opts: ["Encapsulation", "Abstraction", "Polymorphism", "Composition"],
+        answer: 2,
+        ok:  "✓ Correct! Method overriding is a form of polymorphism — same name, different behaviour.",
+        bad: "✗ Not quite. Overriding a parent method is polymorphism — same interface, different implementation."
+      }
+    ]
+  },
+
+  /* ── 9: Searching & Recursion ───────────────────────────── */
+  {
+    title: "Searching & Recursion",
+    icon: "fas fa-search",
+    tag: "Lesson 10 of 11",
+    filename: "searching.py",
+    explanation: `
+      <p><strong>Searching algorithms</strong> locate a target value in a collection. Two classics:</p>
+      <ul>
+        <li><strong>Linear Search</strong> — check each element in order. Works on any array. O(n).</li>
+        <li><strong>Binary Search</strong> — requires a <em>sorted</em> array. Each step eliminates half the remaining candidates → O(log n). Dramatically faster for large inputs.</li>
+      </ul>
+      <p><strong>Recursion</strong> is when a function calls <em>itself</em>. Every recursive function needs two things:</p>
+      <ul>
+        <li><strong>Base case</strong> — the stopping condition that ends the chain of calls</li>
+        <li><strong>Recursive case</strong> — the function calls itself with a simpler or smaller input</li>
+      </ul>
+      <p>Example: <code>factorial(5)</code> = 5 × factorial(4) = 5 × 4 × 3 × 2 × 1 = 120.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">Linear Search — O(n)</span>
+        <span class="concept-tag">Binary Search — O(log n)</span>
+        <span class="concept-tag">Sorted Array</span>
+        <span class="concept-tag">Recursion</span>
+        <span class="concept-tag">Base Case</span>
+      </div>`,
+    code: `# Binary Search — O(log n)
+def binary_search(arr, target):
+    lo, hi = 0, len(arr) - 1
+    steps  = 0
+    while lo <= hi:
+        steps += 1
+        mid = (lo + hi) // 2
+        if arr[mid] == target:
+            return mid, steps
+        elif arr[mid] < target:
+            lo = mid + 1    # search right half
+        else:
+            hi = mid - 1    # search left half
+    return -1, steps
+
+nums = [2, 5, 8, 12, 16, 23, 38, 42, 56, 72, 91]
+idx, steps = binary_search(nums, 42)
+print(f"Found 42 at index {idx} in {steps} step(s)")
+
+# Recursion — factorial
+def factorial(n):
+    if n <= 1:                      # base case
+        return 1
+    return n * factorial(n - 1)    # recursive call
+
+print(f"5!  = {factorial(5)}")     # 120
+print(f"10! = {factorial(10)}")    # 3628800`,
+    output: `Found 42 at index 7 in 4 step(s)
+5!  = 120
+10! = 3628800`,
+    interactive: {
+      type: "search-vis",
+      data: [2, 5, 8, 12, 16, 23, 38, 42, 56, 72, 91],
+      target: 42
+    },
+    quiz: [
+      {
+        q: "What does Binary Search require that Linear Search does not?",
+        opts: ["A hash table", "The array must be sorted", "Exactly n elements", "Recursion"],
+        answer: 1,
+        ok:  "✓ Correct! Binary Search only works on a sorted array — it halves the search space each step.",
+        bad: "✗ Not quite. Binary Search requires a sorted array to correctly eliminate halves."
+      },
+      {
+        q: "Every recursive function must have a ______ to prevent infinite recursion.",
+        opts: ["global variable", "return type", "base case", "loop"],
+        answer: 2,
+        ok:  "✓ Correct! A base case is the stopping condition that ends the chain of recursive calls.",
+        bad: "✗ Not quite. A base case is essential — without it, the function recurses forever and crashes."
+      }
+    ]
+  },
+
+  /* ── 10: Practical Programming ──────────────────────────── */
+  {
+    title: "Practical Programming",
+    icon: "fas fa-rocket",
+    tag: "Lesson 11 of 11",
+    filename: "practical.py",
+    explanation: `
+      <p>Real programs combine everything you've learned into useful tools. Three classic beginner projects:</p>
+      <ul>
+        <li><strong>Text-Based Games</strong>: loops, conditionals, and <code>input()</code> power interactive stories. Hangman, number guessing games, and choose-your-own-adventure are all built with the basics.</li>
+        <li><strong>Data Parsers</strong>: Python's built-in <code>csv</code> module reads comma-separated files. Combine it with list comprehensions to compute averages, find extremes, and rank records — no external library needed.</li>
+        <li><strong>Basic APIs</strong>: the <code>requests</code> library (install via pip) lets you fetch live data from the web. A single <code>requests.get(url).json()</code> call can return weather data, news headlines, or currency rates.</li>
+      </ul>
+      <p>The code below demonstrates a CSV data parser — one of the most common everyday programming tasks.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">csv module</span>
+        <span class="concept-tag">List Comprehensions</span>
+        <span class="concept-tag">Data Analysis</span>
+        <span class="concept-tag">requests library</span>
+        <span class="concept-tag">Text-Based Games</span>
+      </div>`,
+    code: `import csv, io
+
+# Simulate reading a CSV file from disk
+csv_data = """name,score,grade
+Alice,92,A
+Bob,78,B
+Carol,85,B
+Dave,61,D
+Eve,98,A"""
+
+reader   = csv.DictReader(io.StringIO(csv_data))
+students = list(reader)
+
+# Compute stats using list comprehension
+scores = [int(s['score']) for s in students]
+avg    = sum(scores) / len(scores)
+top    = max(students, key=lambda s: int(s['score']))
+bottom = min(students, key=lambda s: int(s['score']))
+
+print(f"Students  : {len(students)}")
+print(f"Average   : {avg:.1f}")
+print(f"Top scorer: {top['name']} ({top['score']})")
+print(f"Lowest    : {bottom['name']} ({bottom['score']})")
+print()
+
+# Sort and display a ranked leaderboard
+ranked = sorted(students, key=lambda s: int(s['score']), reverse=True)
+for i, s in enumerate(ranked, 1):
+    print(f"  #{i}  {s['name']:6}  {s['score']}  Grade: {s['grade']}")`,
+    output: `Students  : 5
+Average   : 82.8
+Top scorer: Eve (98)
+Lowest    : Dave (61)
+
+  #1  Eve     98  Grade: A
+  #2  Alice   92  Grade: A
+  #3  Carol   85  Grade: B
+  #4  Bob     78  Grade: B
+  #5  Dave    61  Grade: D`,
+    interactive: {
+      type: "practical-vis",
+      students: [
+        { name: "Alice", score: 92, grade: "A" },
+        { name: "Bob",   score: 78, grade: "B" },
+        { name: "Carol", score: 85, grade: "B" },
+        { name: "Dave",  score: 61, grade: "D" },
+        { name: "Eve",   score: 98, grade: "A" }
+      ]
+    },
+    quiz: [
+      {
+        q: "Which Python module is used to read CSV (comma-separated values) files?",
+        opts: ["json", "io", "csv", "pandas"], answer: 2,
+        ok:  "✓ Correct! Python's built-in csv module provides csv.reader and csv.DictReader.",
+        bad: "✗ Not quite. The built-in csv module handles CSV files — no external library needed."
+      },
+      {
+        q: "What does <code>requests.get(url).json()</code> return when fetching a JSON API?",
+        opts: [
+          "A raw HTML string",
+          "A Python dict or list parsed from the JSON response",
+          "A binary file object",
+          "A CSV string"
+        ],
+        answer: 1,
+        ok:  "✓ Correct! .json() parses the JSON response into a native Python dict or list.",
+        bad: "✗ Not quite. .json() automatically converts the JSON body into Python objects (dict/list)."
       }
     ]
   }
@@ -1004,6 +1534,11 @@ function renderInteractive(cfg) {
     'fn-demo':        renderFnDemo,
     'ds-visual':      renderDsVisual,
     'sort-vis':       renderSortVis,
+    'op-explorer':    renderOpExplorer,
+    'string-lab':     renderStringLab,
+    'class-vis':      renderClassVis,
+    'search-vis':     renderSearchVis,
+    'practical-vis':  renderPracticalVis,
   };
   const fn = handlers[cfg.type];
   if (fn) fn(zone, cfg);
@@ -1326,6 +1861,317 @@ function renderSortVis(zone, cfg) {
   window.sortReset = () => { draw(stepIdx = 0); };
 
   draw(0);
+}
+
+/* ──────────────────────────────────────────────────────────
+   Operator Explorer (Lesson 7)
+   ────────────────────────────────────────────────────────── */
+function renderOpExplorer(zone) {
+  const OPS = [
+    { sym: '+',  name: 'Addition',       desc: 'Sum of two numbers' },
+    { sym: '-',  name: 'Subtraction',    desc: 'Difference between two numbers' },
+    { sym: '*',  name: 'Multiplication', desc: 'Product of two numbers' },
+    { sym: '/',  name: 'Division',       desc: 'Quotient — always a float in Python 3' },
+    { sym: '//', name: 'Floor Division', desc: 'Quotient rounded down to the nearest integer' },
+    { sym: '%',  name: 'Modulo',         desc: 'Remainder after integer division' },
+    { sym: '**', name: 'Exponentiation', desc: 'Left operand raised to the power of the right' },
+  ];
+
+  zone.innerHTML = `
+    <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .75rem;">
+      Enter two numbers, pick an operator, and see the result live.
+      The table below highlights the selected operator.
+    </p>
+    <div class="op-explorer">
+      <div class="op-row">
+        <input type="number" class="op-num-input" id="opA" value="17">
+        <select class="op-select" id="opSym">
+          ${OPS.map(o => `<option value="${o.sym}">${o.sym}</option>`).join('')}
+        </select>
+        <input type="number" class="op-num-input" id="opB" value="5">
+        <span class="op-equals">=</span>
+        <span class="op-result-val" id="opResult">—</span>
+      </div>
+      <div style="font-size:.83rem;color:var(--text-secondary);min-height:1.2em;" id="opDesc"></div>
+      <table class="op-ref-table">
+        <thead>
+          <tr><th>Symbol</th><th>Name</th><th>a=17, b=5</th><th>Result</th></tr>
+        </thead>
+        <tbody id="opTbody"></tbody>
+      </table>
+    </div>`;
+
+  function compute(a, b, sym) {
+    if (sym === '+')  return a + b;
+    if (sym === '-')  return a - b;
+    if (sym === '*')  return a * b;
+    if (sym === '/')  return b !== 0 ? a / b : '÷0 error';
+    if (sym === '//') return b !== 0 ? Math.floor(a / b) : '÷0 error';
+    if (sym === '%')  return b !== 0 ? ((a % b) + Math.abs(b)) % Math.abs(b) : '÷0 error';
+    if (sym === '**') return Math.pow(a, b);
+    return '?';
+  }
+
+  function fmt(v) {
+    if (typeof v !== 'number') return String(v);
+    return Number.isInteger(v) ? String(v) : v.toFixed(4).replace(/\.?0+$/, '');
+  }
+
+  function update() {
+    const a   = parseFloat(document.getElementById('opA').value) || 0;
+    const b   = parseFloat(document.getElementById('opB').value) || 0;
+    const sym = document.getElementById('opSym').value;
+    document.getElementById('opResult').textContent = fmt(compute(a, b, sym));
+    document.getElementById('opDesc').textContent   = OPS.find(o => o.sym === sym)?.desc || '';
+    document.getElementById('opTbody').innerHTML = OPS.map(o =>
+      `<tr class="${o.sym === sym ? 'op-active' : ''}">
+         <td><code>${o.sym}</code></td>
+         <td>${o.name}</td>
+         <td>17 ${o.sym} 5</td>
+         <td><code>${fmt(compute(17, 5, o.sym))}</code></td>
+       </tr>`).join('');
+  }
+
+  ['opA', 'opB', 'opSym'].forEach(id => {
+    document.getElementById(id).addEventListener('input', update);
+    document.getElementById(id).addEventListener('change', update);
+  });
+  update();
+}
+
+/* ──────────────────────────────────────────────────────────
+   String Lab (Lesson 8)
+   ────────────────────────────────────────────────────────── */
+function renderStringLab(zone) {
+  zone.innerHTML = `
+    <div class="string-lab">
+      <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .25rem;">
+        Type any string and see Python's built-in string methods applied live.
+      </p>
+      <div class="str-input-row">
+        <label>s =</label>
+        <input type="text" id="strInput" value="Hello, World!" maxlength="60"
+               placeholder="Type a string…">
+      </div>
+      <div class="str-ops-grid" id="strOpsGrid"></div>
+    </div>`;
+
+  function titleCase(str) {
+    return str.replace(/\w\S*/g, t => t[0].toUpperCase() + t.slice(1).toLowerCase());
+  }
+
+  function update() {
+    const s = document.getElementById('strInput').value;
+    const ops = [
+      { name: 'len(s)',                val: s.length },
+      { name: 's.upper()',             val: JSON.stringify(s.toUpperCase()) },
+      { name: 's.lower()',             val: JSON.stringify(s.toLowerCase()) },
+      { name: 's.title()',             val: JSON.stringify(titleCase(s)) },
+      { name: 's[0:5]',               val: JSON.stringify(s.slice(0, 5)) },
+      { name: 's[-4:]',               val: JSON.stringify(s.slice(-4)) },
+      { name: 's[::-1]',              val: JSON.stringify(s.split('').reverse().join('')) },
+      { name: 's.replace(" ","_")',   val: JSON.stringify(s.replaceAll(' ', '_')) },
+      { name: '"World" in s',         val: s.includes('World') ? 'True' : 'False' },
+      { name: 's.split(",")',         val: JSON.stringify(s.split(',')) },
+    ];
+    document.getElementById('strOpsGrid').innerHTML = ops.map(o =>
+      `<div class="str-op-card">
+         <div class="str-op-name">${o.name}</div>
+         <div class="str-op-val">${o.val}</div>
+       </div>`).join('');
+  }
+
+  document.getElementById('strInput').addEventListener('input', update);
+  update();
+}
+
+/* ──────────────────────────────────────────────────────────
+   Class Visualizer — OOP (Lesson 9)
+   ────────────────────────────────────────────────────────── */
+function renderClassVis(zone) {
+  const CLASSES = [
+    {
+      name: 'Car', label: 'Parent class',
+      attrs:   ['self.make', 'self.model', 'self.year', 'self._mileage  # "private"'],
+      methods: ['__init__(make, model, year)', 'drive(miles)', 'describe()'],
+      desc: 'The blueprint for all cars. Defines shared state (make, model, year, mileage) and behaviour (drive, describe). The _mileage convention signals it should not be modified directly from outside the class — this is encapsulation.'
+    },
+    {
+      name: 'ElectricCar', label: 'Child class — inherits Car',
+      attrs:   ['self.battery_kwh  # new attribute'],
+      methods: ['__init__(make, model, year, battery_kwh)', 'describe()  # overrides parent'],
+      desc: "Inherits all of Car's attributes and methods automatically via super(). Adds battery_kwh and overrides describe() to return richer info. Calling describe() on any Car-like object works the same way — that's polymorphism."
+    }
+  ];
+
+  zone.innerHTML = `
+    <div class="class-vis-wrap">
+      <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .5rem;">
+        Click a class box to inspect its attributes and methods. The arrow shows inheritance.
+      </p>
+      <div class="class-hierarchy">
+        ${CLASSES.map((c, i) => `
+          <div class="class-diagram-box" id="cdb-${i}" onclick="pickClass(${i})">
+            <div class="class-diagram-hdr">
+              <span>class ${c.name}</span>
+              <span class="class-label">${c.label}</span>
+            </div>
+            <div class="class-diagram-body">
+              ${c.attrs.map(a => `<div class="cattr">  ${a}</div>`).join('')}
+              ${c.methods.map(m => `<div class="cmeth">  def ${m}</div>`).join('')}
+            </div>
+          </div>
+          ${i < CLASSES.length - 1 ? '<div class="inherit-connector">↓ inherits</div>' : ''}`
+        ).join('')}
+      </div>
+      <div class="class-detail-panel" id="classDetailPanel">
+        <h4>← Click a class to learn about it</h4>
+      </div>
+    </div>`;
+
+  window.pickClass = function (i) {
+    document.querySelectorAll('.class-diagram-box')
+      .forEach((b, j) => b.classList.toggle('active', j === i));
+    const c = CLASSES[i];
+    document.getElementById('classDetailPanel').innerHTML = `
+      <h4>${c.name}</h4>
+      <p>${c.desc}</p>
+      <ul class="class-detail-list">
+        <li class="cdl-section">Attributes</li>
+        ${c.attrs.map(a => `<li><span>${a}</span></li>`).join('')}
+        <li class="cdl-section">Methods</li>
+        ${c.methods.map(m => `<li><span>def ${m}</span></li>`).join('')}
+      </ul>`;
+  };
+}
+
+/* ──────────────────────────────────────────────────────────
+   Search Visualizer — Binary Search (Lesson 10)
+   ────────────────────────────────────────────────────────── */
+function renderSearchVis(zone, cfg) {
+  const arr    = cfg.data;
+  const target = cfg.target;
+
+  function buildSteps(arr, target) {
+    const steps = [];
+    let lo = 0, hi = arr.length - 1;
+    steps.push({ lo, hi, mid: -1, gone: [], desc: `Binary Search for ${target}. Initial range: lo=0, hi=${hi}.`, found: false });
+    while (lo <= hi) {
+      const mid  = Math.floor((lo + hi) / 2);
+      const gone = [];
+      if (arr[mid] === target) {
+        steps.push({ lo, hi, mid, gone, desc: `arr[${mid}] = ${arr[mid]} ✓  Found ${target} at index ${mid}!`, found: true, foundIdx: mid });
+        break;
+      } else if (arr[mid] < target) {
+        for (let i = 0; i <= mid; i++) gone.push(i);
+        const newLo = mid + 1;
+        steps.push({ lo: newLo, hi, mid, gone, desc: `arr[${mid}]=${arr[mid]} < ${target}. Eliminate left half → lo = ${newLo}.`, found: false });
+        lo = newLo;
+      } else {
+        for (let i = mid; i < arr.length; i++) gone.push(i);
+        const newHi = mid - 1;
+        steps.push({ lo, hi: newHi, mid, gone, desc: `arr[${mid}]=${arr[mid]} > ${target}. Eliminate right half → hi = ${newHi}.`, found: false });
+        hi = newHi;
+      }
+    }
+    return steps;
+  }
+
+  const steps = buildSteps(arr, target);
+  let si = 0;
+
+  zone.innerHTML = `
+    <div class="search-vis">
+      <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .25rem;">
+        Step through Binary Search for <strong>${target}</strong> in this sorted array.
+      </p>
+      <div class="search-ptrs-row" id="sPtrs"></div>
+      <div class="search-arr-row"  id="sArr"></div>
+      <div class="search-legend">
+        <span><span style="background:#e2e8f0;padding:0 4px;border-radius:2px;">□</span> Normal</span>
+        <span><span style="color:#fbbf24">■</span> Mid (comparing)</span>
+        <span><span style="color:#22c55e">■</span> Found</span>
+        <span style="color:#cbd5e1">■ Eliminated</span>
+      </div>
+      <div class="search-controls">
+        <button class="s-btn" id="sBtnPrev" onclick="sBinPrev()" disabled>← Prev</button>
+        <button class="s-btn" id="sBtnNext" onclick="sBinNext()">Next →</button>
+        <button class="s-btn" onclick="sBinReset()">↺ Reset</button>
+      </div>
+      <div class="search-step-desc" id="sDesc">Press Next to start Binary Search.</div>
+    </div>`;
+
+  function draw(idx) {
+    const s = steps[idx];
+    document.getElementById('sArr').innerHTML = arr.map((v, i) => {
+      let cls = 's-val';
+      if (s.found && i === s.foundIdx) cls += ' s-found';
+      else if (s.gone.includes(i)) cls += ' s-gone';
+      else if (i === s.mid && idx > 0) cls += ' s-mid';
+      return `<div class="search-cell">
+        <div class="${cls}">${v}</div>
+        <div class="s-idx">[${i}]</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('sPtrs').innerHTML = arr.map((_, i) => {
+      const lbls = [];
+      if (!s.found) {
+        if (i === s.lo) lbls.push(`<span style="color:#22c55e">lo</span>`);
+        if (i === s.hi) lbls.push(`<span style="color:#ef4444">hi</span>`);
+      }
+      if (i === s.mid && idx > 0) lbls.push(`<span style="color:#f59e0b">mid</span>`);
+      return `<div class="search-ptr-cell">${lbls.join(' ')}</div>`;
+    }).join('');
+
+    document.getElementById('sDesc').textContent = s.desc;
+    document.getElementById('sBtnPrev').disabled = idx === 0;
+    document.getElementById('sBtnNext').disabled = idx === steps.length - 1;
+  }
+
+  window.sBinNext  = () => { if (si < steps.length - 1) draw(++si); };
+  window.sBinPrev  = () => { if (si > 0) draw(--si); };
+  window.sBinReset = () => { draw(si = 0); };
+  draw(0);
+}
+
+/* ──────────────────────────────────────────────────────────
+   Practical Visualizer — CSV data table (Lesson 11)
+   ────────────────────────────────────────────────────────── */
+function renderPracticalVis(zone, cfg) {
+  const students = cfg.students;
+  const scores   = students.map(s => s.score);
+  const avg      = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+  const maxScore = Math.max(...scores);
+  const minScore = Math.min(...scores);
+  const ranked   = [...students].sort((a, b) => b.score - a.score);
+
+  zone.innerHTML = `
+    <div class="practical-vis">
+      <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .5rem;">
+        CSV data parsed and sorted. The highlighted row is the top scorer.
+      </p>
+      <div class="stat-pills">
+        <div class="stat-pill">Count: <strong>${students.length}</strong></div>
+        <div class="stat-pill">Average: <strong>${avg}</strong></div>
+        <div class="stat-pill">Highest: <strong>${maxScore}</strong></div>
+        <div class="stat-pill">Lowest: <strong>${minScore}</strong></div>
+      </div>
+      <table class="prac-table">
+        <thead>
+          <tr><th>Rank</th><th>Name</th><th>Score</th><th>Grade</th></tr>
+        </thead>
+        <tbody>
+          ${ranked.map((s, i) => `
+            <tr class="${s.score === maxScore ? 'prac-top' : ''}">
+              <td>#${i + 1}</td>
+              <td>${s.name}</td>
+              <td>${s.score}</td>
+              <td><span class="grade-pill g${s.grade}">${s.grade}</span></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
 }
 
 /* ============================================================
