@@ -26,6 +26,9 @@ logger = logging.getLogger(__name__)
 # Initialize Flask application.
 app = Flask(__name__)
 
+from website_blueprint import website_bp
+app.register_blueprint(website_bp, url_prefix='/website')
+
 # Global model variables.
 digit_model = None
 scaler = None

@@ -1,0 +1,164 @@
+{% extends "website/base.html" %}
+{% block title %}Checkout — WebCraft Store{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Secure Checkout</h1>
+</div>
+
+<div class="checkout-layout">
+  <!-- Order review -->
+  <div class="checkout-items">
+    <h2>Order Review</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Qty</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>
+            <span class="item-icon">{{ item.product.icon }}</span>
+            <strong>{{ item.product.name }}</strong>
+          </td>
+          <td>{{ item.qty }}</td>
+          <td>${{ "%.2f"|format(item.subtotal) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="2"><strong>Total</strong></td>
+          <td><strong>${{ "%.2f"|format(total) }}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Payment -->
+  <aside class="checkout-payment">
+    <h2>Payment Method</h2>
+    <p class="payment-note">
+      Choose <strong>PayPal</strong> or <strong>Venmo</strong> below.
+      Your payment is processed securely by PayPal.
+    </p>
+
+    <!-- Payment buttons -->
+    <div id="paypal-button-container"></div>
+
+    {% if not sdk_ready %}
+    <!-- Fallback manual buttons when SDK is not yet configured -->
+    <div class="manual-pay">
+      {% if paypal_me_username %}
+      <a class="pay-btn pay-btn--paypal"
+         href="https://www.paypal.com/paypalme/{{ paypal_me_username }}/{{ '%.2f'|format(total) }}"
+         target="_blank" rel="noopener noreferrer">
+        <img src="/static/images/paypal-logo.svg" alt="" class="pay-btn__logo" />
+        Pay ${{ '%.2f'|format(total) }} with PayPal
+      </a>
+      {% else %}
+      <a class="pay-btn pay-btn--paypal"
+         href="https://www.paypal.com/" target="_blank" rel="noopener noreferrer">
+        <img src="/static/images/paypal-logo.svg" alt="" class="pay-btn__logo" />
+        Pay with PayPal
+      </a>
+      {% endif %}
+
+      {% if venmo_username %}
+      <a class="pay-btn pay-btn--venmo"
+         href="https://venmo.com/{{ venmo_username }}?txn=pay&amount={{ '%.2f'|format(total) }}&note=WebCraft+Store"
+         target="_blank" rel="noopener noreferrer">
+        <img src="/static/images/venmo-logo.svg" alt="" class="pay-btn__logo" />
+        Pay ${{ '%.2f'|format(total) }} with Venmo
+      </a>
+      {% else %}
+      <a class="pay-btn pay-btn--venmo"
+         href="https://venmo.com/" target="_blank" rel="noopener noreferrer">
+        <img src="/static/images/venmo-logo.svg" alt="" class="pay-btn__logo" />
+        Pay with Venmo
+      </a>
+      {% endif %}
+
+      <p class="config-hint">
+        💡 <strong>Developer:</strong> set <code>PAYPAL_ME_USERNAME</code> / <code>VENMO_USERNAME</code>
+        in <code>.env</code>, or set <code>PAYPAL_CLIENT_ID</code> to enable the full PayPal SDK checkout.
+      </p>
+    </div>
+    {% endif %}
+
+    <div id="payment-error" class="alert alert--danger" style="display:none"></div>
+
+    <div class="payment-badges">
+      <span>🔒 256-bit SSL</span>
+      <span>🛡️ Buyer Protection</span>
+    </div>
+
+    <p class="back-link"><a href="/website/cart">← Back to Cart</a></p>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if sdk_ready %}
+<!--
+  PayPal JavaScript SDK
+  enable-funding=venmo  → shows Venmo button for eligible US buyers
+-->
+<script
+  src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=USD&enable-funding=venmo&intent=capture"
+  data-sdk-integration-source="button-factory"
+  onerror="showSdkError()">
+</script>
+<script>
+  function showSdkError() {
+    const el = document.getElementById("payment-error");
+    el.textContent = "Could not load the PayPal SDK. Check your Client ID or network and try again.";
+    el.style.display = "block";
+  }
+
+  const ORDER_TOTAL = "{{ '%.2f'|format(total) }}";
+
+  if (typeof paypal !== "undefined") {
+    paypal.Buttons({
+      style: {
+        layout: "vertical",
+        color:  "blue",
+        shape:  "rect",
+        label:  "pay",
+      },
+      createOrder: function(data, actions) {
+        return actions.order.create({
+          purchase_units: [{
+            amount: { value: ORDER_TOTAL, currency_code: "USD" },
+            description: "WebCraft Store — Personal Website Package(s)"
+          }]
+        });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function() {
+          return fetch("/checkout/complete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderID: data.orderID })
+          })
+          .then(res => res.json())
+          .then(() => { window.location.href = "/order-success"; });
+        });
+      },
+      onError: function(err) {
+        const el = document.getElementById("payment-error");
+        el.textContent = "Payment failed. Please try again.";
+        el.style.display = "block";
+        console.error("PayPal error:", err);
+      }
+    }).render("#paypal-button-container");
+  } else {
+    showSdkError();
+  }
+</script>
+{% endif %}
+{% endblock %}

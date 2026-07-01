@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}WebCraft Store{% endblock %}</title>
+  <link rel="stylesheet" href="/static/website/css/styles.css" />
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <!-- ── Navigation ── -->
+  <nav class="nav">
+    <a class="nav__brand" href="/website/">
+      <span class="nav__logo">🌐</span> WebCraft Store
+    </a>
+    <div class="nav__links">
+      <a href="/">Main Site</a>
+      <a href="/website/">Shop</a>
+      <a href="/website/demo" target="_blank">Example Site</a>
+      <a href="/website/cart" class="nav__cart">
+        🛒 Cart
+        {% if cart_count > 0 %}
+          <span class="badge">{{ cart_count }}</span>
+        {% endif %}
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Flash messages (set by routes via context) ── -->
+  {% if flash %}
+  <div class="flash flash--{{ flash_type | default('info') }}">{{ flash }}</div>
+  {% endif %}
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 WebCraft Store · Secure checkout via PayPal &amp; Venmo</p>
+  </footer>
+
+  <script src="/static/website/js/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

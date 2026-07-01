@@ -1,0 +1,69 @@
+{% extends "website/base.html" %}
+{% block title %}Shopping Cart — WebCraft Store{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>🛒 Your Cart</h1>
+</div>
+
+{% if items %}
+<div class="cart-layout">
+  <!-- Items table -->
+  <div class="cart-items">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>
+            <span class="item-icon">{{ item.product.icon }}</span>
+            <strong>{{ item.product.name }}</strong>
+            <br><small class="text-muted">{{ item.product.tagline }}</small>
+          </td>
+          <td>${{ "%.2f"|format(item.product.price) }}</td>
+          <td>{{ item.qty }}</td>
+          <td>${{ "%.2f"|format(item.subtotal) }}</td>
+          <td>
+            <form method="POST" action="/website/cart/remove/{{ item.product.id }}">
+              <button type="submit" class="btn btn--danger btn--sm" title="Remove">✕</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Order summary -->
+  <aside class="cart-summary">
+    <h2>Order Summary</h2>
+    <div class="summary-line">
+      <span>Subtotal</span>
+      <span>${{ "%.2f"|format(total) }}</span>
+    </div>
+    <div class="summary-line summary-line--total">
+      <span>Total</span>
+      <span>${{ "%.2f"|format(total) }}</span>
+    </div>
+    <a href="/website/checkout" class="btn btn--primary btn--full">Proceed to Checkout →</a>
+    <a href="/website/" class="btn btn--ghost btn--full">← Continue Shopping</a>
+  </aside>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-state__icon">🛒</div>
+  <h2>Your cart is empty</h2>
+  <p>Browse our packages and add one to get started.</p>
+  <a href="/website/" class="btn btn--primary">Browse Packages</a>
+</div>
+{% endif %}
+{% endblock %}
