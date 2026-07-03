@@ -41,6 +41,9 @@
                 <a href="{{ url_for('learn') }}" class="nav-link {% if request.endpoint == 'learn' %}active{% endif %}">
                     <i class="fas fa-graduation-cap"></i> Learn
                 </a>
+                <a href="{{ url_for('learn_electrician') }}" class="nav-link {% if request.endpoint == 'learn_electrician' %}active{% endif %}">
+                    <i class="fas fa-bolt"></i> Electrician
+                </a>
             </div>
         </div>
     </nav>

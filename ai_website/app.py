@@ -254,6 +254,222 @@ def learn():
     """Render the interactive CS basics learning page."""
     return render_template('learn.html')
 
+@app.route('/learn-electrician')
+def learn_electrician():
+    """Render the electrician apprenticeship learning page."""
+    return render_template('learn_electrician.html')
+
+@app.route('/learn-electrician/<topic>')
+def learn_electrician_topic(topic):
+    """Render a specific electrician apprenticeship topic."""
+    topics = {
+        'ohms-law': {
+            'title': "Ohm's Law", 
+            'icon': 'fa-plug',
+            'content': "Ohm's Law describes the relationship between Voltage (V), Current (I), and Resistance (R). The core formula is V = I × R. The Power Formula (Watt's Law) adds Power (P) in watts, where P = V × I. These form the absolute foundation of circuit design and troubleshooting.",
+            'interactive_type': 'ohms-law-calc',
+            'quiz': [
+                {
+                    'q': 'If a circuit has a voltage of 120V and a resistance of 60Ω, what is the current?',
+                    'opts': ['2A', '0.5A', '7200A', '60A'],
+                    'answer': 0,
+                    'ok': '✓ Correct! I = V / R. 120 / 60 = 2A.',
+                    'bad': '✗ Not quite. Remember I = V / R.'
+                },
+                {
+                    'q': 'What happens to current if resistance increases and voltage stays the same?',
+                    'opts': ['Increases', 'Decreases', 'Stays the same', 'Goes to zero'],
+                    'answer': 1,
+                    'ok': '✓ Correct! Current is inversely proportional to resistance.',
+                    'bad': '✗ Not quite. If resistance goes up, it is harder for current to flow.'
+                },
+                {
+                    'q': 'What is the power consumed by a 120V circuit drawing 10 amps?',
+                    'opts': ['12 Watts', '1200 Watts', '120 Watts', '14400 Watts'],
+                    'answer': 1,
+                    'ok': '✓ Correct! Power = Voltage × Current. 120V × 10A = 1200W.',
+                    'bad': '✗ Not quite. Use the Power formula: P = V × I.'
+                }
+            ]
+        },
+        'series-parallel': {
+            'title': "Series vs. Parallel Circuits", 
+            'icon': 'fa-network-wired',
+            'content': "In a series circuit, components are connected end-to-end, so the same current flows through all of them. In a parallel circuit, components are connected across the same voltage points, so the voltage is the same across each, but the current splits. Most house wiring is parallel so turning off one light doesn't turn off all of them.",
+            'interactive_type': 'series-parallel-vis',
+            'quiz': [
+                {
+                    'q': 'In a series circuit, what happens if one light bulb burns out?',
+                    'opts': ['The others get brighter', 'The others get dimmer', 'All bulbs go out', 'Nothing changes'],
+                    'answer': 2,
+                    'ok': '✓ Correct! A series circuit has only one path for current. If it breaks, current stops.',
+                    'bad': '✗ Not quite. Think about the path of the current.'
+                },
+                {
+                    'q': 'How are outlets in a standard residential room wired?',
+                    'opts': ['In Series', 'In Parallel', 'Both', 'Neither'],
+                    'answer': 1,
+                    'ok': '✓ Correct! They are in parallel so they all receive 120V independent of each other.',
+                    'bad': '✗ Not quite. If they were in series, unplugging a lamp would kill the TV.'
+                }
+            ]
+        },
+        'safety': {
+            'title': "Electrical Safety", 
+            'icon': 'fa-shield-alt',
+            'content': "Safety is paramount in electrical work. Lockout/Tagout (LOTO) is a safety procedure used to ensure that dangerous machines are properly shut off and not able to be started up again prior to the completion of maintenance. Arc flash and shock are the two primary electrical hazards.",
+            'interactive_type': 'none',
+            'quiz': [
+                {
+                    'q': 'What is the primary purpose of Lockout/Tagout (LOTO)?',
+                    'opts': ['To save energy', 'To prevent accidental re-energization', 'To organize equipment', 'To pass inspection'],
+                    'answer': 1,
+                    'ok': '✓ Correct! LOTO ensures equipment is safely de-energized and cannot be turned on.',
+                    'bad': '✗ Not quite. It is a critical safety measure for maintenance.'
+                },
+                {
+                    'q': 'Which of the following is NOT an acceptable way to test if a wire is live?',
+                    'opts': ['Non-contact voltage tester', 'Multimeter', 'Touching it quickly', 'Plug-in tester'],
+                    'answer': 2,
+                    'ok': '✓ Correct! Never touch a wire to test if it is live.',
+                    'bad': '✗ Not quite. Always use a proper testing device.'
+                }
+            ]
+        },
+        'nec': {
+            'title': "National Electrical Code (NEC)", 
+            'icon': 'fa-book-open',
+            'content': "The NEC is a standard for the safe installation of electrical wiring and equipment. It is updated every three years (e.g., 2017, 2020, 2023) and is adopted by states and municipalities as law. Understanding how to navigate the index and articles is a vital skill.",
+            'interactive_type': 'none',
+            'quiz': [
+                {
+                    'q': 'How often is the National Electrical Code (NEC) typically updated?',
+                    'opts': ['Every year', 'Every 2 years', 'Every 3 years', 'Every 5 years'],
+                    'answer': 2,
+                    'ok': '✓ Correct! The NFPA updates the NEC every 3 years.',
+                    'bad': '✗ Not quite. The cycle is every three years.'
+                }
+            ]
+        },
+        'ac-dc': {
+            'title': "AC/DC Theory", 
+            'icon': 'fa-lightbulb',
+            'content': "Alternating Current (AC) periodically reverses direction, which is standard for grid power because it can be easily transformed to different voltages. Direct Current (DC) flows in one direction, typical in batteries, solar panels, and electronics.",
+            'interactive_type': 'ac-dc-vis',
+            'quiz': [
+                {
+                    'q': 'Why is AC predominantly used for power distribution instead of DC?',
+                    'opts': ['It is safer', 'It can easily be stepped up/down with transformers', 'It is cheaper to generate', 'It travels faster'],
+                    'answer': 1,
+                    'ok': '✓ Correct! Transformers allow AC voltage to be stepped up for efficient long-distance transmission.',
+                    'bad': '✗ Not quite. The main advantage is voltage transformation.'
+                },
+                {
+                    'q': 'Which frequency is standard for AC power in North America?',
+                    'opts': ['50 Hz', '60 Hz', '120 Hz', '240 Hz'],
+                    'answer': 1,
+                    'ok': '✓ Correct! 60 Hz is standard in the US and Canada.',
+                    'bad': '✗ Not quite. The standard frequency in North America is 60 cycles per second.'
+                }
+            ]
+        },
+        'tools': {
+            'title': "Tools & Materials", 
+            'icon': 'fa-tools',
+            'content': "Electricians use multimeters to measure voltage, current, and resistance. Wire strippers are used to remove insulation, and lineman's pliers are used for cutting, twisting, and gripping wires. Materials like EMT conduit and THHN wire are standard in commercial settings.",
+            'interactive_type': 'none',
+            'quiz': [
+                {
+                    'q': 'What tool is best for measuring if a circuit is live (has voltage)?',
+                    'opts': ['Lineman pliers', 'Wire strippers', 'Multimeter / Voltage tester', 'Tape measure'],
+                    'answer': 2,
+                    'ok': '✓ Correct! A multimeter or voltage tester safely indicates presence of voltage.',
+                    'bad': '✗ Not quite. You need a tool designed to read electrical properties.'
+                }
+            ]
+        },
+        'transformers': {
+            'title': "Transformers", 
+            'icon': 'fa-charging-station',
+            'content': "A transformer transfers electrical energy between two or more circuits through electromagnetic induction. They are used to 'step up' or 'step down' AC voltages. A step-down transformer has fewer turns on the secondary coil than on the primary.",
+            'interactive_type': 'none',
+            'quiz': [
+                {
+                    'q': 'Can a standard transformer change DC voltage?',
+                    'opts': ['Yes, just like AC', 'No, transformers only work with AC', 'Only if it is a step-up', 'Only if it is a step-down'],
+                    'answer': 1,
+                    'ok': '✓ Correct! Electromagnetic induction requires a changing magnetic field, which AC provides.',
+                    'bad': '✗ Not quite. Transformers rely on the alternating magnetic field of AC.'
+                },
+                {
+                    'q': 'A transformer has 100 turns on the primary and 50 turns on the secondary. If 120V is applied to the primary, what is the secondary voltage?',
+                    'opts': ['240V', '60V', '120V', '0V'],
+                    'answer': 1,
+                    'ok': '✓ Correct! It is a 2:1 step-down transformer. 120 / 2 = 60V.',
+                    'bad': '✗ Not quite. The voltage ratio is the same as the turns ratio.'
+                }
+            ]
+        },
+        'wire-sizing': {
+            'title': "Wire Sizing & Ampacity", 
+            'icon': 'fa-ruler',
+            'content': "American Wire Gauge (AWG) determines the physical thickness of a wire. A smaller AWG number means a thicker wire. 'Ampacity' is the maximum current a conductor can carry continuously without exceeding its temperature rating.",
+            'interactive_type': 'none',
+            'quiz': [
+                {
+                    'q': 'Which wire is thicker?',
+                    'opts': ['14 AWG', '12 AWG', '10 AWG', 'They are the same'],
+                    'answer': 2,
+                    'ok': '✓ Correct! In the AWG system, a smaller number indicates a thicker wire.',
+                    'bad': '✗ Not quite. The AWG scale is inverse—smaller numbers mean thicker wire.'
+                },
+                {
+                    'q': 'What is the standard breaker size for a 12 AWG copper wire in a residential setting?',
+                    'opts': ['15 Amp', '20 Amp', '30 Amp', '50 Amp'],
+                    'answer': 1,
+                    'ok': '✓ Correct! 12 AWG is typically protected by a 20 Amp breaker.',
+                    'bad': '✗ Not quite. 12 AWG is standard for 20A circuits.'
+                }
+            ]
+        },
+        'motors': {
+            'title': "Motors & Generators", 
+            'icon': 'fa-cogs',
+            'content': "Motors convert electrical energy into mechanical energy, while generators convert mechanical energy into electrical energy. Both rely on electromagnetism. Three-phase motors are extremely common in industrial applications due to their efficiency and smooth power delivery.",
+            'interactive_type': 'none',
+            'quiz': [
+                {
+                    'q': 'What does a generator do?',
+                    'opts': ['Converts electrical energy to mechanical', 'Converts mechanical energy to electrical', 'Stores electricity', 'Steps down voltage'],
+                    'answer': 1,
+                    'ok': '✓ Correct! Generators take mechanical spinning force and turn it into electricity.',
+                    'bad': '✗ Not quite. A generator generates electricity from motion.'
+                }
+            ]
+        },
+        'grounding': {
+            'title': "Grounding & Bonding", 
+            'icon': 'fa-bolt',
+            'content': "Grounding is a direct connection to the earth to help safely dissipate fault currents and lightning. Bonding is connecting all metal parts of an electrical system together to ensure there's no voltage difference between them, preventing shock hazards.",
+            'interactive_type': 'none',
+            'quiz': [
+                {
+                    'q': 'What is the purpose of bonding?',
+                    'opts': ['To create a path to the earth', 'To ensure metal parts have the same electrical potential', 'To increase voltage', 'To act as a neutral wire'],
+                    'answer': 1,
+                    'ok': '✓ Correct! Bonding ties metal parts together so there is no voltage difference that could shock someone.',
+                    'bad': '✗ Not quite. Grounding connects to earth, bonding connects parts together.'
+                }
+            ]
+        }
+    }
+    
+    topic_data = topics.get(topic)
+    if not topic_data:
+        return render_template('404.html'), 404
+        
+    return render_template('learn_electrician_topic.html', topic_data=topic_data)
+
 @app.route('/api/svm', methods=['POST'])
 def train_svm():
     """Train an SVM classifier and return decision boundary with support vectors.

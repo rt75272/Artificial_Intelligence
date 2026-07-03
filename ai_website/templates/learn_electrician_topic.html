@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic_data.title }} - Electrician Apprenticeship{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title"><i class="fas {{ topic_data.icon }}"></i> {{ topic_data.title }}</h1>
+        <p class="page-subtitle">Electrician Apprenticeship Topic</p>
+    </div>
+</section>
+
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 800px;">
+    <div class="lesson-explanation" style="background: white; border-radius: 12px; padding: 1.75rem; border: 1px solid #e2e8f0; margin-bottom: 2rem;">
+        <h2>About this topic</h2>
+        <p style="font-size: 1.1rem; line-height: 1.8; margin-top: 1rem;">
+            {{ topic_data.content }}
+        </p>
+    </div>
+
+    <!-- Interactive Component Section -->
+    {% if topic_data.interactive_type and topic_data.interactive_type != 'none' %}
+    <div class="interactive-zone" style="margin-bottom: 2rem; background: white; padding: 1.75rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <h3 class="zone-title" style="margin-top: 0; color: #3b82f6;"><i class="fas fa-hand-pointer"></i> Try It</h3>
+        
+        {% if topic_data.interactive_type == 'ohms-law-calc' %}
+        <div id="ohms-law-container">
+            <p>Enter any two values to calculate the third.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; align-items: start;">
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 0.25rem;">Voltage (V)</label>
+                    <input type="number" id="v-input" placeholder="Volts" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 0.25rem;">Current (I)</label>
+                    <input type="number" id="i-input" placeholder="Amps" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 0.25rem;">Resistance (R)</label>
+                    <input type="number" id="r-input" placeholder="Ohms" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+            </div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button onclick="calcOhmsLaw()" class="btn btn-primary" style="flex: 1; min-width: 120px; justify-content: center;">Calculate</button>
+                <button onclick="clearOhmsLaw()" class="btn btn-secondary" style="flex: 1; min-width: 120px; justify-content: center;">Clear</button>
+            </div>
+            <p id="ohms-law-result" style="margin-top: 1.5rem; font-weight: bold; min-height: 1.5rem; color: #1e293b;"></p>
+        </div>
+        <script>
+            function calcOhmsLaw() {
+                const v = parseFloat(document.getElementById('v-input').value);
+                const i = parseFloat(document.getElementById('i-input').value);
+                const r = parseFloat(document.getElementById('r-input').value);
+                const res = document.getElementById('ohms-law-result');
+
+                if (!isNaN(v) && !isNaN(i) && isNaN(r)) {
+                    res.innerText = `Resistance (R) = V ÷ I = ${v} ÷ ${i} = ${(v/i).toFixed(2)} Ω`;
+                    document.getElementById('r-input').value = (v/i).toFixed(2);
+                } else if (!isNaN(v) && !isNaN(r) && isNaN(i)) {
+                    res.innerText = `Current (I) = V ÷ R = ${v} ÷ ${r} = ${(v/r).toFixed(2)} A`;
+                    document.getElementById('i-input').value = (v/r).toFixed(2);
+                } else if (!isNaN(i) && !isNaN(r) && isNaN(v)) {
+                    res.innerText = `Voltage (V) = I × R = ${i} × ${r} = ${(i*r).toFixed(2)} V`;
+                    document.getElementById('v-input').value = (i*r).toFixed(2);
+                } else {
+                    res.innerText = "Please enter exactly TWO values to calculate the third.";
+                    res.style.color = "#ef4444";
+                    setTimeout(() => res.style.color = "#1e293b", 2000);
+                }
+            }
+            function clearOhmsLaw() {
+                document.getElementById('v-input').value = '';
+                document.getElementById('i-input').value = '';
+                document.getElementById('r-input').value = '';
+                document.getElementById('ohms-law-result').innerText = '';
+            }
+        </script>
+        {% endif %}
+
+        {% if topic_data.interactive_type == 'series-parallel-vis' %}
+        <div>
+            <p>Click the switches to see how current flows in series vs parallel circuits.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                <!-- Series -->
+                <div style="border: 1px solid #cbd5e1; padding: 1.5rem; text-align: center; border-radius: 8px; width: 100%; box-sizing: border-box;">
+                    <h4>Series Circuit</h4>
+                    <div style="height: 120px; border: 3px solid #334155; margin: 1.5rem 0; display: flex; align-items: center; justify-content: space-around; position: relative; border-radius: 8px;">
+                        <div class="bulb series-bulb" style="width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; border: 2px solid #64748b; transition: all 0.3s;"></div>
+                        <div class="bulb series-bulb" style="width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; border: 2px solid #64748b; transition: all 0.3s;"></div>
+                    </div>
+                    <button onclick="toggleSeries()" class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem; justify-content: center;">Toggle Switch</button>
+                    <button onclick="breakSeries()" class="btn btn-secondary" style="width: 100%; justify-content: center;">Break One Bulb</button>
+                </div>
+                <!-- Parallel -->
+                <div style="border: 1px solid #cbd5e1; padding: 1.5rem; text-align: center; border-radius: 8px; width: 100%; box-sizing: border-box;">
+                    <h4>Parallel Circuit</h4>
+                    <div style="height: 120px; border: 3px solid #334155; margin: 1.5rem 0; position: relative; border-radius: 8px;">
+                        <div style="position: absolute; top: 25%; left: 0; right: 0; border-top: 3px solid #334155; display: flex; justify-content: center;">
+                            <div class="bulb parallel-bulb-1" style="width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; border: 2px solid #64748b; transform: translateY(-20px); transition: all 0.3s;"></div>
+                        </div>
+                        <div style="position: absolute; top: 75%; left: 0; right: 0; border-top: 3px solid #334155; display: flex; justify-content: center;">
+                            <div class="bulb parallel-bulb-2" style="width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; border: 2px solid #64748b; transform: translateY(-20px); transition: all 0.3s;"></div>
+                        </div>
+                    </div>
+                    <button onclick="toggleParallel()" class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem; justify-content: center;">Toggle Switch</button>
+                    <button onclick="breakParallel()" class="btn btn-secondary" style="width: 100%; justify-content: center;">Break Top Bulb</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            let seriesOn = false;
+            let seriesBroken = false;
+            function toggleSeries() { seriesOn = !seriesOn; updateSeries(); }
+            function breakSeries() { seriesBroken = !seriesBroken; updateSeries(); }
+            function updateSeries() {
+                const bulbs = document.querySelectorAll('.series-bulb');
+                if (seriesOn && !seriesBroken) {
+                    bulbs.forEach(b => { b.style.background = '#fde047'; b.style.boxShadow = '0 0 15px #fde047'; });
+                } else {
+                    bulbs.forEach(b => { b.style.background = '#e2e8f0'; b.style.boxShadow = 'none'; });
+                    if(seriesBroken) { bulbs[0].style.background = '#475569'; } // Broken bulb
+                }
+            }
+
+            let parallelOn = false;
+            let parallelBroken = false;
+            function toggleParallel() { parallelOn = !parallelOn; updateParallel(); }
+            function breakParallel() { parallelBroken = !parallelBroken; updateParallel(); }
+            function updateParallel() {
+                const b1 = document.querySelector('.parallel-bulb-1');
+                const b2 = document.querySelector('.parallel-bulb-2');
+                if (parallelOn) {
+                    if(!parallelBroken) {
+                        b1.style.background = '#fde047'; b1.style.boxShadow = '0 0 15px #fde047';
+                    } else {
+                        b1.style.background = '#475569'; b1.style.boxShadow = 'none';
+                    }
+                    b2.style.background = '#fde047'; b2.style.boxShadow = '0 0 15px #fde047';
+                } else {
+                    b1.style.background = '#e2e8f0'; b1.style.boxShadow = 'none';
+                    if(parallelBroken) b1.style.background = '#475569';
+                    b2.style.background = '#e2e8f0'; b2.style.boxShadow = 'none';
+                }
+            }
+        </script>
+        {% endif %}
+
+        {% if topic_data.interactive_type == 'ac-dc-vis' %}
+        <div>
+            <p>Visualize the difference between Direct Current (constant) and Alternating Current (sine wave).</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                <div style="width: 100%; box-sizing: border-box;">
+                    <h4 style="margin-bottom: 0.5rem;">DC (Direct Current)</h4>
+                    <canvas id="dc-canvas" height="150" style="background: #1e293b; border-radius: 8px; width: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);"></canvas>
+                </div>
+                <div style="width: 100%; box-sizing: border-box;">
+                    <h4 style="margin-bottom: 0.5rem;">AC (Alternating Current)</h4>
+                    <canvas id="ac-canvas" height="150" style="background: #1e293b; border-radius: 8px; width: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);"></canvas>
+                </div>
+            </div>
+        </div>
+        <script>
+            const dcCanvas = document.getElementById('dc-canvas');
+            const acCanvas = document.getElementById('ac-canvas');
+            const dcCtx = dcCanvas.getContext('2d');
+            const acCtx = acCanvas.getContext('2d');
+            
+            // Set internal resolution based on actual display size
+            function resizeCanvas() {
+                dcCanvas.width = dcCanvas.clientWidth;
+                acCanvas.width = acCanvas.clientWidth;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            let offset = 0;
+            
+            function drawGraph(ctx, type, offset) {
+                const width = ctx.canvas.width;
+                const height = ctx.canvas.height;
+                const mid = height / 2;
+                
+                ctx.clearRect(0, 0, width, height);
+                
+                // Draw zero axis
+                ctx.strokeStyle = '#475569';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, mid);
+                ctx.lineTo(width, mid);
+                ctx.stroke();
+                
+                // Draw wave
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                for(let x = 0; x < width; x++) {
+                    let y;
+                    if(type === 'dc') {
+                        y = mid - 40; // Constant positive voltage
+                    } else {
+                        y = mid - Math.sin((x + offset) * 0.05) * 40; // Sine wave
+                    }
+                    
+                    if(x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            
+            function animate() {
+                offset += 2;
+                drawGraph(dcCtx, 'dc', offset);
+                drawGraph(acCtx, 'ac', offset);
+                requestAnimationFrame(animate);
+            }
+            animate();
+        </script>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+    <!-- Quiz Section -->
+    {% if topic_data.quiz %}
+    <div class="quiz-zone" style="background: white; padding: 1.75rem; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 2rem;">
+        <h3 class="zone-title" style="margin-top: 0; color: #10b981;"><i class="fas fa-question-circle"></i> Knowledge Check</h3>
+        <div id="quiz-container" style="margin-top: 1.5rem;">
+            {% for q in topic_data.quiz %}
+            {% set q_index = loop.index0 %}
+            <div class="quiz-question" style="margin-bottom: 2rem; {% if not loop.last %}border-bottom: 1px solid #e2e8f0; padding-bottom: 2rem;{% endif %}">
+                <p style="font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; color: #1e293b;">
+                    {{ loop.index }}. {{ q.q }}
+                </p>
+                <div style="display: grid; gap: 0.75rem;">
+                    {% for opt in q.opts %}
+                    <button class="quiz-opt-btn btn btn-secondary" 
+                            style="text-align: left; padding: 1rem; border: 1px solid #cbd5e1; background: #f8fafc; color: #334155; cursor: pointer; border-radius: 8px; transition: all 0.2s; white-space: normal; height: auto;"
+                            onclick="checkAnswer(this, {{ q_index }}, {{ loop.index0 }}, {{ q.answer }}, '{{ q.ok }}', '{{ q.bad }}')">
+                        {{ opt }}
+                    </button>
+                    {% endfor %}
+                </div>
+                <div id="quiz-feedback-{{ q_index }}" style="margin-top: 1rem; font-weight: bold; min-height: 1.5rem;"></div>
+            </div>
+            {% endfor %}
+        </div>
+        <script>
+            function checkAnswer(btn, qIndex, btnIndex, correctIndex, okText, badText) {
+                const parent = btn.parentElement;
+                const buttons = parent.querySelectorAll('button');
+                
+                // Reset styling and disable all
+                buttons.forEach(b => {
+                    b.style.background = '#f8fafc';
+                    b.style.borderColor = '#cbd5e1';
+                    b.style.color = '#334155';
+                    b.disabled = true;
+                    b.style.cursor = 'default';
+                });
+                
+                const feedbackEl = document.getElementById('quiz-feedback-' + qIndex);
+                
+                if (btnIndex === correctIndex) {
+                    btn.style.background = '#d1fae5';
+                    btn.style.borderColor = '#10b981';
+                    btn.style.color = '#065f46';
+                    feedbackEl.innerHTML = '<i class="fas fa-check-circle"></i> ' + okText;
+                    feedbackEl.style.color = '#10b981';
+                } else {
+                    btn.style.background = '#fee2e2';
+                    btn.style.borderColor = '#ef4444';
+                    btn.style.color = '#991b1b';
+                    
+                    // Highlight correct answer as well
+                    buttons[correctIndex].style.background = '#d1fae5';
+                    buttons[correctIndex].style.borderColor = '#10b981';
+                    buttons[correctIndex].style.color = '#065f46';
+                    
+                    feedbackEl.innerHTML = '<i class="fas fa-times-circle"></i> ' + badText;
+                    feedbackEl.style.color = '#ef4444';
+                }
+            }
+        </script>
+    </div>
+    {% endif %}
+
+    <div>
+        <a href="{{ url_for('learn_electrician') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Topics
+        </a>
+    </div>
+</div>
+{% endblock %}

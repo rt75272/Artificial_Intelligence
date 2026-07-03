@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Learn Electrician Apprenticeship - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-bolt"></i> Electrician Apprenticeship Topics</h1>
+        <p class="page-subtitle">Learn the fundamentals of electrical work and theory</p>
+    </div>
+</section>
+
+<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+    <div class="features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <a href="{{ url_for('learn_electrician_topic', topic='ohms-law') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-plug"></i>
+            </div>
+            <h3>Ohm's Law</h3>
+            <p>Understand the relationship between voltage, current, and resistance (V = I × R). It's the foundation of all electrical theory.</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='series-parallel') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-network-wired"></i>
+            </div>
+            <h3>Series vs. Parallel Circuits</h3>
+            <p>Learn how components are wired together. In series, current is constant; in parallel, voltage is constant.</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='safety') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Electrical Safety</h3>
+            <p>Master lockout/tagout (LOTO) procedures, proper PPE usage, and safe working practices to prevent shock and arc flash.</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='nec') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h3>National Electrical Code (NEC)</h3>
+            <p>Navigate the NEC rulebook to ensure all installations meet legal safety standards and pass inspection.</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='ac-dc') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <h3>AC/DC Theory</h3>
+            <p>Discover the difference between Alternating Current (used in homes) and Direct Current (used in batteries/electronics).</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='tools') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-tools"></i>
+            </div>
+            <h3>Tools & Materials</h3>
+            <p>Identify common hand tools, wire types (THHN, Romex), conduit (EMT, PVC), and how to properly use a multimeter.</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='transformers') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-charging-station"></i>
+            </div>
+            <h3>Transformers</h3>
+            <p>Learn how electromagnetic induction allows us to step AC voltages up for transmission and down for safe residential use.</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='wire-sizing') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-ruler"></i>
+            </div>
+            <h3>Wire Sizing & Ampacity</h3>
+            <p>Understand the American Wire Gauge (AWG) system and how to select the right wire size and breaker for a given load.</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='motors') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-cogs"></i>
+            </div>
+            <h3>Motors & Generators</h3>
+            <p>Explore the principles behind converting electrical energy into mechanical energy, and vice-versa.</p>
+        </a>
+        <a href="{{ url_for('learn_electrician_topic', topic='grounding') }}" class="feature-card" style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+            <div class="feature-icon" style="color: #fbbf24;">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Grounding & Bonding</h3>
+            <p>Discover how proper grounding and bonding protect people and equipment from dangerous fault currents.</p>
+        </a>
+    </div>
+</div>
+{% endblock %}
