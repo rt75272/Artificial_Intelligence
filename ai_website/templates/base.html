@@ -35,6 +35,9 @@
                 <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
                     <i class="fas fa-info-circle"></i> About
                 </a>
+                <a href="{{ url_for('cycling') }}" class="nav-link {% if request.endpoint == 'cycling' %}active{% endif %}">
+                    <i class="fas fa-bicycle"></i> Cycling
+                </a>
                 <a href="{{ url_for('projects') }}" class="nav-link {% if request.endpoint == 'projects' or 'demo' in request.endpoint %}active{% endif %}">
                     <i class="fas fa-flask"></i> Demos
                 </a>
@@ -54,7 +57,7 @@
 
     <footer class="footer">
         <div class="footer-container">
-            <p>&copy; 2025 Ryan Thompson.</p>
+            <p>&copy; 2026 Ryan Thompson.</p>
             <div class="footer-links">
                 <a href="https://github.com/rt75272" target="blank"><i class="fab fa-github"></i></a>
                 <a href="mailto:rt75272@gmail.com" target="blank"><i class="fas fa-envelope"></i></a>

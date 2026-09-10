@@ -395,6 +395,137 @@ h1, h2, h3, h4, h5, h6 {
     opacity: 0.9;
 }
 
+/* Cycling page */
+.cycling-header {
+    background: linear-gradient(135deg, #0f766e 0%, #166534 100%);
+}
+
+.cycling-kicker,
+.cycling-eyebrow,
+.cycling-card-label {
+    color: #0f766e;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.cycling-kicker {
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 1rem;
+}
+
+.cycling-content {
+    padding: 5rem 0 6rem;
+    background: #f0fdf4;
+}
+
+.cycling-intro,
+.cycling-footer-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.cycling-intro {
+    max-width: 900px;
+    margin: 0 auto 3rem;
+}
+
+.cycling-intro h2,
+.cycling-footer-cta h2 {
+    color: var(--text-primary);
+    font-size: 2.2rem;
+    margin: 0.45rem 0 1rem;
+}
+
+.cycling-intro p:not(.cycling-eyebrow) {
+    color: var(--text-secondary);
+    line-height: 1.75;
+    max-width: 680px;
+}
+
+.cycling-strava-btn {
+    flex-shrink: 0;
+    background: #fc4c02;
+}
+
+.cycling-strava-btn:hover {
+    background: #d83d00;
+}
+
+.cycling-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto 4rem;
+}
+
+.cycling-card {
+    background: var(--bg-primary);
+    border: 1px solid rgba(15, 118, 110, 0.12);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.cycling-card--feature {
+    background: #115e59;
+    color: white;
+}
+
+.cycling-card--feature .cycling-card-label,
+.cycling-card--feature h3,
+.cycling-card--feature p {
+    color: white;
+}
+
+.cycling-card-icon {
+    color: #0f766e;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.cycling-card--feature .cycling-card-icon {
+    color: #a7f3d0;
+}
+
+.cycling-card h3 {
+    color: var(--text-primary);
+    font-size: 1.35rem;
+    margin: 0.5rem 0 0.75rem;
+}
+
+.cycling-card p:last-child {
+    color: var(--text-secondary);
+    line-height: 1.65;
+}
+
+.cycling-footer-cta {
+    border-top: 1px solid rgba(15, 118, 110, 0.2);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-top: 2.5rem;
+}
+
+.cycling-footer-cta h2 {
+    font-size: 1.7rem;
+    margin-bottom: 0;
+}
+
+.text-link {
+    color: #0f766e;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.text-link:hover {
+    color: #115e59;
+}
+
 /* About Content */
 .about-content {
     padding: 6rem 0;
@@ -869,6 +1000,16 @@ canvas {
     }
 
     .approach-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cycling-intro,
+    .cycling-footer-cta {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cycling-grid {
         grid-template-columns: 1fr;
     }
 

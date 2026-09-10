@@ -148,6 +148,11 @@ def about():
     """
     return render_template('about.html')
 
+@app.route('/cycling')
+def cycling():
+    """Render the cycling excursions page."""
+    return render_template('cycling.html')
+
 @app.route('/projects')
 def projects():
     """Render the projects page with demos and references.
