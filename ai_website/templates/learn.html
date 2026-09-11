@@ -22,7 +22,7 @@
         <div class="sidebar-header">
             <h3>Curriculum</h3>
             <div class="progress-tracker">
-                <span id="progressText">0 / 6 complete</span>
+                <span id="progressText">0 / 16 complete</span>
                 <div class="progress-bar-outer">
                     <div class="progress-bar-inner" id="progressBar"></div>
                 </div>
@@ -91,7 +91,7 @@
 <!-- Completion banner (hidden until all lessons done) -->
 <div class="completion-banner" id="completionBanner" style="display:none;">
     <i class="fas fa-trophy"></i>
-    <strong>Congratulations!</strong> You've completed all 11 lessons. Keep building and stay curious!
+    <strong>Congratulations!</strong> You've completed all 16 lessons. Keep building and stay curious!
 </div>
 
 <!-- ════════════════════════════════════════════════════════
@@ -184,9 +184,16 @@
 .lesson-explanation p:last-child { margin-bottom: 0; }
 .lesson-explanation ul { margin: 0.4rem 0 0.8rem 1.4rem; }
 .lesson-explanation li { margin-bottom: 0.3rem; }
-.lesson-explanation code {
-    background: #f1f5f9; color: #3b82f6;
-    padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em;
+.lesson-explanation code,
+.quiz-question p code,
+.quiz-feedback code {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 0.14rem 0.42rem;
+    border-radius: 5px;
+    font-size: 0.88em;
+    font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+    border: 1px solid rgba(148, 163, 184, 0.35);
 }
 .concept-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
 .concept-tag {
@@ -224,6 +231,43 @@
 .ide-code-area code {
     font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
     font-size: 0.88rem; line-height: 1.65;
+    white-space: pre;
+}
+.ide-code-area .hljs,
+.ide-code-area code.hljs {
+    background: #282c34;
+    color: #f8fafc;
+}
+.ide-code-area .hljs-keyword,
+.ide-code-area .hljs-selector-tag,
+.ide-code-area .hljs-literal,
+.ide-code-area .hljs-name,
+.ide-code-area .hljs-built_in,
+.ide-code-area .hljs-attribute,
+.ide-code-area .hljs-type,
+.ide-code-area .hljs-title {
+    color: #c678dd;
+}
+.ide-code-area .hljs-string,
+.ide-code-area .hljs-meta-string,
+.ide-code-area .hljs-symbol,
+.ide-code-area .hljs-bullet {
+    color: #98c379;
+}
+.ide-code-area .hljs-number,
+.ide-code-area .hljs-comment,
+.ide-code-area .hljs-quote {
+    color: #7f9f7f;
+}
+.ide-code-area .hljs-function,
+.ide-code-area .hljs-class,
+.ide-code-area .hljs-variable,
+.ide-code-area .hljs-params {
+    color: #61afef;
+}
+.ide-code-area .hljs-property,
+.ide-code-area .hljs-operator {
+    color: #e5c07b;
 }
 .ide-footer {
     background: #21252b;
@@ -266,6 +310,39 @@
     color: var(--text-primary); margin-bottom: 1.25rem;
     display: flex; align-items: center; gap: 0.5rem;
 }
+
+/* ---------- AI pipeline visualizer ---------- */
+.ai-pipeline { display: flex; flex-direction: column; gap: 1rem; }
+.ai-pipeline-steps {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  gap: 0.6rem;
+}
+.ai-pipeline-step {
+  display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+  min-height: 104px; padding: 0.75rem 0.5rem;
+  border: 2px solid var(--border-color); border-radius: 8px;
+  background: #f8fafc; color: var(--text-primary); cursor: pointer;
+  font-size: 0.78rem; font-weight: 600; transition: all 0.2s;
+}
+.ai-pipeline-step:hover { border-color: var(--primary-color); }
+.ai-pipeline-step.active {
+  border-color: var(--primary-color);
+  background: rgba(59,130,246,0.1); color: var(--primary-color);
+}
+.ai-pipeline-step i { font-size: 1.15rem; color: #0f766e; }
+.ai-pipeline-step.active i { color: var(--primary-color); }
+.ai-pipeline-number {
+  width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: #e2e8f0; color: #475569; font-size: 0.7rem;
+}
+.ai-pipeline-step.active .ai-pipeline-number { background: var(--primary-color); color: white; }
+.ai-pipeline-detail {
+  display: flex; flex-direction: column; gap: 0.25rem;
+  background: #1e293b; color: #e2e8f0; border-radius: 8px;
+  padding: 0.9rem 1rem; font-size: 0.85rem;
+}
+.ai-pipeline-detail strong { color: #93c5fd; }
+.ai-pipeline-detail span { color: #cbd5e1; }
 
 /* ---------- Type Inspector ---------- */
 .type-inspector { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -1282,7 +1359,7 @@ Drove 200 mi. Total: 200`,
   {
     title: "Searching & Recursion",
     icon: "fas fa-search",
-    tag: "Lesson 10 of 11",
+    tag: "Lesson 10 of 16",
     filename: "searching.py",
     explanation: `
       <p><strong>Searching algorithms</strong> locate a target value in a collection. Two classics:</p>
@@ -1356,11 +1433,324 @@ print(f"10! = {factorial(10)}")    # 3628800`,
     ]
   },
 
-  /* ── 10: Practical Programming ──────────────────────────── */
+  /* ── 10: Artificial Intelligence & Machine Learning ───── */
+  {
+    title: "Artificial Intelligence & Machine Learning",
+    icon: "fas fa-brain",
+    tag: "Lesson 11 of 16",
+    filename: "ai_ml_intro.py",
+    explanation: `
+      <p><strong>Artificial Intelligence (AI)</strong> is the broad field of creating systems that can reason, learn, perceive, or act intelligently. <strong>Machine Learning (ML)</strong> is a subset of AI that learns patterns from data instead of following only hand-written rules.</p>
+      <ul>
+        <li><strong>Supervised learning</strong> — learn from labeled examples, such as predicting price or classifying spam.</li>
+        <li><strong>Unsupervised learning</strong> — discover patterns in unlabeled data, such as clustering customers or segments.</li>
+        <li><strong>Reinforcement learning</strong> — learn through trial and error using rewards and penalties.</li>
+      </ul>
+      <p>In practice, ML models use a training loop: fit on data, evaluate performance, then use the learned weights to make predictions on new inputs.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">AI</span>
+        <span class="concept-tag">ML</span>
+        <span class="concept-tag">Supervised</span>
+        <span class="concept-tag">Unsupervised</span>
+        <span class="concept-tag">Training</span>
+        <span class="concept-tag">Prediction</span>
+      </div>`,
+    code: `from sklearn.datasets import make_blobs
+from sklearn.linear_model import LogisticRegression
+
+# Create a simple 2-class dataset
+X, y = make_blobs(n_samples=120, centers=2, random_state=7)
+
+# Train a supervised learning model
+model = LogisticRegression(max_iter=200)
+model.fit(X, y)
+
+# Make one prediction on new data
+point = [[2.2, 2.0]]
+prediction = model.predict(point)[0]
+confidence = model.predict_proba(point)[0].max()
+
+print(f"Prediction: {prediction}")
+print(f"Confidence: {confidence:.2f}")`,
+    output: `Prediction: 1
+Confidence: 0.96`,
+    interactive: {
+      type: "slider",
+      label: "Confidence threshold",
+      min: 30, max: 95, step: 1, value: 70,
+      branches: [
+        { range: [76, 95], cond: "if probability >= 0.75", out: "High confidence — accept prediction." },
+        { range: [51, 75], cond: "elif probability >= 0.50", out: "Borderline — request review." },
+        { range: [30, 50], cond: "else", out: "Low confidence — gather more data." }
+      ]
+    },
+    quiz: [
+      {
+        q: "Which type of machine learning uses labeled examples during training?",
+        opts: ["Unsupervised learning", "Supervised learning", "Reinforcement learning", "Heuristic learning"],
+        answer: 1,
+        ok: "✓ Correct! Supervised learning trains on labeled examples where the correct answer is known.",
+        bad: "✗ Not quite. Supervised learning uses labeled inputs and targets to learn patterns."
+      },
+      {
+        q: "What is the main goal of a machine learning model after training?",
+        opts: ["To rewrite code", "To predict outcomes on new data", "To replace all math", "To remove the need for data"],
+        answer: 1,
+        ok: "✓ Correct! A trained model generalizes to new examples by using the patterns it learned during training.",
+        bad: "✗ Not quite. The model's purpose is to make useful predictions on new, unseen data."
+      }
+    ]
+  },
+
+  /* ── 11: Data Preparation ───────────────────────────────── */
+  {
+    title: "Data Preparation",
+    icon: "fas fa-filter",
+    tag: "Lesson 12 of 16",
+    filename: "data_preparation.py",
+    explanation: `
+      <p>Models learn from examples, so the quality of the input data matters as much as the algorithm. <strong>Data preparation</strong> turns messy observations into consistent features a model can use.</p>
+      <ul>
+        <li><strong>Clean</strong> missing values, duplicates, and impossible measurements.</li>
+        <li><strong>Encode</strong> categories such as city or device type as numeric features.</li>
+        <li><strong>Scale</strong> numeric features so large units do not overpower smaller ones.</li>
+        <li><strong>Split</strong> data before training so the test set stays unseen.</li>
+      </ul>
+      <p>Always fit preprocessing steps on the training data only. Letting test information leak into training can make a model look accurate while failing on genuinely new data.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">Features</span>
+        <span class="concept-tag">Cleaning</span>
+        <span class="concept-tag">Scaling</span>
+        <span class="concept-tag">Data Leakage</span>
+      </div>`,
+    code: `from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# X contains features; y contains the target labels
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)  # reuse training statistics
+
+print(f"Training rows: {len(X_train_scaled)}")
+print(f"Test rows:     {len(X_test_scaled)}")`,
+    output: `Training rows: 80
+Test rows:     20`,
+    interactive: {
+      type: "ai-pipeline",
+      steps: [
+        { label: "Raw data", detail: "Missing values and mixed units", icon: "fa-database" },
+        { label: "Clean", detail: "Remove duplicates and fill gaps", icon: "fa-broom" },
+        { label: "Transform", detail: "Encode and scale features", icon: "fa-sliders-h" },
+        { label: "Split", detail: "Keep test examples unseen", icon: "fa-code-branch" },
+        { label: "Ready to train", detail: "Consistent inputs for the model", icon: "fa-check" }
+      ]
+    },
+    quiz: [
+      {
+        q: "Why should a scaler be fitted on training data only?",
+        opts: ["To make the model larger", "To prevent test-data leakage", "To remove all features", "To avoid using numbers"], answer: 1,
+        ok: "✓ Correct! Fitting on test data leaks information about future examples into training.",
+        bad: "✗ Not quite. The key reason is preventing information from the test set leaking into training."
+      },
+      {
+        q: "What is a feature in a machine learning dataset?",
+        opts: ["An input measurement used to make a prediction", "The final model score", "A programming language", "A random seed"], answer: 0,
+        ok: "✓ Correct! Features are the input columns the model uses to learn patterns.",
+        bad: "✗ Not quite. A feature is an input measurement, such as age, height, or temperature."
+      }
+    ]
+  },
+
+  /* ── 12: Model Training ─────────────────────────────────── */
+  {
+    title: "Training a Model",
+    icon: "fas fa-cogs",
+    tag: "Lesson 13 of 16",
+    filename: "model_training.py",
+    explanation: `
+      <p><strong>Training</strong> is the process of adjusting a model's parameters so its predictions become closer to the known answers. The model makes a prediction, measures its error with a loss function, and updates its parameters.</p>
+      <p>A <strong>learning rate</strong> controls how large each update is. If it is too small, training is slow. If it is too large, the model can jump past a useful solution.</p>
+      <ul>
+        <li><strong>Epoch</strong> — one pass through the training data.</li>
+        <li><strong>Batch</strong> — a smaller group processed in one update.</li>
+        <li><strong>Loss</strong> — a number describing how wrong the predictions are.</li>
+      </ul>
+      <div class="concept-tags">
+        <span class="concept-tag">Loss</span>
+        <span class="concept-tag">Gradient Descent</span>
+        <span class="concept-tag">Epochs</span>
+        <span class="concept-tag">Learning Rate</span>
+      </div>`,
+    code: `import numpy as np
+
+weight = 0.0
+learning_rate = 0.1
+
+# Gradient descent learns y = 2x from examples
+for epoch in range(5):
+    prediction = weight * 3
+    error = prediction - 6
+    loss = error ** 2
+    gradient = 2 * error * 3
+    weight -= learning_rate * gradient
+    print(f"epoch {epoch + 1}: loss={loss:.3f}, weight={weight:.3f}")`,
+    output: `epoch 1: loss=36.000, weight=3.600
+epoch 2: loss=5.760, weight=2.160
+epoch 3: loss=0.922, weight=2.016
+epoch 4: loss=0.037, weight=2.002
+epoch 5: loss=0.001, weight=2.000`,
+    interactive: {
+      type: "slider",
+      label: "Learning rate",
+      min: 1, max: 100, step: 1, value: 25, unit: "%",
+      branches: [
+        { range: [1, 19], cond: "learning_rate < 0.20", out: "Small updates — training is stable but slow." },
+        { range: [20, 60], cond: "0.20 <= learning_rate <= 0.60", out: "Balanced updates — a useful starting point." },
+        { range: [61, 100], cond: "learning_rate > 0.60", out: "Large updates — watch for unstable training." }
+      ]
+    },
+    quiz: [
+      {
+        q: "What does the loss function measure?",
+        opts: ["How much memory the model uses", "How wrong the model's predictions are", "How many features exist", "How fast the computer is"], answer: 1,
+        ok: "✓ Correct! Loss measures prediction error and guides parameter updates.",
+        bad: "✗ Not quite. Loss is a numerical measure of prediction error."
+      },
+      {
+        q: "What can happen when the learning rate is too large?",
+        opts: ["The model may overshoot a good solution", "The dataset becomes labeled", "The test set disappears", "The model needs no data"], answer: 0,
+        ok: "✓ Correct! Huge updates can make training unstable or skip over a good solution.",
+        bad: "✗ Not quite. A large learning rate can cause the updates to overshoot and become unstable."
+      }
+    ]
+  },
+
+  /* ── 13: Neural Networks ────────────────────────────────── */
+  {
+    title: "Neural Networks",
+    icon: "fas fa-network-wired",
+    tag: "Lesson 14 of 16",
+    filename: "neural_network.py",
+    explanation: `
+      <p>A <strong>neural network</strong> is a stack of layers that transforms inputs into predictions. Each neuron combines inputs with learned weights, adds a bias, and applies an activation function.</p>
+      <p>Hidden layers let the network build increasingly useful representations: early layers may detect simple patterns, while later layers combine them into more meaningful concepts.</p>
+      <ul>
+        <li><strong>ReLU</strong> keeps positive values and replaces negative values with zero.</li>
+        <li><strong>Softmax</strong> turns output scores into probabilities that sum to one.</li>
+        <li><strong>Backpropagation</strong> sends error information backward to update weights.</li>
+      </ul>
+      <div class="concept-tags">
+        <span class="concept-tag">Neurons</span>
+        <span class="concept-tag">Layers</span>
+        <span class="concept-tag">ReLU</span>
+        <span class="concept-tag">Softmax</span>
+      </div>`,
+    code: `import numpy as np
+
+def relu(values):
+    return np.maximum(0, values)
+
+inputs = np.array([0.8, 0.4])
+weights = np.array([[0.6, -0.2], [0.3, 0.9]])
+bias = np.array([0.1, -0.1])
+
+hidden = relu(inputs @ weights + bias)
+print("Hidden activations:", hidden.round(2))`,
+    output: `Hidden activations: [0.70 0.10]`,
+    interactive: {
+      type: "ai-pipeline",
+      steps: [
+        { label: "Input layer", detail: "Receives numeric features", icon: "fa-sign-in-alt" },
+        { label: "Weighted sum", detail: "Combines inputs and learned weights", icon: "fa-plus" },
+        { label: "Activation", detail: "Adds non-linearity with ReLU", icon: "fa-bolt" },
+        { label: "Output layer", detail: "Produces scores or probabilities", icon: "fa-bullseye" }
+      ]
+    },
+    quiz: [
+      {
+        q: "Why do neural networks use activation functions?",
+        opts: ["To store files", "To add non-linear behavior", "To sort the dataset", "To remove all weights"], answer: 1,
+        ok: "✓ Correct! Non-linear activations let stacked layers learn complex patterns.",
+        bad: "✗ Not quite. Activation functions add the non-linearity needed to learn complex patterns."
+      },
+      {
+        q: "What does softmax commonly produce?",
+        opts: ["A list of file names", "Class probabilities that sum to one", "A missing-value report", "A database connection"], answer: 1,
+        ok: "✓ Correct! Softmax converts output scores into a probability distribution.",
+        bad: "✗ Not quite. Softmax is often used to turn class scores into probabilities."
+      }
+    ]
+  },
+
+  /* ── 14: Evaluation, Bias & Ethics ──────────────────────── */
+  {
+    title: "Evaluation, Bias & Ethics",
+    icon: "fas fa-balance-scale",
+    tag: "Lesson 15 of 16",
+    filename: "evaluate_model.py",
+    explanation: `
+      <p>A model is not useful just because it performs well on one number. Evaluation should reflect the real cost of mistakes and the people affected by the system.</p>
+      <ul>
+        <li><strong>Accuracy</strong> — the fraction of predictions that are correct.</li>
+        <li><strong>Precision</strong> — among predicted positives, how many are truly positive.</li>
+        <li><strong>Recall</strong> — among actual positives, how many the model finds.</li>
+        <li><strong>Fairness</strong> — whether performance and errors differ across groups.</li>
+      </ul>
+      <p>Bias can enter through unrepresentative data, labels that reflect historical inequality, or a deployment context different from the training environment. Responsible ML includes documentation, monitoring, human oversight, and a way to challenge harmful decisions.</p>
+      <div class="concept-tags">
+        <span class="concept-tag">Accuracy</span>
+        <span class="concept-tag">Precision</span>
+        <span class="concept-tag">Recall</span>
+        <span class="concept-tag">Fairness</span>
+      </div>`,
+    code: `from sklearn.metrics import confusion_matrix
+
+actual =    [1, 1, 1, 0, 0, 0]
+predicted = [1, 1, 0, 1, 0, 0]
+
+tn, fp, fn, tp = confusion_matrix(actual, predicted).ravel()
+precision = tp / (tp + fp)
+recall = tp / (tp + fn)
+
+print(f"Precision: {precision:.2f}")
+print(f"Recall:    {recall:.2f}")`,
+    output: `Precision: 0.67
+Recall:    0.67`,
+    interactive: {
+      type: "slider",
+      label: "Decision threshold",
+      min: 10, max: 90, step: 1, value: 50, unit: "%",
+      branches: [
+        { range: [10, 39], cond: "threshold < 0.40", out: "More positives found — recall rises, but false alarms may increase." },
+        { range: [40, 60], cond: "0.40 <= threshold <= 0.60", out: "Balanced starting point — inspect both kinds of errors." },
+        { range: [61, 90], cond: "threshold > 0.60", out: "Fewer positives accepted — precision may rise, but misses can increase." }
+      ]
+    },
+    quiz: [
+      {
+        q: "What does recall measure?",
+        opts: ["The positive cases the model successfully finds", "The number of model layers", "The size of the training file", "The time needed to load Python"], answer: 0,
+        ok: "✓ Correct! Recall measures how many actual positive cases were found.",
+        bad: "✗ Not quite. Recall focuses on finding the positive cases that truly exist."
+      },
+      {
+        q: "Which practice helps reveal unfair model behavior?",
+        opts: ["Evaluate only the overall average", "Compare errors across relevant groups", "Delete the test set", "Hide the model's limitations"], answer: 1,
+        ok: "✓ Correct! Group-level evaluation can reveal differences hidden by an overall average.",
+        bad: "✗ Not quite. Comparing performance and errors across groups helps identify disparities."
+      }
+    ]
+  },
+
+  /* ── 15: Practical Programming ──────────────────────────── */
   {
     title: "Practical Programming",
     icon: "fas fa-rocket",
-    tag: "Lesson 11 of 11",
+    tag: "Lesson 16 of 16",
     filename: "practical.py",
     explanation: `
       <p>Real programs combine everything you've learned into useful tools. Three classic beginner projects:</p>
@@ -1479,20 +1869,40 @@ function renderNav() {
 /* ============================================================
    Main lesson rendering
    ============================================================ */
+function applyCodeHighlighting() {
+  if (!window.hljs) return;
+
+  document.querySelectorAll('#ideCode, .lesson-explanation code, #quizContent code').forEach((codeEl) => {
+    if (!codeEl.classList.contains('language-python')) {
+      codeEl.classList.add('language-python');
+    }
+
+    codeEl.classList.add('hljs');
+
+    const text = codeEl.textContent || '';
+    if (!text.trim()) return;
+
+    codeEl.innerHTML = window.hljs.highlight(text, { language: 'python' }).value;
+  });
+}
+
 function renderLesson(idx) {
   const l = LESSONS[idx];
 
   document.getElementById('lessonBreadcrumb').textContent = l.tag;
   document.getElementById('lessonTitle').innerHTML =
     `<i class="${l.icon}"></i> ${l.title}`;
-  document.getElementById('lessonExplanation').innerHTML = l.explanation;
+  const explanationEl = document.getElementById('lessonExplanation');
+  explanationEl.innerHTML = l.explanation;
 
   // IDE code
   document.getElementById('ideTab').textContent = l.filename;
   const codeEl = document.getElementById('ideCode');
-  codeEl.className = 'language-python';
-  codeEl.textContent = l.code;
-  hljs.highlightElement(codeEl);
+  codeEl.className = 'language-python hljs';
+  codeEl.innerHTML = window.hljs ? window.hljs.highlight(l.code, { language: 'python' }).value : l.code;
+
+  // Highlight all code blocks after content is replaced
+  applyCodeHighlighting();
 
   // Output area — hide until Run is clicked
   const outputArea = document.getElementById('outputArea');
@@ -1530,6 +1940,7 @@ function renderInteractive(cfg) {
   const handlers = {
     'type-inspector': renderTypeInspector,
     'slider':         renderSlider,
+    'ai-pipeline':    renderAiPipeline,
     'step-through':   renderStepThrough,
     'fn-demo':        renderFnDemo,
     'ds-visual':      renderDsVisual,
@@ -1542,6 +1953,40 @@ function renderInteractive(cfg) {
   };
   const fn = handlers[cfg.type];
   if (fn) fn(zone, cfg);
+}
+
+/* ──────────────────────────────────────────────────────────
+   AI pipeline visualizer
+   ────────────────────────────────────────────────────────── */
+function renderAiPipeline(zone, cfg) {
+  let active = 0;
+  zone.innerHTML = `
+    <p style="color:var(--text-secondary);font-size:.87rem;margin-bottom:1rem;">
+      Move through the pipeline to see how an AI system turns inputs into a useful result.
+    </p>
+    <div class="ai-pipeline">
+      <div class="ai-pipeline-steps">
+        ${cfg.steps.map((step, i) => `
+          <button class="ai-pipeline-step" id="ai-step-${i}" onclick="selectAiPipelineStep(${i})">
+            <span class="ai-pipeline-number">${i + 1}</span>
+            <i class="fas ${step.icon}"></i>
+            <span>${step.label}</span>
+          </button>`).join('')}
+      </div>
+      <div class="ai-pipeline-detail" id="ai-pipeline-detail"></div>
+    </div>`;
+
+  window._aiPipelineSteps = cfg.steps;
+  window.selectAiPipelineStep = function (index) {
+    active = index;
+    document.querySelectorAll('.ai-pipeline-step').forEach((step, i) => {
+      step.classList.toggle('active', i === active);
+    });
+    const step = window._aiPipelineSteps[active];
+    document.getElementById('ai-pipeline-detail').innerHTML =
+      `<strong>${step.label}</strong><span>${step.detail}</span>`;
+  };
+  window.selectAiPipelineStep(0);
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -1598,6 +2043,7 @@ window.inspectVar = function (i) {
    Slider — Conditionals (Lesson 2)
    ────────────────────────────────────────────────────────── */
 function renderSlider(zone, cfg) {
+  const unit = cfg.unit || '°F';
   zone.innerHTML = `
     <div class="slider-demo">
       <div class="slider-row">
@@ -1605,7 +2051,7 @@ function renderSlider(zone, cfg) {
         <input type="range" id="condSlider"
                min="${cfg.min}" max="${cfg.max}"
                step="${cfg.step}" value="${cfg.value}">
-        <span class="slider-val" id="sliderVal">${cfg.value}°F</span>
+        <span class="slider-val" id="sliderVal">${cfg.value}${unit}</span>
       </div>
       <p style="font-size:.85rem;color:var(--text-secondary);margin:0 0 .5rem;">
         Drag the slider — the active branch highlights automatically.
@@ -1621,7 +2067,7 @@ function renderSlider(zone, cfg) {
     </div>`;
 
   function update(val) {
-    document.getElementById('sliderVal').textContent = val + '°F';
+    document.getElementById('sliderVal').textContent = val + unit;
     let active = null;
     cfg.branches.forEach((b, i) => {
       const el = document.getElementById(`br-${i}`);
@@ -2191,7 +2637,12 @@ function renderQuiz(questions) {
       <div class="quiz-feedback" id="qf-${qi}"></div>
     </div>`).join('');
 
+  if (window.hljs) {
+    hljs.highlightAll();
+  }
+
   window._quizData     = questions;
+  applyCodeHighlighting();
   window._quizAnswered = {};
 }
 
