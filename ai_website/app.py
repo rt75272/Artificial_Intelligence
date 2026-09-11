@@ -14,7 +14,7 @@ import traceback
 from typing import Optional
 
 import numpy as np
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_file
 from PIL import Image
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
@@ -147,6 +147,14 @@ def about():
         str: Rendered HTML template for the about page.
     """
     return render_template('about.html')
+
+@app.route('/resume')
+def resume():
+    """Serve the personal resume PDF."""
+    resume_path = os.path.join(app.root_path, 'Resume_2026_424242.pdf')
+    if not os.path.exists(resume_path):
+        return "Resume not found.", 404
+    return send_file(resume_path, as_attachment=False, mimetype='application/pdf')
 
 @app.route('/cycling')
 def cycling():

@@ -248,6 +248,53 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--primary-color);
 }
 
+.btn-secondary-dark {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.btn-secondary-dark:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.resume-section {
+    padding: 2rem 0 4rem;
+}
+
+.resume-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.resume-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.resume-preview {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    min-height: 900px;
+}
+
+.resume-preview iframe {
+    width: 100%;
+    min-height: 900px;
+    border: none;
+    display: block;
+    background: white;
+}
+
 /* AI Animation */
 .hero-visual {
     display: flex;
