@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Fab Yield Intelligence - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Fab Yield Intelligence</h1>
+        <p class="page-subtitle">ML-driven wafer yield forecasting for semiconductor process control</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Predictive Analytics</span>
+            <span class="obj-tag">Digital Twin</span>
+            <span class="obj-tag">Yield Optimization</span>
+            <span class="obj-tag">Root Cause Ranking</span>
+        </div>
+    </div>
+</section>
+
+<section class="fab-yield-section">
+    <div class="container">
+        <div class="edu-demo-layout">
+            <aside class="edu-sidebar">
+                <div class="edu-card">
+                    <h3><i class="fas fa-microchip"></i> Why this matters in fabs</h3>
+                    <p>
+                        Memory fabs run thousands of process steps where tiny drift in overlay, particles, or chamber
+                        conditions can destroy wafer yield. This demo simulates a machine-learning model that estimates
+                        final lot yield and flags the highest-impact control levers.
+                    </p>
+                    <div class="edu-tags">
+                        <span class="edu-tag">SPC-aware</span>
+                        <span class="edu-tag">Process Window</span>
+                        <span class="edu-tag">Maintenance Signals</span>
+                    </div>
+                </div>
+                <div class="edu-card">
+                    <h3><i class="fas fa-chart-line"></i> Model Output</h3>
+                    <p>
+                        The prediction includes expected wafer yield, risk band, confidence window, top feature drivers,
+                        and recommended engineering actions.
+                    </p>
+                    <div class="edu-formula">yield = f(uniformity, overlay, particles, pressure, thermal drift, age, vibration)</div>
+                </div>
+            </aside>
+
+            <div class="edu-demo-panel">
+                <h3><i class="fas fa-sliders-h"></i> Process Telemetry Inputs</h3>
+                <div id="fabControls" class="fab-controls-grid" data-feature-ids="{{ fab_features.keys() | join(',') }}">
+                    {% for feature_id, cfg in fab_features.items() %}
+                    <div class="fab-control-item">
+                        <label for="{{ feature_id }}">{{ cfg.label }}</label>
+                        <input
+                            id="{{ feature_id }}"
+                            type="range"
+                            min="{{ cfg.min }}"
+                            max="{{ cfg.max }}"
+                            step="{{ cfg.step }}"
+                            value="{{ cfg.default }}"
+                            aria-describedby="{{ feature_id }}_value">
+                        <output id="{{ feature_id }}_value" class="range-val" aria-live="polite">{{ cfg.default }}</output>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="fab-actions">
+                    <button id="runForecast" class="btn btn-primary" data-api-url="{{ url_for('predict_fab_yield') }}"><i class="fas fa-play-circle"></i> Run Yield Forecast</button>
+                </div>
+
+                <div id="fabResults" class="fab-results-panel" role="status" aria-live="polite" aria-atomic="true">
+                    <div class="fab-result-row fab-result-primary">Predicted Yield: <strong id="predYield">--</strong></div>
+                    <div class="fab-result-row">Risk Level: <strong id="riskLevel">--</strong></div>
+                    <div class="fab-result-row">Confidence Window: <span id="confidenceWindow">--</span></div>
+                    <div class="fab-result-block">
+                        <strong>Top Drivers</strong>
+                        <ul id="topDrivers" class="fab-result-list"></ul>
+                    </div>
+                    <div class="fab-result-block">
+                        <strong>Recommended Actions</strong>
+                        <ul id="recommendations" class="fab-result-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="{{ url_for('static', filename='js/fab_yield_intelligence.js') }}"></script>
+{% endblock %}

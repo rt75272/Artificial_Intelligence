@@ -370,6 +370,13 @@ h1, h2, h3, h4, h5, h6 {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.feature-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+}
+
 .feature-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
@@ -2301,6 +2308,75 @@ canvas {
     color: var(--text-primary); display: flex; align-items: center; gap: 0.45rem;
 }
 .edu-demo-panel h3 i { color: var(--primary-color); }
+
+.fab-yield-section {
+    padding: 0 0 3rem;
+}
+
+.fab-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.fab-control-item label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.fab-control-item input[type="range"] {
+    width: 100%;
+}
+
+.range-val {
+    display: inline-block;
+    margin-top: 0.2rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.fab-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.fab-results-panel {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.fab-result-primary {
+    font-size: 1.1rem;
+}
+
+.fab-result-row {
+    margin-top: 0.35rem;
+}
+
+.fab-result-row:first-child {
+    margin-top: 0;
+}
+
+.fab-result-block {
+    margin-top: 0.9rem;
+}
+
+.fab-result-list {
+    margin: 0.4rem 0 0 1.1rem;
+}
+
+@media (max-width: 760px) {
+    .fab-controls-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 /* 3-column cards row (for full-width demos) */
 .edu-cards-row {
