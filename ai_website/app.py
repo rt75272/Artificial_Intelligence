@@ -40,6 +40,7 @@ house_scaler = None
 house_feature_names = ["sqft", "bedrooms", "bathrooms", "year_built"]
 fab_yield_model = None
 fab_feature_importance = {}
+fab_prediction_sigma = 1.2
 fab_feature_ranges = {
     'etch_uniformity': (80.0, 100.0),
     'overlay_error': (0.5, 8.0),
@@ -1274,7 +1275,7 @@ def predict_house_price():
 @app.route('/api/fab-yield', methods=['POST'])
 def predict_fab_yield():
     """Predict semiconductor wafer yield from fab process telemetry."""
-    global fab_yield_model, fab_feature_importance
+    global fab_yield_model, fab_feature_importance, fab_prediction_sigma
     try:
         if fab_yield_model is None:
             return jsonify({'error': 'Fab yield model is unavailable.'}), 500
@@ -1316,8 +1317,17 @@ def predict_fab_yield():
         ]], dtype=float)
         prediction = float(fab_yield_model.predict(X)[0])
         prediction = min(max(prediction, 55.0), 99.95)
-        tree_predictions = np.array([tree.predict(X)[0] for tree in fab_yield_model.estimators_], dtype=float)
-        uncertainty = float(np.std(tree_predictions))
+        stress_score = (
+            (100.0 - features['etch_uniformity']) / 20.0
+            + features['overlay_error'] / 8.0
+            + features['particle_count'] / 120.0
+            + abs(features['chamber_pressure'] - 55.0) / 20.0
+            + abs(features['temperature_delta']) / 4.0
+            + features['tool_age_days'] / 1500.0
+            + features['vibration_index'] / 2.5
+        )
+        uncertainty_scale = min(max(stress_score / 3.2, 0.8), 1.8)
+        uncertainty = float(fab_prediction_sigma * uncertainty_scale)
         if prediction >= 95.0:
             risk = 'Low'
         elif prediction >= 89.0:
@@ -1413,7 +1423,7 @@ def create_app():
 
 def initialize_models():
     """Initialize machine learning models used by the website."""
-    global digit_model, scaler, house_model, house_scaler, fab_yield_model, fab_feature_importance
+    global digit_model, scaler, house_model, house_scaler, fab_yield_model, fab_feature_importance, fab_prediction_sigma
     try:
         # Initialize handwriting recognition model.
         logger.info("Initializing handwriting recognition model...")
@@ -1494,6 +1504,8 @@ def initialize_models():
             name: float(score)
             for name, score in zip(feature_order, fab_yield_model.feature_importances_)
         }
+        train_pred = fab_yield_model.predict(X_fab)
+        fab_prediction_sigma = float(np.std(yield_rate - train_pred))
         logger.info("Fab yield intelligence model initialized successfully")
     except Exception as e:
         logger.error(f"Model initialization failed: {e}")
