@@ -66,11 +66,15 @@
                 <div class="pso-visuals">
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-mountain-sun"></i> Search Landscape</div>
-                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape heatmap with moving swarm particles and the global best trail" aria-describedby="landscapeSummary"></canvas>
+                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape heatmap with moving swarm particles and the global best trail" aria-describedby="landscapeSummary">
+                            Interactive PSO landscape heatmap with moving particles and best-path trail.
+                        </canvas>
                     </div>
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-chart-line"></i> Best Fitness Over Iterations</div>
-                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Line chart showing global best fitness improvement over iterations" aria-describedby="convergenceSummary"></canvas>
+                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Line chart showing global best fitness improvement over iterations" aria-describedby="convergenceSummary">
+                            Line chart showing best fitness convergence as optimization iterates.
+                        </canvas>
                     </div>
                     <div class="stats-row">
                         <div class="stat-card">
@@ -171,6 +175,7 @@
     let trail = [];
     let running = false;
     let loopId = null;
+    let lastStepTimestamp = 0;
     let landscapeCache = {
         objective: null,
         canvas: null
@@ -427,12 +432,15 @@
         drawAll();
     }
 
-    function runLoop() {
+    function runLoop(timestamp) {
         if (!running) {
             return;
         }
-        psoStep();
-        loopId = window.setTimeout(runLoop, 52);
+        if (timestamp - lastStepTimestamp >= 52) {
+            psoStep();
+            lastStepTimestamp = timestamp;
+        }
+        loopId = window.requestAnimationFrame(runLoop);
     }
 
     function setRunning(next) {
@@ -445,12 +453,13 @@
         runBtnLabel.textContent = running ? 'Pause' : 'Run';
         if (running) {
             if (loopId !== null) {
-                clearTimeout(loopId);
+                window.cancelAnimationFrame(loopId);
                 loopId = null;
             }
+            lastStepTimestamp = 0;
             runLoop();
         } else if (loopId !== null) {
-            clearTimeout(loopId);
+            window.cancelAnimationFrame(loopId);
             loopId = null;
         }
     }
