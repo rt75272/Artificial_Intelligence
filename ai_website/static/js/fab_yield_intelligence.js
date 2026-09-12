@@ -39,8 +39,17 @@ async function runFabForecast() {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(collectFabPayload())
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Failed to forecast yield');
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      if (!response.ok) {
+        const fallbackMessage = await response.text();
+        throw new Error(fallbackMessage || 'Failed to forecast yield');
+      }
+      throw parseError;
+    }
+    if (!response.ok) throw new Error(data?.error || 'Failed to forecast yield');
 
     fabResultsEl.predYield.textContent = `${data.predicted_yield}%`;
     fabResultsEl.riskLevel.textContent = data.risk_level;
