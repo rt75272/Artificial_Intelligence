@@ -66,13 +66,13 @@
                 <div class="pso-visuals">
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-mountain-sun"></i> Search Landscape</div>
-                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape heatmap with moving swarm particles and the global best trail" aria-describedby="landscapeSummary">
+                        <canvas id="landscapeCanvas" width="860" height="500" aria-hidden="true">
                             Interactive PSO landscape heatmap with moving particles and best-path trail.
                         </canvas>
                     </div>
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-chart-line"></i> Best Fitness Over Iterations</div>
-                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Line chart showing global best fitness improvement over iterations" aria-describedby="convergenceSummary">
+                        <canvas id="convergenceCanvas" width="860" height="190" aria-hidden="true">
                             Line chart showing best fitness convergence as optimization iterates.
                         </canvas>
                     </div>
@@ -457,7 +457,7 @@
                 loopId = null;
             }
             lastStepTimestamp = 0;
-            runLoop();
+            loopId = window.requestAnimationFrame(runLoop);
         } else if (loopId !== null) {
             window.cancelAnimationFrame(loopId);
             loopId = null;
