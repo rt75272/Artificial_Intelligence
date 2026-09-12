@@ -66,11 +66,11 @@
                 <div class="pso-visuals">
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-mountain-sun"></i> Search Landscape</div>
-                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape heatmap with moving swarm particles and the global best trail" aria-describedby="visualSummary"></canvas>
+                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape heatmap with moving swarm particles and the global best trail" aria-describedby="landscapeSummary"></canvas>
                     </div>
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-chart-line"></i> Best Fitness Over Iterations</div>
-                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Line chart showing global best fitness improvement over iterations" aria-describedby="visualSummary"></canvas>
+                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Line chart showing global best fitness improvement over iterations" aria-describedby="convergenceSummary"></canvas>
                     </div>
                     <div class="stats-row">
                         <div class="stat-card">
@@ -90,7 +90,8 @@
                             <div id="avgValue" class="stat-value">--</div>
                         </div>
                     </div>
-                    <p id="visualSummary" class="sr-only" aria-live="polite">Swarm visualization summary will appear here.</p>
+                    <p id="landscapeSummary" class="sr-only" aria-live="polite">Landscape summary will appear here.</p>
+                    <p id="convergenceSummary" class="sr-only" aria-live="polite">Convergence summary will appear here.</p>
                 </div>
             </div>
         </div>
@@ -158,7 +159,8 @@
     const bestValue = document.getElementById('bestValue');
     const bestPos = document.getElementById('bestPos');
     const avgValue = document.getElementById('avgValue');
-    const visualSummary = document.getElementById('visualSummary');
+    const landscapeSummary = document.getElementById('landscapeSummary');
+    const convergenceSummary = document.getElementById('convergenceSummary');
 
     const bounds = { min: -5.12, max: 5.12 };
     const particles = [];
@@ -363,9 +365,10 @@
         bestPos.textContent = globalBest ? `(${globalBest.x.toFixed(3)}, ${globalBest.y.toFixed(3)})` : '(--, --)';
         const avg = particles.reduce((sum, p) => sum + objectiveValue(p.x, p.y), 0) / Math.max(particles.length, 1);
         avgValue.textContent = Number.isFinite(avg) ? avg.toFixed(5) : '--';
-        visualSummary.textContent = globalBest
-            ? `Iteration ${iteration}. Best fitness ${globalBestValue.toFixed(6)} at x ${globalBest.x.toFixed(3)}, y ${globalBest.y.toFixed(3)}. Average swarm fitness ${avg.toFixed(5)}.`
-            : `Iteration ${iteration}. Swarm initialized.`;
+        landscapeSummary.textContent = globalBest
+            ? `Landscape view at iteration ${iteration}. Best particle is at x ${globalBest.x.toFixed(3)}, y ${globalBest.y.toFixed(3)} with fitness ${globalBestValue.toFixed(6)}.`
+            : `Landscape view initialized.`;
+        convergenceSummary.textContent = `Convergence chart at iteration ${iteration}. Current global best fitness is ${Number.isFinite(globalBestValue) ? globalBestValue.toFixed(6) : '--'} and average swarm fitness is ${Number.isFinite(avg) ? avg.toFixed(5) : '--'}.`;
     }
 
     function psoStep() {
@@ -441,12 +444,12 @@
         runBtnIcon.className = running ? 'fas fa-pause' : 'fas fa-play';
         runBtnLabel.textContent = running ? 'Pause' : 'Run';
         if (running) {
-            if (loopId) {
+            if (loopId !== null) {
                 clearTimeout(loopId);
                 loopId = null;
             }
             runLoop();
-        } else if (loopId) {
+        } else if (loopId !== null) {
             clearTimeout(loopId);
             loopId = null;
         }
