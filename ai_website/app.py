@@ -227,7 +227,7 @@ def about():
 @app.route('/resume')
 def resume():
     """Serve the personal resume PDF."""
-    resume_path = os.path.join(app.root_path, 'Resume_2026_424242.pdf')
+    resume_path = os.path.join(app.root_path, 'Resume.pdf')
     if not os.path.exists(resume_path):
         return "Resume not found.", 404
     return send_file(resume_path, as_attachment=False, mimetype='application/pdf')
