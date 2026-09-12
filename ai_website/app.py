@@ -18,6 +18,7 @@ from typing import Optional
 import numpy as np
 from flask import Flask, jsonify, render_template, request, send_file
 from PIL import Image
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 
@@ -37,6 +38,17 @@ scaler = None
 house_model = None
 house_scaler = None
 house_feature_names = ["sqft", "bedrooms", "bathrooms", "year_built"]
+fab_yield_model = None
+fab_feature_importance = {}
+fab_feature_ranges = {
+    'etch_uniformity': (80.0, 100.0),
+    'overlay_error': (0.5, 8.0),
+    'particle_count': (0.0, 120.0),
+    'chamber_pressure': (35.0, 75.0),
+    'temperature_delta': (-4.0, 4.0),
+    'tool_age_days': (30.0, 1500.0),
+    'vibration_index': (0.1, 2.5)
+}
 
 # Domain logic mapping wafer defect profiles to factory machines and actions.
 DEFECT_PROFILES = [
@@ -327,6 +339,11 @@ def game_of_life_demo():
         str: Rendered HTML template for the Game of Life demo.
     """
     return render_template('game_of_life.html')
+
+@app.route('/demos/fab-yield-intelligence')
+def fab_yield_intelligence_demo():
+    """Render the fab yield intelligence demo page."""
+    return render_template('fab_yield_intelligence.html')
 
 @app.route('/demos/pathfinding')
 def pathfinding_demo():
@@ -1254,6 +1271,102 @@ def predict_house_price():
         logger.error(f"Traceback: {traceback.format_exc()}")
         return jsonify({'error': 'Prediction failed.'}), 500
 
+@app.route('/api/fab-yield', methods=['POST'])
+def predict_fab_yield():
+    """Predict semiconductor wafer yield from fab process telemetry."""
+    global fab_yield_model, fab_feature_importance
+    try:
+        if fab_yield_model is None:
+            return jsonify({'error': 'Fab yield model is unavailable.'}), 500
+        payload = request.get_json(silent=True) or {}
+        feature_labels = {
+            'etch_uniformity': 'Etch Uniformity (%)',
+            'overlay_error': 'Overlay Error (nm)',
+            'particle_count': 'Particle Count (ppm)',
+            'chamber_pressure': 'Chamber Pressure (mTorr)',
+            'temperature_delta': 'Temperature Drift (°C)',
+            'tool_age_days': 'Tool Age (days)',
+            'vibration_index': 'Vibration Index'
+        }
+        defaults = {
+            'etch_uniformity': 95.0,
+            'overlay_error': 2.0,
+            'particle_count': 30.0,
+            'chamber_pressure': 55.0,
+            'temperature_delta': 0.0,
+            'tool_age_days': 365.0,
+            'vibration_index': 0.8
+        }
+        features = {}
+        for name, (min_value, max_value) in fab_feature_ranges.items():
+            raw_value = payload.get(name, defaults[name])
+            try:
+                value = float(raw_value)
+            except (TypeError, ValueError):
+                return jsonify({'error': f'Invalid value for {name}.'}), 400
+            features[name] = min(max(value, min_value), max_value)
+        X = np.array([[
+            features['etch_uniformity'],
+            features['overlay_error'],
+            features['particle_count'],
+            features['chamber_pressure'],
+            features['temperature_delta'],
+            features['tool_age_days'],
+            features['vibration_index']
+        ]], dtype=float)
+        prediction = float(fab_yield_model.predict(X)[0])
+        prediction = min(max(prediction, 55.0), 99.95)
+        tree_predictions = np.array([tree.predict(X)[0] for tree in fab_yield_model.estimators_], dtype=float)
+        uncertainty = float(np.std(tree_predictions))
+        if prediction >= 95.0:
+            risk = 'Low'
+        elif prediction >= 89.0:
+            risk = 'Moderate'
+        else:
+            risk = 'High'
+        recommendations = []
+        if features['particle_count'] > 70:
+            recommendations.append('Increase chamber clean frequency and review pre-exposure filtration performance.')
+        if features['overlay_error'] > 4.0:
+            recommendations.append('Run scanner alignment calibration and verify stage servo drift compensation.')
+        if abs(features['temperature_delta']) > 2.0:
+            recommendations.append('Stabilize thermal zones and check closed-loop heater control tuning.')
+        if features['vibration_index'] > 1.4:
+            recommendations.append('Inspect vacuum pumps and tool isolation mounts for vibration-induced overlay drift.')
+        if features['tool_age_days'] > 1000:
+            recommendations.append('Prioritize preventative maintenance window for aging subassemblies and seals.')
+        if features['etch_uniformity'] < 90:
+            recommendations.append('Audit gas flow balancing and endpoint detection for etch non-uniformity.')
+        if not recommendations:
+            recommendations.append('Process appears healthy; continue SPC monitoring and keep current PM cadence.')
+        ranked_drivers = sorted(
+            fab_feature_importance.items(),
+            key=lambda item: item[1],
+            reverse=True
+        )[:3]
+        top_drivers = [
+            {
+                'name': feature_labels.get(name, name),
+                'importance_pct': round(score * 100, 1)
+            }
+            for name, score in ranked_drivers
+        ]
+        return jsonify({
+            'predicted_yield': round(prediction, 2),
+            'risk_level': risk,
+            'confidence_window': {
+                'low': round(max(55.0, prediction - uncertainty), 2),
+                'high': round(min(99.95, prediction + uncertainty), 2)
+            },
+            'top_drivers': top_drivers,
+            'recommendations': recommendations,
+            'inputs': features
+        })
+    except Exception as e:
+        logger.error(f"Fab yield prediction error: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return jsonify({'error': 'Fab yield prediction failed.'}), 500
+
 @app.errorhandler(404)
 def page_not_found(error):
     """Handle 404 Not Found errors.
@@ -1300,7 +1413,7 @@ def create_app():
 
 def initialize_models():
     """Initialize machine learning models used by the website."""
-    global digit_model, scaler, house_model, house_scaler
+    global digit_model, scaler, house_model, house_scaler, fab_yield_model, fab_feature_importance
     try:
         # Initialize handwriting recognition model.
         logger.info("Initializing handwriting recognition model...")
@@ -1329,6 +1442,59 @@ def initialize_models():
         house_model = LinearRegression()
         house_model.fit(Xs, price)
         logger.info("Housing model initialized successfully")
+
+        # Initialize fab yield intelligence model from synthetic process telemetry.
+        logger.info("Initializing fab yield intelligence model...")
+        n_fab_samples = 1200
+        etch_uniformity = rng.uniform(80, 100, n_fab_samples)
+        overlay_error = rng.uniform(0.5, 8.0, n_fab_samples)
+        particle_count = rng.uniform(0, 120, n_fab_samples)
+        chamber_pressure = rng.uniform(35, 75, n_fab_samples)
+        temperature_delta = rng.uniform(-4, 4, n_fab_samples)
+        tool_age_days = rng.uniform(30, 1500, n_fab_samples)
+        vibration_index = rng.uniform(0.1, 2.5, n_fab_samples)
+        yield_rate = (
+            98.5
+            - 0.42 * overlay_error
+            - 0.05 * particle_count
+            - 0.03 * np.abs(chamber_pressure - 55)
+            - 0.65 * np.abs(temperature_delta)
+            - 0.002 * tool_age_days
+            - 2.0 * vibration_index
+            - 0.08 * np.power(100 - etch_uniformity, 1.2)
+            + rng.normal(0, 0.75, n_fab_samples)
+        )
+        yield_rate = np.clip(yield_rate, 55.0, 99.95)
+        X_fab = np.column_stack([
+            etch_uniformity,
+            overlay_error,
+            particle_count,
+            chamber_pressure,
+            temperature_delta,
+            tool_age_days,
+            vibration_index
+        ])
+        fab_yield_model = RandomForestRegressor(
+            n_estimators=220,
+            max_depth=10,
+            min_samples_leaf=2,
+            random_state=42
+        )
+        fab_yield_model.fit(X_fab, yield_rate)
+        feature_order = [
+            'etch_uniformity',
+            'overlay_error',
+            'particle_count',
+            'chamber_pressure',
+            'temperature_delta',
+            'tool_age_days',
+            'vibration_index'
+        ]
+        fab_feature_importance = {
+            name: float(score)
+            for name, score in zip(feature_order, fab_yield_model.feature_importances_)
+        }
+        logger.info("Fab yield intelligence model initialized successfully")
     except Exception as e:
         logger.error(f"Model initialization failed: {e}")
         logger.error(f"Traceback: {traceback.format_exc()}")
