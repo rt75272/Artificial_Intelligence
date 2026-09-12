@@ -15,6 +15,8 @@ const fabResultsEl = {
   topDrivers: document.getElementById('topDrivers'),
   recommendations: document.getElementById('recommendations')
 };
+const runForecastBtn = document.getElementById('runForecast');
+const fabApiUrl = runForecastBtn.dataset.apiUrl;
 
 function updateFabRangeLabels() {
   fabIds.forEach((id) => {
@@ -34,7 +36,7 @@ function collectFabPayload() {
 
 async function runFabForecast() {
   try {
-    const response = await fetch('/api/fab-yield', {
+    const response = await fetch(fabApiUrl, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(collectFabPayload())
@@ -82,6 +84,6 @@ async function runFabForecast() {
 fabIds.forEach((id) => {
   document.getElementById(id).addEventListener('input', updateFabRangeLabels);
 });
-document.getElementById('runForecast').addEventListener('click', runFabForecast);
+runForecastBtn.addEventListener('click', runFabForecast);
 updateFabRangeLabels();
 runFabForecast();

@@ -1305,7 +1305,11 @@ def predict_fab_yield():
                 value = float(raw_value)
             except (TypeError, ValueError):
                 return jsonify({'error': f'Invalid value for {name}.'}), 400
-            features[name] = min(max(value, min_value), max_value)
+            if value < min_value or value > max_value:
+                return jsonify({
+                    'error': f'{name} must be between {min_value} and {max_value}.'
+                }), 400
+            features[name] = value
         X = np.array([[
             features['etch_uniformity'],
             features['overlay_error'],

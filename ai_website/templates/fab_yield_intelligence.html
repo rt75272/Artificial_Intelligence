@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
-                    <button id="runForecast" class="btn btn-primary"><i class="fas fa-play-circle"></i> Run Yield Forecast</button>
+                    <button id="runForecast" class="btn btn-primary" data-api-url="{{ url_for('predict_fab_yield') }}"><i class="fas fa-play-circle"></i> Run Yield Forecast</button>
                 </div>
 
                 <div id="fabResults" role="status" aria-live="polite" aria-atomic="true" style="margin-top:1rem;padding:1rem;border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;">
