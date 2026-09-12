@@ -66,13 +66,13 @@
                 <div class="pso-visuals">
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-mountain-sun"></i> Search Landscape</div>
-                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape visualization" aria-describedby="landscapeSummary">
+                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape visualization" aria-describedby="landscapeDesc landscapeSummary">
                             Optimization landscape heatmap showing swarm particle search behavior.
                         </canvas>
                     </div>
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-chart-line"></i> Best Fitness Over Iterations</div>
-                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Convergence chart visualization" aria-describedby="convergenceSummary">
+                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Convergence chart visualization" aria-describedby="convergenceDesc convergenceSummary">
                             Convergence line chart for best fitness over optimization iterations.
                         </canvas>
                     </div>
@@ -94,6 +94,8 @@
                             <div id="avgValue" class="stat-value">--</div>
                         </div>
                     </div>
+                    <p id="landscapeDesc" class="sr-only">The landscape canvas shows a colored objective surface where cooler and darker regions indicate lower function values, while moving particles represent candidate solutions.</p>
+                    <p id="convergenceDesc" class="sr-only">The convergence chart plots the best fitness found so far as iterations increase, helping illustrate optimization progress and stagnation.</p>
                     <p id="landscapeSummary" class="sr-only" aria-live="polite">Landscape summary will appear here.</p>
                     <p id="convergenceSummary" class="sr-only" aria-live="polite">Convergence summary will appear here.</p>
                 </div>
