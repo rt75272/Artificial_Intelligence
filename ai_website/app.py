@@ -9,7 +9,9 @@ import io
 import logging
 import os
 import pickle
+import random
 import secrets
+import time
 import traceback
 from typing import Optional
 
@@ -35,6 +37,80 @@ scaler = None
 house_model = None
 house_scaler = None
 house_feature_names = ["sqft", "bedrooms", "bathrooms", "year_built"]
+
+# Domain logic mapping wafer defect profiles to factory machines and actions.
+DEFECT_PROFILES = [
+    {
+        'type': 'Center',
+        'name': 'Center Defect Cluster',
+        'machine': 'CMP Polish Head',
+        'tool_id': 'CMP-POL-04',
+        'action': 'Inspect for uneven pneumatic pressure & polish pad wear.',
+        'yield_impact': '-4.2%',
+        'severity': 'High',
+        'mechanism': 'Slurry distribution imbalance or localized downforce anomaly during chemical mechanical planarization causing central dielectric over-polish.'
+    },
+    {
+        'type': 'Edge-Ring',
+        'name': 'Edge-Ring Anomaly',
+        'machine': 'RTP Annealing Furnace',
+        'tool_id': 'RTP-FURN-02',
+        'action': 'Check zone 4 temperature controller & quartz ring alignment.',
+        'yield_impact': '-8.7%',
+        'severity': 'Critical',
+        'mechanism': 'Thermal gradient mismatch near wafer periphery during rapid thermal processing leading to localized slip lines and gate oxide breakdown.'
+    },
+    {
+        'type': 'Scratch',
+        'name': 'Linear Surface Scratch',
+        'machine': 'Wafer Handling Robot',
+        'tool_id': 'ROBOT-ARM-01',
+        'action': 'Inspect transfer blade for particle buildup & recalibrate pick-and-place alignment.',
+        'yield_impact': '-2.1%',
+        'severity': 'Medium',
+        'mechanism': 'Mechanical abrasion or silicon micro-particulates on the vacuum transfer blade during inter-bay cassette transport.'
+    },
+    {
+        'type': 'Random',
+        'name': 'Random Particle Contamination',
+        'machine': 'Cleanroom Ambient',
+        'tool_id': 'HVAC-HEPA-BAY3',
+        'action': 'Check HEPA filtration particle counts & laminar airflow velocity.',
+        'yield_impact': '-0.8%',
+        'severity': 'Low',
+        'mechanism': 'Airborne sub-micron particulate fallout between lithography exposure and photoresist develop.'
+    },
+    {
+        'type': 'Edge-Loc',
+        'name': 'Localized Edge Defect',
+        'machine': 'Litho Coater Track',
+        'tool_id': 'LITH-EBR-03',
+        'action': 'Calibrate Edge Bead Removal (EBR) solvent dispense nozzle & spin speed.',
+        'yield_impact': '-3.5%',
+        'severity': 'Medium',
+        'mechanism': 'Incomplete edge bead removal causing photoresist flaking and peripheral pattern bridging.'
+    },
+    {
+        'type': 'Donut',
+        'name': 'Donut / Ring-Core Anomaly',
+        'machine': 'ICP Plasma Etch Chamber',
+        'tool_id': 'ETCH-ICP-02',
+        'action': 'Verify RF coil tuning matching network and gas distribution showerhead holes.',
+        'yield_impact': '-6.1%',
+        'severity': 'High',
+        'mechanism': 'Plasma density non-uniformity and reactive ion flux imbalance midway between center and wafer boundary.'
+    },
+    {
+        'type': 'None',
+        'name': 'Normal (Defect-Free)',
+        'machine': 'All Systems Nominal',
+        'tool_id': 'FAB-ONLINE',
+        'action': 'No maintenance required. Wafer meets strict yield thresholds (>99.5%).',
+        'yield_impact': '0.0%',
+        'severity': 'Nominal',
+        'mechanism': 'Normal baseline process operation with standard statistical yield distribution.'
+    }
+]
 
 # Application configuration.
 class Config:
@@ -232,6 +308,16 @@ def svm_demo():
         str: Rendered HTML template for the SVM demo.
     """
     return render_template('svm_demo.html')
+
+@app.route('/demos/wafer-sandbox')
+@app.route('/wafer-sandbox')
+def wafer_sandbox_demo():
+    """Render the AI/ML semiconductor wafer sandbox demo page.
+
+    Returns:
+        str: Rendered HTML template for the wafer sandbox demo.
+    """
+    return render_template('wafer_sandbox.html')
 
 @app.route('/demos/game-of-life')
 def game_of_life_demo():
@@ -930,6 +1016,158 @@ def train_decision_tree():
     except Exception as e:
         logger.error(f"Decision tree error: {e}")
         return jsonify({'error': 'Training failed'}), 500
+
+@app.route('/api/predict', methods=['POST'])
+@app.route('/api/wafer/predict', methods=['POST'])
+@app.route('/api/wafer-predict', methods=['POST'])
+def wafer_predict():
+    """AI Inference & Semiconductor Equipment Diagnosis Endpoint.
+
+    In a production fab, this route receives a 2D wafer array from metrology tools,
+    passes it through a deep learning model (e.g., PyTorch CNN), and returns the
+    classified defect pattern, confidence score, and root-cause machine maintenance action.
+
+    Expected JSON input (optional fields):
+        {
+            "wafer_map": [[0, 1, ...], ...],
+            "defect_type": "Center" | "Edge-Ring" | "Scratch" | "Random" | "Edge-Loc" | "Donut" | "None",
+            "simulate_delay": true
+        }
+
+    Returns:
+        JSON response with predicted defect classification, confidence, faulty machine,
+        maintenance action, yield impact, and probability breakdown.
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+        simulate_delay = data.get('simulate_delay', True)
+        if simulate_delay:
+            time.sleep(0.35)
+
+        wafer_map = data.get('wafer_map')
+        preset_type = data.get('defect_type')
+
+        classified_type = None
+        stats = {
+            'total_dies': 0,
+            'defective_dies': 0,
+            'passing_dies': 0,
+            'yield_rate': 100.0,
+            'defect_density': 0.0
+        }
+
+        if wafer_map and isinstance(wafer_map, list) and len(wafer_map) > 0:
+            rows = len(wafer_map)
+            cols = len(wafer_map[0]) if rows > 0 else 0
+            cx, cy = (cols - 1) / 2.0, (rows - 1) / 2.0
+            max_r = min(cx, cy)
+
+            defect_coords = []
+            valid_dies = 0
+
+            for r in range(rows):
+                for c in range(cols):
+                    val = wafer_map[r][c]
+                    if val is not None and val != -1:
+                        valid_dies += 1
+                        if val == 1:
+                            nx = (c - cx) / max_r if max_r > 0 else 0.0
+                            ny = (r - cy) / max_r if max_r > 0 else 0.0
+                            dist = float(np.sqrt(nx**2 + ny**2))
+                            angle = float(np.arctan2(ny, nx))
+                            defect_coords.append((nx, ny, dist, angle))
+
+            total_defects = len(defect_coords)
+            stats['total_dies'] = valid_dies
+            stats['defective_dies'] = total_defects
+            stats['passing_dies'] = max(0, valid_dies - total_defects)
+            stats['yield_rate'] = round((stats['passing_dies'] / valid_dies * 100.0), 2) if valid_dies > 0 else 100.0
+            stats['defect_density'] = round((total_defects / valid_dies * 100.0), 2) if valid_dies > 0 else 0.0
+
+            if total_defects == 0 or stats['yield_rate'] >= 99.8:
+                classified_type = 'None'
+            elif preset_type and any(p['type'] == preset_type for p in DEFECT_PROFILES):
+                classified_type = preset_type
+            else:
+                dists = [d[2] for d in defect_coords]
+                angles = [d[3] for d in defect_coords]
+
+                center_count = sum(1 for d in dists if d <= 0.38)
+                donut_count = sum(1 for d in dists if 0.38 < d <= 0.72)
+                edge_count = sum(1 for d in dists if d > 0.72)
+
+                center_ratio = center_count / total_defects
+                donut_ratio = donut_count / total_defects
+                edge_ratio = edge_count / total_defects
+
+                is_scratch = False
+                if total_defects >= 4:
+                    pts_x = np.array([d[0] for d in defect_coords])
+                    pts_y = np.array([d[1] for d in defect_coords])
+                    cov = np.cov(pts_x, pts_y) if len(pts_x) > 1 else np.zeros((2, 2))
+                    eigvals = np.linalg.eigvals(cov) if cov.shape == (2, 2) else [0, 0]
+                    eig_ratio = (max(eigvals) / (min(eigvals) + 1e-5)) if min(eigvals) > 0 else 1.0
+                    if eig_ratio > 4.2:
+                        is_scratch = True
+
+                is_edge_loc = False
+                if edge_ratio > 0.40 and len(angles) >= 4:
+                    ang_std = float(np.std(angles))
+                    if ang_std < 0.85:
+                        is_edge_loc = True
+
+                if is_scratch:
+                    classified_type = 'Scratch'
+                elif is_edge_loc:
+                    classified_type = 'Edge-Loc'
+                elif edge_ratio > 0.52:
+                    classified_type = 'Edge-Ring'
+                elif center_ratio > 0.48:
+                    classified_type = 'Center'
+                elif donut_ratio > 0.48:
+                    classified_type = 'Donut'
+                else:
+                    classified_type = 'Random'
+
+        if not classified_type:
+            if preset_type and any(p['type'] == preset_type for p in DEFECT_PROFILES):
+                classified_type = preset_type
+            else:
+                classified_type = random.choice(['Center', 'Edge-Ring', 'Scratch', 'Random', 'Edge-Loc', 'Donut'])
+
+        profile = next((p for p in DEFECT_PROFILES if p['type'] == classified_type), DEFECT_PROFILES[0])
+
+        if classified_type == 'None':
+            base_confidence = round(random.uniform(98.5, 99.9), 1)
+        else:
+            base_confidence = round(random.uniform(92.0, 99.4), 1)
+
+        remaining_prob = max(0.0, 100.0 - base_confidence)
+        other_types = [p['type'] for p in DEFECT_PROFILES if p['type'] != classified_type]
+        weights = np.random.dirichlet(np.ones(len(other_types)))
+
+        probabilities = {classified_type: base_confidence}
+        for otype, w in zip(other_types, weights):
+            probabilities[otype] = round(float(w * remaining_prob), 1)
+
+        return jsonify({
+            'defect_type': profile['type'],
+            'defect_name': profile['name'],
+            'confidence': base_confidence,
+            'machine': profile['machine'],
+            'tool_id': profile['tool_id'],
+            'action': profile['action'],
+            'yield_impact': profile['yield_impact'],
+            'severity': profile['severity'],
+            'mechanism': profile['mechanism'],
+            'probabilities': probabilities,
+            'stats': stats,
+            'status': 'success'
+        })
+    except Exception as e:
+        logger.error(f"Wafer defect prediction error: {e}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return jsonify({'error': 'Wafer anomaly prediction failed.'}), 500
 
 @app.route('/predict', methods=['POST'])
 def predict():

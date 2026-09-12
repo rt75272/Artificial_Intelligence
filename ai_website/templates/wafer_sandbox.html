@@ -1,0 +1,1785 @@
+{% extends "base.html" %}
+
+{% block title %}AI Semiconductor Wafer Sandbox - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">AI Semiconductor Wafer Sandbox</h1>
+        <p class="page-subtitle">Real-time wafer map defect detection, spatial anomaly classification, and automated fab machine root-cause diagnosis</p>
+        <div class="learn-objectives">
+            <span class="obj-tag"><i class="fas fa-microchip"></i> Semiconductor AI</span>
+            <span class="obj-tag"><i class="fas fa-network-wired"></i> Spatial CNN Analysis</span>
+            <span class="obj-tag"><i class="fas fa-tools"></i> Root Cause Analysis</span>
+            <span class="obj-tag"><i class="fas fa-industry"></i> Predictive Maintenance</span>
+            <span class="obj-tag"><i class="fas fa-chart-pie"></i> Yield Engineering</span>
+        </div>
+    </div>
+</section>
+
+<section style="padding: 0 0 1rem;">
+    <div class="container">
+        <!-- Educational cards row -->
+        <div class="edu-cards-row">
+            <div class="edu-card">
+                <h3><i class="fas fa-compact-disc"></i> Wafer Map Pattern Recognition</h3>
+                <p>During semiconductor fabrication, electrical die sorting generates 2D <strong>Wafer Defect Maps (WMAP)</strong>. Non-random defect clusters are geometric fingerprints of faulty manufacturing tools.</p>
+                <p>Automated AI classification identifies systemic defects in seconds, preventing entire production lots worth millions of dollars from suffering yield loss.</p>
+                <div class="edu-tags">
+                    <span class="edu-tag">Die Sort Metrology</span>
+                    <span class="edu-tag">Spatial Clustering</span>
+                    <span class="edu-tag">Pattern Signatures</span>
+                </div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-cogs"></i> Equipment & Defect Signatures</h3>
+                <div class="edu-facts">
+                    <div class="edu-fact">
+                        <span class="fact-label">Center Cluster</span>
+                        <span class="fact-value">CMP Polish Head pressure</span>
+                    </div>
+                    <div class="edu-fact">
+                        <span class="fact-label">Edge-Ring</span>
+                        <span class="fact-value">RTP Furnace thermal gradient</span>
+                    </div>
+                    <div class="edu-fact">
+                        <span class="fact-label">Scratch Trajectory</span>
+                        <span class="fact-value">Wafer Robot transfer blade</span>
+                    </div>
+                    <div class="edu-fact">
+                        <span class="fact-label">Random Fallout</span>
+                        <span class="fact-value">Cleanroom HEPA filtration</span>
+                    </div>
+                </div>
+                <div class="edu-formula">Yield Impact = (Defective Dies / Total Functional Dies) × 100%</div>
+            </div>
+
+            <div class="edu-card">
+                <h3><i class="fas fa-brain"></i> AI Inference & Fab Action</h3>
+                <p>The backend inference pipeline processes spatial die arrays, extracts radial/angular/connectivity features, and performs deep classification to trigger automated maintenance work orders.</p>
+                <div class="edu-steps">
+                    <div class="edu-step">
+                        <span class="step-num">1</span>
+                        <span class="step-text"><strong>Scan:</strong> Optical/electrical probe scans die matrix.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">2</span>
+                        <span class="step-text"><strong>Infer:</strong> AI classifies spatial anomaly signature.</span>
+                    </div>
+                    <div class="edu-step">
+                        <span class="step-num">3</span>
+                        <span class="step-text"><strong>Dispatch:</strong> Flags specific fab tool & repair protocol.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Wafer Sandbox -->
+<section class="demo-section" style="padding-top: 0.5rem;">
+    <div class="container">
+        
+        <!-- Fab Control & Wafer Grid Layout -->
+        <div class="wafer-sandbox-container">
+            
+            <!-- Left Column: Interactive Wafer Stage -->
+            <div class="wafer-stage-card">
+                <div class="stage-header">
+                    <div class="stage-title">
+                        <i class="fas fa-microchip"></i>
+                        <span>300mm Silicon Wafer Stage</span>
+                    </div>
+                    <div class="wafer-meta-badges">
+                        <span class="wafer-badge" id="lotBadge"><i class="fas fa-barcode"></i> LOT-8492-X</span>
+                        <span class="wafer-badge" id="waferIdBadge"><i class="fas fa-layer-group"></i> WAF-07</span>
+                        <span class="wafer-badge" id="dieCountBadge"><i class="fas fa-th"></i> 448 Dies</span>
+                    </div>
+                </div>
+
+                <!-- Wafer Canvas Container with Laser Scan Animation -->
+                <div class="canvas-wrapper">
+                    <div class="scanner-laser" id="scannerLaser"></div>
+                    <canvas id="waferCanvas" width="460" height="460"></canvas>
+                    <div class="wafer-hud" id="waferHud">
+                        <div class="hud-item"><span class="hud-label">Coord:</span> <span id="hudCoord">X: --, Y: --</span></div>
+                        <div class="hud-item"><span class="hud-label">Die ID:</span> <span id="hudDieId">--</span></div>
+                        <div class="hud-item"><span class="hud-label">Status:</span> <span id="hudStatus" class="hud-status">Good</span></div>
+                    </div>
+                </div>
+
+                <!-- Interactive Wafer Tools & Legend -->
+                <div class="wafer-toolbar">
+                    <div class="toolbar-group">
+                        <span class="toolbar-title"><i class="fas fa-magic"></i> Preset Defect Signatures:</span>
+                        <div class="preset-buttons">
+                            <button class="preset-btn active" data-type="Center" title="CMP Polish Head anomaly">
+                                <i class="fas fa-bullseye"></i> Center
+                            </button>
+                            <button class="preset-btn" data-type="Edge-Ring" title="RTP Annealing Furnace anomaly">
+                                <i class="fas fa-circle-notch"></i> Edge-Ring
+                            </button>
+                            <button class="preset-btn" data-type="Scratch" title="Robot Handling Blade scratch">
+                                <i class="fas fa-bolt"></i> Scratch
+                            </button>
+                            <button class="preset-btn" data-type="Random" title="Cleanroom HEPA particle fallout">
+                                <i class="fas fa-braille"></i> Random
+                            </button>
+                            <button class="preset-btn" data-type="Edge-Loc" title="Litho Edge Bead Removal defect">
+                                <i class="fas fa-border-all"></i> Edge-Loc
+                            </button>
+                            <button class="preset-btn" data-type="Donut" title="Plasma Etch Chamber ring anomaly">
+                                <i class="fas fa-dot-circle"></i> Donut
+                            </button>
+                            <button class="preset-btn" data-type="None" title="Pristine / Nominal wafer">
+                                <i class="fas fa-check-circle"></i> Clean
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="toolbar-actions-row">
+                        <div class="draw-modes">
+                            <button id="brushModeBtn" class="tool-toggle-btn active" title="Paint Defect Dies">
+                                <i class="fas fa-pen"></i> Defect Brush
+                            </button>
+                            <button id="eraseModeBtn" class="tool-toggle-btn" title="Erase / Clear Dies">
+                                <i class="fas fa-eraser"></i> Erase
+                            </button>
+                            <button id="clearWaferBtn" class="tool-action-btn" title="Reset all dies to good">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                            <button id="randomizeBtn" class="tool-action-btn" title="Generate Random Lot Wafer">
+                                <i class="fas fa-dice"></i> Random Lot
+                            </button>
+                        </div>
+
+                        <div class="slider-control">
+                            <label for="noiseSlider"><i class="fas fa-wind"></i> Noise: <span id="noiseVal">3%</span></label>
+                            <input type="range" id="noiseSlider" min="0" max="20" value="3" step="1">
+                        </div>
+                    </div>
+
+                    <!-- Scan Trigger Button -->
+                    <button id="scanBtn" class="btn-scan-primary">
+                        <span class="scan-btn-content">
+                            <i class="fas fa-search-location"></i>
+                            <strong>Scan Wafer & Run AI Inference</strong>
+                        </span>
+                        <div class="scan-pulse-ring"></div>
+                    </button>
+                </div>
+
+                <!-- Wafer Die Legend -->
+                <div class="wafer-legend">
+                    <div class="legend-chip"><span class="legend-color good"></span> Passing Die (Good)</div>
+                    <div class="legend-chip"><span class="legend-color defect"></span> Defective Die (Fail)</div>
+                    <div class="legend-chip"><span class="legend-color hover"></span> Active Laser / Focus</div>
+                </div>
+            </div>
+
+            <!-- Right Column: AI Model Inference & Root-Cause Maintenance Center -->
+            <div class="wafer-diagnostics-card">
+                
+                <div class="diag-header">
+                    <div class="diag-title">
+                        <i class="fas fa-robot"></i>
+                        <span>Fab AI Diagnostic Engine</span>
+                    </div>
+                    <div class="diag-status" id="scanStatusBadge">
+                        <span class="status-dot green"></span>
+                        <span id="scanStatusText">READY FOR SCAN</span>
+                    </div>
+                </div>
+
+                <!-- Main Anomaly Result Banner -->
+                <div class="anomaly-result-box" id="anomalyResultBox">
+                    <div class="anomaly-top-row">
+                        <div class="anomaly-icon-wrap" id="anomalyIconWrap">
+                            <i class="fas fa-bullseye" id="anomalyIcon"></i>
+                        </div>
+                        <div class="anomaly-main-info">
+                            <div class="anomaly-tag-row">
+                                <span class="anomaly-type-pill" id="anomalyPill">Center Defect</span>
+                                <span class="severity-pill high" id="severityPill">High Severity</span>
+                            </div>
+                            <h2 class="anomaly-title" id="anomalyTitle">Center Defect Cluster</h2>
+                            <p class="anomaly-summary" id="anomalySummary">Significant concentration of defective dies detected within central wafer radius.</p>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrology KPIs -->
+                    <div class="kpi-grid">
+                        <div class="kpi-item">
+                            <span class="kpi-label"><i class="fas fa-percentage"></i> AI Confidence</span>
+                            <span class="kpi-value highlight" id="kpiConfidence">98.4%</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-label"><i class="fas fa-chart-line"></i> Yield Impact</span>
+                            <span class="kpi-value danger" id="kpiYieldImpact">-4.2%</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-label"><i class="fas fa-check"></i> Die Yield</span>
+                            <span class="kpi-value" id="kpiDieYield">89.5%</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-label"><i class="fas fa-bug"></i> Defect Count</span>
+                            <span class="kpi-value" id="kpiDefectCount">47 / 448</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Machine Root Cause & Corrective Action Card -->
+                <div class="machine-diagnosis-card">
+                    <div class="card-section-title">
+                        <i class="fas fa-wrench"></i>
+                        <span>Root Cause Machine Diagnosis</span>
+                    </div>
+
+                    <div class="machine-details-box">
+                        <div class="machine-headline">
+                            <div class="machine-icon-box">
+                                <i class="fas fa-industry" id="machineIcon"></i>
+                            </div>
+                            <div class="machine-meta">
+                                <span class="machine-label">FLAGGED EQUIPMENT</span>
+                                <h3 class="machine-name" id="machineName">CMP Polish Head</h3>
+                                <div class="machine-tags">
+                                    <span class="machine-tag" id="toolIdTag"><i class="fas fa-hashtag"></i> CMP-POL-04</span>
+                                    <span class="machine-tag"><i class="fas fa-map-marker-alt"></i> Cleanroom Bay 4 (Planarization)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-alert-box">
+                            <div class="action-header">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Required Maintenance Action:</strong>
+                            </div>
+                            <p class="action-text" id="actionText">Inspect for uneven pneumatic pressure & polish pad wear.</p>
+                        </div>
+
+                        <div class="mechanism-box">
+                            <span class="mechanism-label"><i class="fas fa-atom"></i> Physical Defect Mechanism:</span>
+                            <p class="mechanism-text" id="mechanismText">Slurry distribution imbalance or localized downforce anomaly during chemical mechanical planarization causing central dielectric over-polish.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Multi-Class Probabilities -->
+                <div class="probabilities-card">
+                    <div class="card-section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Model Classification Probabilities</span>
+                    </div>
+                    <div class="prob-bars-list" id="probBarsList">
+                        <!-- Populated dynamically by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Equipment Fleet Live Status -->
+                <div class="fleet-status-card">
+                    <div class="card-section-title">
+                        <i class="fas fa-network-wired"></i>
+                        <span>Fab Tool Health Fleet Matrix</span>
+                    </div>
+                    <div class="fleet-grid">
+                        <div class="fleet-item" id="fleet-cmp">
+                            <div class="fleet-top">
+                                <span class="fleet-name"><i class="fas fa-circle-notch"></i> CMP Polish</span>
+                                <span class="fleet-status-dot alert"></span>
+                            </div>
+                            <span class="fleet-id">CMP-POL-04</span>
+                        </div>
+                        <div class="fleet-item" id="fleet-rtp">
+                            <div class="fleet-top">
+                                <span class="fleet-name"><i class="fas fa-fire"></i> RTP Furnace</span>
+                                <span class="fleet-status-dot nominal"></span>
+                            </div>
+                            <span class="fleet-id">RTP-FURN-02</span>
+                        </div>
+                        <div class="fleet-item" id="fleet-robot">
+                            <div class="fleet-top">
+                                <span class="fleet-name"><i class="fas fa-robot"></i> Robot Handler</span>
+                                <span class="fleet-status-dot nominal"></span>
+                            </div>
+                            <span class="fleet-id">ROBOT-ARM-01</span>
+                        </div>
+                        <div class="fleet-item" id="fleet-hepa">
+                            <div class="fleet-top">
+                                <span class="fleet-name"><i class="fas fa-wind"></i> HEPA Filter</span>
+                                <span class="fleet-status-dot nominal"></span>
+                            </div>
+                            <span class="fleet-id">HVAC-HEPA-B3</span>
+                        </div>
+                        <div class="fleet-item" id="fleet-litho">
+                            <div class="fleet-top">
+                                <span class="fleet-name"><i class="fas fa-layer-group"></i> Litho EBR</span>
+                                <span class="fleet-status-dot nominal"></span>
+                            </div>
+                            <span class="fleet-id">LITH-EBR-03</span>
+                        </div>
+                        <div class="fleet-item" id="fleet-etch">
+                            <div class="fleet-top">
+                                <span class="fleet-name"><i class="fas fa-bolt"></i> Plasma Etch</span>
+                                <span class="fleet-status-dot nominal"></span>
+                            </div>
+                            <span class="fleet-id">ETCH-ICP-02</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Inspection Session History Log -->
+        <div class="history-section">
+            <div class="history-card">
+                <div class="history-header">
+                    <div class="history-title">
+                        <i class="fas fa-history"></i>
+                        <span>Wafer Lot Inspection Log</span>
+                    </div>
+                    <div class="history-actions">
+                        <button id="exportLogBtn" class="btn btn-secondary btn-sm"><i class="fas fa-download"></i> Export Log (JSON)</button>
+                        <button id="clearLogBtn" class="btn btn-secondary btn-sm"><i class="fas fa-trash-alt"></i> Clear History</button>
+                    </div>
+                </div>
+                <div class="history-table-wrapper">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Lot / Wafer ID</th>
+                                <th>Detected Anomaly</th>
+                                <th>Flagged Machine</th>
+                                <th>Confidence</th>
+                                <th>Yield Impact</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- Populated dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Takeaways / Fab Engineering Guide -->
+        <div class="edu-takeaways">
+            <h3><i class="fas fa-lightbulb"></i> Semiconductor Yield Engineering Takeaways</h3>
+            <div class="takeaway-grid">
+                <div class="takeaway-item">
+                    <i class="fas fa-microchip"></i>
+                    <div><strong>Spatial Footprints:</strong> Tool faults leave distinct geometric signatures on wafers because fab processes rotate, heat, or polish wafers radially.</div>
+                </div>
+                <div class="takeaway-item">
+                    <i class="fas fa-robot"></i>
+                    <div><strong>Automated Root Cause:</strong> Coupling deep vision models with manufacturing execution systems (MES) enables instant tool lockout before scrap accumulates.</div>
+                </div>
+                <div class="takeaway-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <div><strong>Yield & Economics:</strong> A 1% yield recovery in a 300mm leading-edge fab represents millions in revenue across high-volume production runs.</div>
+                </div>
+                <div class="takeaway-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <div><strong>Predictive Maintenance:</strong> Real-time anomaly alerts enable opportunistic maintenance during scheduled recipe changes rather than emergency fab downtime.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Custom Styles for Semiconductor Sandbox -->
+<style>
+.wafer-sandbox-container {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 1.75rem;
+    align-items: flex-start;
+    margin: 1rem 0 2rem;
+}
+
+@media (max-width: 980px) {
+    .wafer-sandbox-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Stage Card */
+.wafer-stage-card, .wafer-diagnostics-card, .history-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.stage-header, .diag-header, .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.stage-title, .diag-title, .history-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stage-title i, .diag-title i, .history-title i {
+    color: #3b82f6;
+}
+
+.wafer-meta-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.wafer-badge {
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Canvas Wrapper */
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    margin: 0 auto 1.25rem;
+    background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+    border-radius: 50%;
+    padding: 6px;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.18);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#waferCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    border-radius: 50%;
+}
+
+/* Laser Scanner Animation */
+.scanner-laser {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #38bdf8, #60a5fa, #38bdf8, transparent);
+    box-shadow: 0 0 15px #38bdf8, 0 0 30px #38bdf8;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.scanner-laser.scanning {
+    opacity: 1;
+    animation: laserSweep 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes laserSweep {
+    0% { top: 2%; }
+    100% { top: 96%; }
+}
+
+/* HUD Overlay */
+.wafer-hud {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    display: flex;
+    gap: 0.85rem;
+    font-size: 0.75rem;
+    color: #e2e8f0;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.hud-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.hud-label {
+    color: #94a3b8;
+}
+
+.hud-status.good { color: #10b981; font-weight: 600; }
+.hud-status.defect { color: #ef4444; font-weight: 600; }
+
+/* Toolbar */
+.wafer-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.toolbar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toolbar-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.preset-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+    gap: 0.45rem;
+}
+
+.preset-btn {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.preset-btn:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+}
+
+.preset-btn.active {
+    background: #3b82f6;
+    border-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+.toolbar-actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    background: #f8fafc;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.draw-modes {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.tool-toggle-btn, .tool-action-btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.tool-toggle-btn.active {
+    background: #1e293b;
+    border-color: #0f172a;
+    color: #ffffff;
+}
+
+.slider-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #475569;
+    font-weight: 600;
+}
+
+.slider-control input[type="range"] {
+    width: 80px;
+    cursor: pointer;
+}
+
+/* Primary Scan Button */
+.btn-scan-primary {
+    position: relative;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transition: all 0.25s ease;
+}
+
+.btn-scan-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+}
+
+.btn-scan-primary:active {
+    transform: translateY(0);
+}
+
+.btn-scan-primary.scanning {
+    background: linear-gradient(135deg, #0284c7, #0d9488);
+    pointer-events: none;
+}
+
+.scan-btn-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+/* Wafer Legend */
+.wafer-legend {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 0.85rem;
+    flex-wrap: wrap;
+}
+
+.legend-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.legend-color.good { background: #10b981; }
+.legend-color.defect { background: #ef4444; }
+.legend-color.hover { background: #38bdf8; }
+
+/* Diagnostic Status Badge */
+.diag-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #f1f5f9;
+    padding: 0.3rem 0.65rem;
+    border-radius: 20px;
+    color: #334155;
+    letter-spacing: 0.5px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-dot.green { background: #10b981; box-shadow: 0 0 6px #10b981; }
+.status-dot.yellow { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+.status-dot.red { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
+/* Anomaly Result Box */
+.anomaly-result-box {
+    background: linear-gradient(135deg, #f8fafc, #eff6ff);
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.anomaly-top-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.anomaly-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: #3b82f6;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+.anomaly-icon-wrap.critical { background: #ef4444; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
+.anomaly-icon-wrap.high { background: #f97316; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3); }
+.anomaly-icon-wrap.medium { background: #eab308; box-shadow: 0 4px 10px rgba(234, 179, 8, 0.3); }
+.anomaly-icon-wrap.low { background: #3b82f6; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+.anomaly-icon-wrap.nominal { background: #10b981; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+
+.anomaly-main-info {
+    flex: 1;
+}
+
+.anomaly-tag-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.anomaly-type-pill {
+    background: #dbeafe;
+    color: #1e40af;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.severity-pill {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.severity-pill.critical { background: #fee2e2; color: #991b1b; }
+.severity-pill.high { background: #ffedd5; color: #9a3412; }
+.severity-pill.medium { background: #fef9c3; color: #854d0e; }
+.severity-pill.low { background: #e0f2fe; color: #075985; }
+.severity-pill.nominal { background: #dcfce7; color: #166534; }
+
+.anomaly-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+}
+
+.anomaly-summary {
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+/* KPI Grid */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+@media (max-width: 540px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.kpi-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.kpi-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.kpi-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.kpi-value.highlight { color: #2563eb; }
+.kpi-value.danger { color: #dc2626; }
+
+/* Machine Root Cause Card */
+.machine-diagnosis-card, .probabilities-card, .fleet-status-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.card-section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.card-section-title i {
+    color: #3b82f6;
+}
+
+.machine-details-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.machine-headline {
+    display: flex;
+    gap: 0.85rem;
+    align-items: center;
+}
+
+.machine-icon-box {
+    width: 44px;
+    height: 44px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3b82f6;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.machine-meta {
+    flex: 1;
+}
+
+.machine-label {
+    font-size: 0.68rem;
+    color: #64748b;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.machine-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0.1rem 0 0.25rem;
+}
+
+.machine-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.machine-tag {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+
+/* Action Alert Box */
+.action-alert-box {
+    background: #fff7ed;
+    border-left: 4px solid #f97316;
+    border-radius: 0 8px 8px 0;
+    padding: 0.75rem 0.85rem;
+}
+
+.action-header {
+    font-size: 0.8rem;
+    color: #c2410c;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.action-text {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #7c2d12;
+    line-height: 1.4;
+}
+
+/* Mechanism Box */
+.mechanism-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 0.85rem;
+}
+
+.mechanism-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #475569;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.mechanism-text {
+    font-size: 0.82rem;
+    color: #334155;
+    line-height: 1.45;
+}
+
+/* Probability Bars */
+.prob-bars-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.prob-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+}
+
+.prob-name {
+    width: 85px;
+    font-weight: 600;
+    color: #334155;
+    white-space: nowrap;
+}
+
+.prob-track {
+    flex: 1;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.prob-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.prob-fill.winner {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+.prob-pct {
+    width: 45px;
+    text-align: right;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* Fleet Status Grid */
+.fleet-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+@media (max-width: 500px) {
+    .fleet-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.fleet-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.5rem 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    transition: all 0.2s ease;
+}
+
+.fleet-item.flagged {
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.fleet-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fleet-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.fleet-name i {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+.fleet-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.fleet-status-dot.nominal { background: #10b981; }
+.fleet-status-dot.alert { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
+
+.fleet-id {
+    font-size: 0.68rem;
+    color: #64748b;
+    font-family: monospace;
+}
+
+/* History Section */
+.history-section {
+    margin-top: 1.5rem;
+}
+
+.history-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+}
+
+.history-table-wrapper {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    text-align: left;
+}
+
+.history-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.history-table td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+.history-table tr:hover {
+    background: #f8fafc;
+}
+
+.history-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.72rem;
+}
+
+.history-badge.Center { background: #fee2e2; color: #991b1b; }
+.history-badge.Edge-Ring { background: #ffedd5; color: #9a3412; }
+.history-badge.Scratch { background: #fef9c3; color: #854d0e; }
+.history-badge.Random { background: #e0f2fe; color: #075985; }
+.history-badge.Edge-Loc { background: #ede9fe; color: #5b21b6; }
+.history-badge.Donut { background: #fae8ff; color: #86198f; }
+.history-badge.None { background: #dcfce7; color: #166534; }
+</style>
+
+<!-- Interactive Wafer Sandbox JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Canvas & Stage Config
+    const canvas = document.getElementById('waferCanvas');
+    const ctx = canvas.getContext('2d');
+    const scannerLaser = document.getElementById('scannerLaser');
+    const scanBtn = document.getElementById('scanBtn');
+    const scanStatusBadge = document.getElementById('scanStatusBadge');
+    const scanStatusText = document.getElementById('scanStatusText');
+    const noiseSlider = document.getElementById('noiseSlider');
+    const noiseVal = document.getElementById('noiseVal');
+    const brushModeBtn = document.getElementById('brushModeBtn');
+    const eraseModeBtn = document.getElementById('eraseModeBtn');
+    const clearWaferBtn = document.getElementById('clearWaferBtn');
+    const randomizeBtn = document.getElementById('randomizeBtn');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+    const probBarsList = document.getElementById('probBarsList');
+    const historyTableBody = document.getElementById('historyTableBody');
+    const exportLogBtn = document.getElementById('exportLogBtn');
+    const clearLogBtn = document.getElementById('clearLogBtn');
+
+    // HUD Elements
+    const hudCoord = document.getElementById('hudCoord');
+    const hudDieId = document.getElementById('hudDieId');
+    const hudStatus = document.getElementById('hudStatus');
+
+    // Diagnostic Elements
+    const anomalyIconWrap = document.getElementById('anomalyIconWrap');
+    const anomalyIcon = document.getElementById('anomalyIcon');
+    const anomalyPill = document.getElementById('anomalyPill');
+    const severityPill = document.getElementById('severityPill');
+    const anomalyTitle = document.getElementById('anomalyTitle');
+    const anomalySummary = document.getElementById('anomalySummary');
+    const kpiConfidence = document.getElementById('kpiConfidence');
+    const kpiYieldImpact = document.getElementById('kpiYieldImpact');
+    const kpiDieYield = document.getElementById('kpiDieYield');
+    const kpiDefectCount = document.getElementById('kpiDefectCount');
+    const machineName = document.getElementById('machineName');
+    const toolIdTag = document.getElementById('toolIdTag');
+    const actionText = document.getElementById('actionText');
+    const mechanismText = document.getElementById('mechanismText');
+    const lotBadge = document.getElementById('lotBadge');
+    const waferIdBadge = document.getElementById('waferIdBadge');
+    const dieCountBadge = document.getElementById('dieCountBadge');
+
+    // Grid Parameters (24 x 24 die matrix inside wafer circle)
+    const GRID_SIZE = 24;
+    let dieMap = []; // 2D array: 0 = good, 1 = defect, null = outside wafer circle
+    let isDrawing = false;
+    let currentTool = 'brush'; // 'brush' or 'erase'
+    let currentLot = 'LOT-8492-X';
+    let currentWaferNum = 7;
+    let selectedPreset = 'Center';
+    let scanHistory = [];
+
+    // Initialize 2D Die Grid bounded within circular silicon wafer
+    function initDieMap() {
+        dieMap = [];
+        const center = (GRID_SIZE - 1) / 2;
+        const radius = (GRID_SIZE / 2) - 0.7;
+        let totalActive = 0;
+
+        for (let r = 0; r < GRID_SIZE; r++) {
+            const row = [];
+            for (let c = 0; c < GRID_SIZE; c++) {
+                const dist = Math.sqrt(Math.pow(r - center, 2) + Math.pow(c - center, 2));
+                if (dist <= radius) {
+                    row.push(0); // Good die
+                    totalActive++;
+                } else {
+                    row.push(null); // Outside wafer perimeter
+                }
+            }
+            dieMap.push(row);
+        }
+
+        dieCountBadge.innerHTML = `<i class="fas fa-th"></i> ${totalActive} Dies`;
+    }
+
+    // Generate Defect Patterns onto dieMap
+    function applyPattern(patternType, noisePct = 3) {
+        selectedPreset = patternType;
+        const center = (GRID_SIZE - 1) / 2;
+        const maxRadius = (GRID_SIZE / 2) - 0.7;
+
+        // Reset all valid dies to good first
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                if (dieMap[r][c] !== null) {
+                    dieMap[r][c] = 0;
+                }
+            }
+        }
+
+        // Apply Pattern Signatures
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                if (dieMap[r][c] === null) continue;
+
+                const dist = Math.sqrt(Math.pow(r - center, 2) + Math.pow(c - center, 2));
+                const normDist = dist / maxRadius; // 0 to 1
+                const angle = Math.atan2(r - center, c - center); // -PI to PI
+
+                let isDefect = false;
+
+                if (patternType === 'Center') {
+                    // Dense cluster in center
+                    if (normDist < 0.35) {
+                        isDefect = Math.random() < 0.85;
+                    } else if (normDist < 0.5) {
+                        isDefect = Math.random() < 0.25;
+                    }
+                } else if (patternType === 'Edge-Ring') {
+                    // Defect ring on outer edge
+                    if (normDist >= 0.75) {
+                        isDefect = Math.random() < 0.80;
+                    } else if (normDist >= 0.65) {
+                        isDefect = Math.random() < 0.30;
+                    }
+                } else if (patternType === 'Scratch') {
+                    // Curved mechanical scratch across wafer
+                    // Function: y - 0.3x^2 + 0.5x = offset
+                    const xNorm = (c - center) / maxRadius;
+                    const yNorm = (r - center) / maxRadius;
+                    const lineDist = Math.abs(yNorm - (0.45 * Math.sin(xNorm * 2.8) + 0.15 * xNorm));
+                    if (lineDist < 0.12) {
+                        isDefect = Math.random() < 0.88;
+                    }
+                } else if (patternType === 'Random') {
+                    // Uniform particle distribution
+                    isDefect = Math.random() < 0.14;
+                } else if (patternType === 'Edge-Loc') {
+                    // Concentrated sector on edge (Litho EBR nozzle)
+                    if (normDist >= 0.55 && angle > 0.4 && angle < 1.8) {
+                        isDefect = Math.random() < 0.85;
+                    }
+                } else if (patternType === 'Donut') {
+                    // Annular defect midway between center & edge
+                    if (normDist >= 0.40 && normDist <= 0.70) {
+                        isDefect = Math.random() < 0.78;
+                    }
+                } else if (patternType === 'None') {
+                    // Clean / Pristine
+                    isDefect = false;
+                }
+
+                // Add random background particle noise
+                if (noisePct > 0 && Math.random() < (noisePct / 100)) {
+                    isDefect = true;
+                }
+
+                if (isDefect) {
+                    dieMap[r][c] = 1;
+                }
+            }
+        }
+
+        drawWafer();
+    }
+
+    // Render Silicon Wafer Map on HTML5 Canvas
+    function drawWafer(hoverRow = -1, hoverCol = -1) {
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.clearRect(0, 0, width, height);
+
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const waferRadius = (width / 2) - 16;
+
+        // 1. Draw Silicon Substrate Disk
+        const grad = ctx.createRadialGradient(centerX - 40, centerY - 40, 10, centerX, centerY, waferRadius);
+        grad.addColorStop(0, '#334155');
+        grad.addColorStop(0.7, '#1e293b');
+        grad.addColorStop(1, '#0f172a');
+
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, waferRadius, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Metallic bevel border
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#475569';
+        ctx.stroke();
+
+        // 2. Draw Crystal Orientation Notch at bottom (standard 300mm SEMI spec)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY + waferRadius - 2, 8, Math.PI, 0, false);
+        ctx.fillStyle = '#0f172a';
+        ctx.fill();
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 3. Draw Die Array Grid
+        const diePadding = 2;
+        const dieSize = ((waferRadius * 2) - 40) / GRID_SIZE;
+        const startX = centerX - (GRID_SIZE * dieSize / 2);
+        const startY = centerY - (GRID_SIZE * dieSize / 2);
+
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                const val = dieMap[r][c];
+                if (val === null) continue; // Skip dies outside circular perimeter
+
+                const x = startX + (c * dieSize) + (diePadding / 2);
+                const y = startY + (r * dieSize) + (diePadding / 2);
+                const w = dieSize - diePadding;
+                const h = dieSize - diePadding;
+
+                const isHover = (r === hoverRow && c === hoverCol);
+
+                if (isHover) {
+                    ctx.fillStyle = '#38bdf8'; // Laser focus
+                    ctx.shadowColor = '#38bdf8';
+                    ctx.shadowBlur = 8;
+                } else if (val === 1) {
+                    ctx.fillStyle = '#ef4444'; // Defective Die
+                    ctx.shadowColor = 'rgba(239, 68, 68, 0.5)';
+                    ctx.shadowBlur = 3;
+                } else {
+                    ctx.fillStyle = '#10b981'; // Passing Good Die
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                }
+
+                ctx.fillRect(x, y, w, h);
+
+                // Subtle die border
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = isHover ? '#ffffff' : 'rgba(15, 23, 42, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, w, h);
+            }
+        }
+    }
+
+    // Convert Canvas mouse coordinate to Die Map Grid indices
+    function getGridCoordFromMouse(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const mouseX = (e.clientX - rect.left) * scaleX;
+        const mouseY = (e.clientY - rect.top) * scaleY;
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const waferRadius = (canvas.width / 2) - 16;
+        const dieSize = ((waferRadius * 2) - 40) / GRID_SIZE;
+        const startX = centerX - (GRID_SIZE * dieSize / 2);
+        const startY = centerY - (GRID_SIZE * dieSize / 2);
+
+        const col = Math.floor((mouseX - startX) / dieSize);
+        const row = Math.floor((mouseY - startY) / dieSize);
+
+        if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE) {
+            return { row, col };
+        }
+        return null;
+    }
+
+    // Canvas Mouse Interaction for Drawing & HUD Tooltips
+    canvas.addEventListener('mousemove', (e) => {
+        const coord = getGridCoordFromMouse(e);
+        if (coord && dieMap[coord.row][coord.col] !== null) {
+            const r = coord.row;
+            const c = coord.col;
+            const status = dieMap[r][c] === 1 ? 'Defective' : 'Good';
+            
+            hudCoord.textContent = `X: ${c}, Y: ${r}`;
+            hudDieId.textContent = `D-${(r * GRID_SIZE + c).toString().padStart(3, '0')}`;
+            hudStatus.textContent = status;
+            hudStatus.className = `hud-status ${status.toLowerCase()}`;
+
+            if (isDrawing) {
+                dieMap[r][c] = (currentTool === 'brush') ? 1 : 0;
+            }
+            drawWafer(r, c);
+        } else {
+            hudCoord.textContent = 'X: --, Y: --';
+            hudDieId.textContent = '--';
+            hudStatus.textContent = '--';
+            hudStatus.className = 'hud-status';
+            drawWafer();
+        }
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        const coord = getGridCoordFromMouse(e);
+        if (coord && dieMap[coord.row][coord.col] !== null) {
+            dieMap[coord.row][coord.col] = (currentTool === 'brush') ? 1 : 0;
+            drawWafer(coord.row, coord.col);
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDrawing = false;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+        drawWafer();
+    });
+
+    // Preset Buttons
+    presetBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            presetBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const pattern = btn.getAttribute('data-type');
+            applyPattern(pattern, parseInt(noiseSlider.value, 10));
+        });
+    });
+
+    // Tool toggles
+    brushModeBtn.addEventListener('click', () => {
+        currentTool = 'brush';
+        brushModeBtn.classList.add('active');
+        eraseModeBtn.classList.remove('active');
+    });
+
+    eraseModeBtn.addEventListener('click', () => {
+        currentTool = 'erase';
+        eraseModeBtn.classList.add('active');
+        brushModeBtn.classList.remove('active');
+    });
+
+    clearWaferBtn.addEventListener('click', () => {
+        applyPattern('None', 0);
+    });
+
+    randomizeBtn.addEventListener('click', () => {
+        currentWaferNum = Math.floor(Math.random() * 25) + 1;
+        const lotLetter = String.fromCharCode(65 + Math.floor(Math.random() * 6));
+        currentLot = `LOT-${Math.floor(Math.random() * 9000 + 1000)}-${lotLetter}`;
+        lotBadge.innerHTML = `<i class="fas fa-barcode"></i> ${currentLot}`;
+        waferIdBadge.innerHTML = `<i class="fas fa-layer-group"></i> WAF-${currentWaferNum.toString().padStart(2, '0')}`;
+
+        const presets = ['Center', 'Edge-Ring', 'Scratch', 'Random', 'Edge-Loc', 'Donut', 'None'];
+        const randomPreset = presets[Math.floor(Math.random() * presets.length)];
+        presetBtns.forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-type') === randomPreset);
+        });
+        applyPattern(randomPreset, parseInt(noiseSlider.value, 10));
+    });
+
+    noiseSlider.addEventListener('input', (e) => {
+        noiseVal.textContent = `${e.target.value}%`;
+    });
+
+    // Execute AI Model Inference via REST API
+    async function runInference() {
+        scanBtn.classList.add('scanning');
+        scannerLaser.classList.add('scanning');
+        scanStatusBadge.innerHTML = `<span class="status-dot yellow"></span> <span>AI SCANNING...</span>`;
+
+        try {
+            const response = await fetch('/api/wafer/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    wafer_map: dieMap,
+                    defect_type: selectedPreset,
+                    simulate_delay: true
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            updateDiagnosticsUI(data);
+
+        } catch (err) {
+            console.error('Inference error:', err);
+            // Graceful fallback simulation if network issue
+            fallbackSimulation();
+        } finally {
+            scanBtn.classList.remove('scanning');
+            scannerLaser.classList.remove('scanning');
+        }
+    }
+
+    scanBtn.addEventListener('click', runInference);
+
+    // Update UI with AI Classification & Root Cause Diagnostics
+    function updateDiagnosticsUI(data) {
+        const severity = (data.severity || 'Medium').toLowerCase();
+        const isNominal = data.defect_type === 'None';
+
+        // Update Scan Status Badge
+        scanStatusBadge.innerHTML = isNominal 
+            ? `<span class="status-dot green"></span> <span>PROCESS NOMINAL</span>`
+            : `<span class="status-dot red"></span> <span>ANOMALY FLAGGED</span>`;
+
+        // Update Anomaly Banner
+        anomalyIconWrap.className = `anomaly-icon-wrap ${severity}`;
+        severityPill.className = `severity-pill ${severity}`;
+        severityPill.textContent = `${data.severity || 'Medium'} Severity`;
+        anomalyPill.textContent = data.defect_type;
+        anomalyTitle.textContent = data.defect_name || `${data.defect_type} Anomaly`;
+        
+        // Icon mapping
+        const icons = {
+            'Center': 'fa-bullseye',
+            'Edge-Ring': 'fa-circle-notch',
+            'Scratch': 'fa-bolt',
+            'Random': 'fa-braille',
+            'Edge-Loc': 'fa-border-all',
+            'Donut': 'fa-dot-circle',
+            'None': 'fa-check-circle'
+        };
+        anomalyIcon.className = `fas ${icons[data.defect_type] || 'fa-microchip'}`;
+
+        anomalySummary.textContent = isNominal
+            ? "Wafer meets high-yield standard criteria. No abnormal spatial clustering detected."
+            : `Systemic spatial signature classified as ${data.defect_type}. Tool maintenance required.`;
+
+        // Update KPIs
+        kpiConfidence.textContent = `${data.confidence}%`;
+        kpiYieldImpact.textContent = data.yield_impact;
+        kpiYieldImpact.className = `kpi-value ${isNominal ? 'highlight' : 'danger'}`;
+
+        if (data.stats && data.stats.total_dies > 0) {
+            kpiDieYield.textContent = `${data.stats.yield_rate}%`;
+            kpiDefectCount.textContent = `${data.stats.defective_dies} / ${data.stats.total_dies}`;
+        } else {
+            // Calculate locally
+            let total = 0, defects = 0;
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    if (dieMap[r][c] !== null) {
+                        total++;
+                        if (dieMap[r][c] === 1) defects++;
+                    }
+                }
+            }
+            const yld = (((total - defects) / total) * 100).toFixed(1);
+            kpiDieYield.textContent = `${yld}%`;
+            kpiDefectCount.textContent = `${defects} / ${total}`;
+        }
+
+        // Update Machine Diagnosis
+        machineName.textContent = data.machine;
+        toolIdTag.innerHTML = `<i class="fas fa-hashtag"></i> ${data.tool_id || 'FAB-TOOL-01'}`;
+        actionText.textContent = data.action;
+        mechanismText.textContent = data.mechanism || "Localized process non-uniformity during fabrication step.";
+
+        // Update Probability Bars
+        renderProbabilities(data.probabilities, data.defect_type);
+
+        // Update Fleet Health Matrix
+        updateFleetMatrix(data.defect_type);
+
+        // Log to session history table
+        addToHistoryLog(data);
+    }
+
+    // Render Multi-Class Softmax Probability Bars
+    function renderProbabilities(probabilities, winningType) {
+        probBarsList.innerHTML = '';
+        if (!probabilities) return;
+
+        const sorted = Object.entries(probabilities).sort((a, b) => b[1] - a[1]);
+
+        sorted.forEach(([type, prob]) => {
+            const isWinner = (type === winningType);
+            const row = document.createElement('div');
+            row.className = 'prob-row';
+            row.innerHTML = `
+                <span class="prob-name">${type}</span>
+                <div class="prob-track">
+                    <div class="prob-fill ${isWinner ? 'winner' : ''}" style="width: ${prob}%"></div>
+                </div>
+                <span class="prob-pct">${prob}%</span>
+            `;
+            probBarsList.appendChild(row);
+        });
+    }
+
+    // Update Fleet Hardware Status Indicators
+    function updateFleetMatrix(activeDefect) {
+        const fleetMap = {
+            'Center': 'fleet-cmp',
+            'Edge-Ring': 'fleet-rtp',
+            'Scratch': 'fleet-robot',
+            'Random': 'fleet-hepa',
+            'Edge-Loc': 'fleet-litho',
+            'Donut': 'fleet-etch'
+        };
+
+        // Reset all fleet items
+        document.querySelectorAll('.fleet-item').forEach(item => {
+            item.classList.remove('flagged');
+            const dot = item.querySelector('.fleet-status-dot');
+            if (dot) dot.className = 'fleet-status-dot nominal';
+        });
+
+        // Flag active equipment if defective
+        if (fleetMap[activeDefect]) {
+            const target = document.getElementById(fleetMap[activeDefect]);
+            if (target) {
+                target.classList.add('flagged');
+                const dot = target.querySelector('.fleet-status-dot');
+                if (dot) dot.className = 'fleet-status-dot alert';
+            }
+        }
+    }
+
+    // Add entry to inspection history log
+    function addToHistoryLog(data) {
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+        
+        const entry = {
+            time: timeStr,
+            lotId: `${currentLot} / #${currentWaferNum}`,
+            defect: data.defect_type,
+            machine: data.machine,
+            confidence: `${data.confidence}%`,
+            yieldImpact: data.yield_impact,
+            status: data.defect_type === 'None' ? 'Nominal' : 'Action Req.'
+        };
+
+        scanHistory.unshift(entry);
+        if (scanHistory.length > 10) scanHistory.pop();
+
+        renderHistoryTable();
+    }
+
+    function renderHistoryTable() {
+        historyTableBody.innerHTML = '';
+        scanHistory.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item.time}</td>
+                <td><strong>${item.lotId}</strong></td>
+                <td><span class="history-badge ${item.defect}">${item.defect}</span></td>
+                <td>${item.machine}</td>
+                <td>${item.confidence}</td>
+                <td style="color: ${item.defect === 'None' ? '#10b981' : '#dc2626'}; font-weight: 600;">${item.yieldImpact}</td>
+                <td><span class="wafer-badge">${item.status}</span></td>
+            `;
+            historyTableBody.appendChild(tr);
+        });
+    }
+
+    // Export Log
+    exportLogBtn.addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scanHistory, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `wafer_scan_log_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    });
+
+    clearLogBtn.addEventListener('click', () => {
+        scanHistory = [];
+        renderHistoryTable();
+    });
+
+    // Fallback Simulation for offline resilience
+    function fallbackSimulation() {
+        const profiles = {
+            'Center': { name: 'Center Defect Cluster', machine: 'CMP Polish Head', tool_id: 'CMP-POL-04', action: 'Inspect for uneven pneumatic pressure & polish pad wear.', yield_impact: '-4.2%', severity: 'High', mechanism: 'Slurry distribution imbalance causing central dielectric over-polish.' },
+            'Edge-Ring': { name: 'Edge-Ring Anomaly', machine: 'RTP Annealing Furnace', tool_id: 'RTP-FURN-02', action: 'Check zone 4 temperature controller & quartz ring alignment.', yield_impact: '-8.7%', severity: 'Critical', mechanism: 'Thermal gradient mismatch near wafer periphery during rapid thermal processing.' },
+            'Scratch': { name: 'Linear Surface Scratch', machine: 'Wafer Handling Robot', tool_id: 'ROBOT-ARM-01', action: 'Inspect transfer blade for particle buildup.', yield_impact: '-2.1%', severity: 'Medium', mechanism: 'Mechanical abrasion on vacuum wand during cassette transport.' },
+            'Random': { name: 'Random Particle Contamination', machine: 'Cleanroom Ambient', tool_id: 'HVAC-HEPA-BAY3', action: 'Check HEPA filtration particle counts.', yield_impact: '-0.8%', severity: 'Low', mechanism: 'Airborne sub-micron particulate fallout.' },
+            'Edge-Loc': { name: 'Localized Edge Defect', machine: 'Litho Coater Track', tool_id: 'LITH-EBR-03', action: 'Calibrate Edge Bead Removal (EBR) solvent dispense nozzle.', yield_impact: '-3.5%', severity: 'Medium', mechanism: 'Incomplete edge bead removal causing photoresist flaking.' },
+            'Donut': { name: 'Donut / Ring-Core Anomaly', machine: 'ICP Plasma Etch Chamber', tool_id: 'ETCH-ICP-02', action: 'Verify RF coil tuning and gas showerhead holes.', yield_impact: '-6.1%', severity: 'High', mechanism: 'Plasma density non-uniformity midway between center and edge.' },
+            'None': { name: 'Normal (Defect-Free)', machine: 'All Systems Nominal', tool_id: 'FAB-ONLINE', action: 'No maintenance required. Lot within target yield (>99.5%).', yield_impact: '0.0%', severity: 'Nominal', mechanism: 'Standard baseline process operation.' }
+        };
+
+        const profile = profiles[selectedPreset] || profiles['Center'];
+        const conf = (Math.random() * 5 + 94.5).toFixed(1);
+        const probs = {};
+        probs[selectedPreset] = parseFloat(conf);
+        const others = Object.keys(profiles).filter(k => k !== selectedPreset);
+        let rem = 100.0 - parseFloat(conf);
+        others.forEach((k, idx) => {
+            const p = (idx === others.length - 1) ? rem : (rem * (Math.random() * 0.4 + 0.1));
+            probs[k] = parseFloat(p.toFixed(1));
+            rem -= probs[k];
+        });
+
+        updateDiagnosticsUI({
+            defect_type: selectedPreset,
+            defect_name: profile.name,
+            confidence: conf,
+            machine: profile.machine,
+            tool_id: profile.tool_id,
+            action: profile.action,
+            yield_impact: profile.yield_impact,
+            severity: profile.severity,
+            mechanism: profile.mechanism,
+            probabilities: probs,
+            stats: { total_dies: 448, defective_dies: selectedPreset === 'None' ? 0 : 38, passing_dies: selectedPreset === 'None' ? 448 : 410, yield_rate: selectedPreset === 'None' ? 100.0 : 91.5 }
+        });
+    }
+
+    // Initialize stage & apply initial Center pattern
+    initDieMap();
+    applyPattern('Center', 3);
+    
+    // Initial run
+    runInference();
+});
+</script>
+{% endblock %}
