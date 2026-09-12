@@ -16,7 +16,7 @@
     </div>
 </section>
 
-<section style="padding: 0 0 3rem;">
+<section class="fab-yield-section">
     <div class="container">
         <div class="edu-demo-layout">
             <aside class="edu-sidebar">
@@ -45,58 +45,37 @@
 
             <div class="edu-demo-panel">
                 <h3><i class="fas fa-sliders-h"></i> Process Telemetry Inputs</h3>
-                <div id="fabControls" style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;">
-                    <div>
-                        <label for="etch_uniformity">Etch Uniformity (%)</label>
-                        <input id="etch_uniformity" type="range" min="80" max="100" step="0.1" value="95" aria-describedby="etch_uniformity_value">
-                        <output id="etch_uniformity_value" class="range-val" aria-live="polite">95.0</output>
+                <div id="fabControls" class="fab-controls-grid" data-feature-ids="{{ fab_features.keys() | join(',') }}">
+                    {% for feature_id, cfg in fab_features.items() %}
+                    <div class="fab-control-item">
+                        <label for="{{ feature_id }}">{{ cfg.label }}</label>
+                        <input
+                            id="{{ feature_id }}"
+                            type="range"
+                            min="{{ cfg.min }}"
+                            max="{{ cfg.max }}"
+                            step="{{ cfg.step }}"
+                            value="{{ cfg.default }}"
+                            aria-describedby="{{ feature_id }}_value">
+                        <output id="{{ feature_id }}_value" class="range-val" aria-live="polite">{{ cfg.default }}</output>
                     </div>
-                    <div>
-                        <label for="overlay_error">Overlay Error (nm)</label>
-                        <input id="overlay_error" type="range" min="0.5" max="8" step="0.1" value="2.0" aria-describedby="overlay_error_value">
-                        <output id="overlay_error_value" class="range-val" aria-live="polite">2.0</output>
-                    </div>
-                    <div>
-                        <label for="particle_count">Particle Count (ppm)</label>
-                        <input id="particle_count" type="range" min="0" max="120" step="1" value="30" aria-describedby="particle_count_value">
-                        <output id="particle_count_value" class="range-val" aria-live="polite">30</output>
-                    </div>
-                    <div>
-                        <label for="chamber_pressure">Chamber Pressure (mTorr)</label>
-                        <input id="chamber_pressure" type="range" min="35" max="75" step="0.5" value="55" aria-describedby="chamber_pressure_value">
-                        <output id="chamber_pressure_value" class="range-val" aria-live="polite">55.0</output>
-                    </div>
-                    <div>
-                        <label for="temperature_delta">Temperature Drift (°C)</label>
-                        <input id="temperature_delta" type="range" min="-4" max="4" step="0.1" value="0" aria-describedby="temperature_delta_value">
-                        <output id="temperature_delta_value" class="range-val" aria-live="polite">0.0</output>
-                    </div>
-                    <div>
-                        <label for="tool_age_days">Tool Age (days)</label>
-                        <input id="tool_age_days" type="range" min="30" max="1500" step="5" value="365" aria-describedby="tool_age_days_value">
-                        <output id="tool_age_days_value" class="range-val" aria-live="polite">365</output>
-                    </div>
-                    <div>
-                        <label for="vibration_index">Vibration Index</label>
-                        <input id="vibration_index" type="range" min="0.1" max="2.5" step="0.1" value="0.8" aria-describedby="vibration_index_value">
-                        <output id="vibration_index_value" class="range-val" aria-live="polite">0.8</output>
-                    </div>
+                    {% endfor %}
                 </div>
-                <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                <div class="fab-actions">
                     <button id="runForecast" class="btn btn-primary" data-api-url="{{ url_for('predict_fab_yield') }}"><i class="fas fa-play-circle"></i> Run Yield Forecast</button>
                 </div>
 
-                <div id="fabResults" role="status" aria-live="polite" aria-atomic="true" style="margin-top:1rem;padding:1rem;border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;">
-                    <div style="font-size:1.1rem;">Predicted Yield: <strong id="predYield">--</strong></div>
-                    <div style="margin-top:0.35rem;">Risk Level: <strong id="riskLevel">--</strong></div>
-                    <div style="margin-top:0.35rem;">Confidence Window: <span id="confidenceWindow">--</span></div>
-                    <div style="margin-top:0.9rem;">
+                <div id="fabResults" class="fab-results-panel" role="status" aria-live="polite" aria-atomic="true">
+                    <div class="fab-result-row fab-result-primary">Predicted Yield: <strong id="predYield">--</strong></div>
+                    <div class="fab-result-row">Risk Level: <strong id="riskLevel">--</strong></div>
+                    <div class="fab-result-row">Confidence Window: <span id="confidenceWindow">--</span></div>
+                    <div class="fab-result-block">
                         <strong>Top Drivers</strong>
-                        <ul id="topDrivers" style="margin:0.4rem 0 0 1.1rem;"></ul>
+                        <ul id="topDrivers" class="fab-result-list"></ul>
                     </div>
-                    <div style="margin-top:0.9rem;">
+                    <div class="fab-result-block">
                         <strong>Recommended Actions</strong>
-                        <ul id="recommendations" style="margin:0.4rem 0 0 1.1rem;"></ul>
+                        <ul id="recommendations" class="fab-result-list"></ul>
                     </div>
                 </div>
             </div>

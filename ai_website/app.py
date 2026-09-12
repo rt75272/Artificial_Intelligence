@@ -41,14 +41,14 @@ house_feature_names = ["sqft", "bedrooms", "bathrooms", "year_built"]
 fab_yield_model = None
 fab_feature_importance = {}
 fab_prediction_sigma = 1.2
-fab_feature_ranges = {
-    'etch_uniformity': (80.0, 100.0),
-    'overlay_error': (0.5, 8.0),
-    'particle_count': (0.0, 120.0),
-    'chamber_pressure': (35.0, 75.0),
-    'temperature_delta': (-4.0, 4.0),
-    'tool_age_days': (30.0, 1500.0),
-    'vibration_index': (0.1, 2.5)
+FAB_FEATURE_CONFIG = {
+    'etch_uniformity': {'label': 'Etch Uniformity (%)', 'min': 80.0, 'max': 100.0, 'default': 95.0, 'step': 0.1},
+    'overlay_error': {'label': 'Overlay Error (nm)', 'min': 0.5, 'max': 8.0, 'default': 2.0, 'step': 0.1},
+    'particle_count': {'label': 'Particle Count (ppm)', 'min': 0.0, 'max': 120.0, 'default': 30.0, 'step': 1.0},
+    'chamber_pressure': {'label': 'Chamber Pressure (mTorr)', 'min': 35.0, 'max': 75.0, 'default': 55.0, 'step': 0.5},
+    'temperature_delta': {'label': 'Temperature Drift (°C)', 'min': -4.0, 'max': 4.0, 'default': 0.0, 'step': 0.1},
+    'tool_age_days': {'label': 'Tool Age (days)', 'min': 30.0, 'max': 1500.0, 'default': 365.0, 'step': 5.0},
+    'vibration_index': {'label': 'Vibration Index', 'min': 0.1, 'max': 2.5, 'default': 0.8, 'step': 0.1}
 }
 
 # Domain logic mapping wafer defect profiles to factory machines and actions.
@@ -344,7 +344,7 @@ def game_of_life_demo():
 @app.route('/demos/fab-yield-intelligence')
 def fab_yield_intelligence_demo():
     """Render the fab yield intelligence demo page."""
-    return render_template('fab_yield_intelligence.html')
+    return render_template('fab_yield_intelligence.html', fab_features=FAB_FEATURE_CONFIG)
 
 @app.route('/demos/pathfinding')
 def pathfinding_demo():
@@ -1280,27 +1280,12 @@ def predict_fab_yield():
         if fab_yield_model is None:
             return jsonify({'error': 'Fab yield model is unavailable.'}), 500
         payload = request.get_json(silent=True) or {}
-        feature_labels = {
-            'etch_uniformity': 'Etch Uniformity (%)',
-            'overlay_error': 'Overlay Error (nm)',
-            'particle_count': 'Particle Count (ppm)',
-            'chamber_pressure': 'Chamber Pressure (mTorr)',
-            'temperature_delta': 'Temperature Drift (°C)',
-            'tool_age_days': 'Tool Age (days)',
-            'vibration_index': 'Vibration Index'
-        }
-        defaults = {
-            'etch_uniformity': 95.0,
-            'overlay_error': 2.0,
-            'particle_count': 30.0,
-            'chamber_pressure': 55.0,
-            'temperature_delta': 0.0,
-            'tool_age_days': 365.0,
-            'vibration_index': 0.8
-        }
+        feature_labels = {name: cfg['label'] for name, cfg in FAB_FEATURE_CONFIG.items()}
         features = {}
-        for name, (min_value, max_value) in fab_feature_ranges.items():
-            raw_value = payload.get(name, defaults[name])
+        for name, cfg in FAB_FEATURE_CONFIG.items():
+            min_value = cfg['min']
+            max_value = cfg['max']
+            raw_value = payload.get(name, cfg['default'])
             try:
                 value = float(raw_value)
             except (TypeError, ValueError):
@@ -1474,13 +1459,13 @@ def initialize_models():
         # Initialize fab yield intelligence model from synthetic process telemetry.
         logger.info("Initializing fab yield intelligence model...")
         n_fab_samples = 1200
-        etch_uniformity = rng.uniform(80, 100, n_fab_samples)
-        overlay_error = rng.uniform(0.5, 8.0, n_fab_samples)
-        particle_count = rng.uniform(0, 120, n_fab_samples)
-        chamber_pressure = rng.uniform(35, 75, n_fab_samples)
-        temperature_delta = rng.uniform(-4, 4, n_fab_samples)
-        tool_age_days = rng.uniform(30, 1500, n_fab_samples)
-        vibration_index = rng.uniform(0.1, 2.5, n_fab_samples)
+        etch_uniformity = rng.uniform(FAB_FEATURE_CONFIG['etch_uniformity']['min'], FAB_FEATURE_CONFIG['etch_uniformity']['max'], n_fab_samples)
+        overlay_error = rng.uniform(FAB_FEATURE_CONFIG['overlay_error']['min'], FAB_FEATURE_CONFIG['overlay_error']['max'], n_fab_samples)
+        particle_count = rng.uniform(FAB_FEATURE_CONFIG['particle_count']['min'], FAB_FEATURE_CONFIG['particle_count']['max'], n_fab_samples)
+        chamber_pressure = rng.uniform(FAB_FEATURE_CONFIG['chamber_pressure']['min'], FAB_FEATURE_CONFIG['chamber_pressure']['max'], n_fab_samples)
+        temperature_delta = rng.uniform(FAB_FEATURE_CONFIG['temperature_delta']['min'], FAB_FEATURE_CONFIG['temperature_delta']['max'], n_fab_samples)
+        tool_age_days = rng.uniform(FAB_FEATURE_CONFIG['tool_age_days']['min'], FAB_FEATURE_CONFIG['tool_age_days']['max'], n_fab_samples)
+        vibration_index = rng.uniform(FAB_FEATURE_CONFIG['vibration_index']['min'], FAB_FEATURE_CONFIG['vibration_index']['max'], n_fab_samples)
         yield_rate = (
             98.5
             - 0.42 * overlay_error
@@ -1509,15 +1494,7 @@ def initialize_models():
             random_state=42
         )
         fab_yield_model.fit(X_fab, yield_rate)
-        feature_order = [
-            'etch_uniformity',
-            'overlay_error',
-            'particle_count',
-            'chamber_pressure',
-            'temperature_delta',
-            'tool_age_days',
-            'vibration_index'
-        ]
+        feature_order = list(FAB_FEATURE_CONFIG.keys())
         fab_feature_importance = {
             name: float(score)
             for name, score in zip(feature_order, fab_yield_model.feature_importances_)
