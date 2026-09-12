@@ -16,11 +16,11 @@
     </div>
 </section>
 
-<section style="padding: 0 0 3rem;">
+<section class="pso-section">
     <div class="container">
         <div class="edu-demo-panel">
             <h3><i class="fas fa-wand-magic-sparkles"></i> Interactive PSO Playground</h3>
-            <p style="margin:0 0 1rem;color:#6b7280;">
+            <p class="pso-intro">
                 The background shows the optimization surface, each dot is a particle, and the golden trail is the best solution discovered over time.
             </p>
             <div class="pso-layout">
@@ -66,11 +66,11 @@
                 <div class="pso-visuals">
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-mountain-sun"></i> Search Landscape</div>
-                        <canvas id="landscapeCanvas" width="860" height="500" aria-hidden="true"></canvas>
+                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape visualization" aria-describedby="landscapeSummary" tabindex="0"></canvas>
                     </div>
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-chart-line"></i> Best Fitness Over Iterations</div>
-                        <canvas id="convergenceCanvas" width="860" height="190" aria-hidden="true"></canvas>
+                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Convergence chart visualization" aria-describedby="convergenceSummary" tabindex="0"></canvas>
                     </div>
                     <div class="stats-row">
                         <div class="stat-card">
@@ -99,6 +99,8 @@
 </section>
 
 <style>
+.pso-section { padding: 0 0 3rem; }
+.pso-intro { margin: 0 0 1rem; color: #6b7280; }
 .pso-layout { display:grid; grid-template-columns:320px 1fr; gap:20px; }
 @media (max-width: 1050px) { .pso-layout { grid-template-columns:1fr; } }
 .pso-controls { background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:14px; }
