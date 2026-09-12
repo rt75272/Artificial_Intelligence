@@ -66,11 +66,15 @@
                 <div class="pso-visuals">
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-mountain-sun"></i> Search Landscape</div>
-                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape visualization" aria-describedby="landscapeSummary"></canvas>
+                        <canvas id="landscapeCanvas" width="860" height="500" role="img" aria-label="Optimization landscape visualization" aria-describedby="landscapeSummary">
+                            Optimization landscape heatmap showing swarm particle search behavior.
+                        </canvas>
                     </div>
                     <div class="visual-card">
                         <div class="visual-title"><i class="fas fa-chart-line"></i> Best Fitness Over Iterations</div>
-                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Convergence chart visualization" aria-describedby="convergenceSummary"></canvas>
+                        <canvas id="convergenceCanvas" width="860" height="190" role="img" aria-label="Convergence chart visualization" aria-describedby="convergenceSummary">
+                            Convergence line chart for best fitness over optimization iterations.
+                        </canvas>
                     </div>
                     <div class="stats-row">
                         <div class="stat-card">
@@ -200,12 +204,33 @@
         return 20 + (x * x - 10 * Math.cos(2 * Math.PI * x)) + (y * y - 10 * Math.cos(2 * Math.PI * y));
     }
 
+    function hslToRgb(h, s, l) {
+        const sat = s / 100;
+        const light = l / 100;
+        const c = (1 - Math.abs(2 * light - 1)) * sat;
+        const hp = h / 60;
+        const x = c * (1 - Math.abs((hp % 2) - 1));
+        let r = 0, g = 0, b = 0;
+        if (hp >= 0 && hp < 1) [r, g, b] = [c, x, 0];
+        else if (hp < 2) [r, g, b] = [x, c, 0];
+        else if (hp < 3) [r, g, b] = [0, c, x];
+        else if (hp < 4) [r, g, b] = [0, x, c];
+        else if (hp < 5) [r, g, b] = [x, 0, c];
+        else [r, g, b] = [c, 0, x];
+        const m = light - c / 2;
+        return [
+            Math.round((r + m) * 255),
+            Math.round((g + m) * 255),
+            Math.round((b + m) * 255)
+        ];
+    }
+
     function fitnessColor(v, min, max) {
         const t = clamp((v - min) / (max - min + 1e-9), 0, 1);
         const hue = 250 - (220 * t);
         const sat = 85;
         const light = 18 + (50 * (1 - t));
-        return `hsl(${hue}, ${sat}%, ${light}%)`;
+        return hslToRgb(hue, sat, light);
     }
 
     function drawLandscape() {
@@ -216,31 +241,39 @@
 
         let minVal = Number.POSITIVE_INFINITY;
         let maxVal = Number.NEGATIVE_INFINITY;
-        const values = [];
+        const w = landscapeCanvas.width;
+        const h = landscapeCanvas.height;
+        const values = new Float32Array(w * h);
         for (let py = 0; py < landscapeCanvas.height; py++) {
-            const row = [];
             for (let px = 0; px < landscapeCanvas.width; px++) {
                 const x = bounds.min + (px / landscapeCanvas.width) * (bounds.max - bounds.min);
                 const y = bounds.min + ((landscapeCanvas.height - py) / landscapeCanvas.height) * (bounds.max - bounds.min);
                 const val = objectiveValue(x, y);
-                row.push(val);
+                values[py * w + px] = val;
                 minVal = Math.min(minVal, val);
                 maxVal = Math.max(maxVal, val);
             }
-            values.push(row);
         }
 
         const cachedCanvas = document.createElement('canvas');
-        cachedCanvas.width = landscapeCanvas.width;
-        cachedCanvas.height = landscapeCanvas.height;
+        cachedCanvas.width = w;
+        cachedCanvas.height = h;
         const cachedCtx = cachedCanvas.getContext('2d');
+        const imageData = cachedCtx.createImageData(w, h);
+        const data = imageData.data;
 
-        for (let py = 0; py < landscapeCanvas.height; py++) {
-            for (let px = 0; px < landscapeCanvas.width; px++) {
-                cachedCtx.fillStyle = fitnessColor(values[py][px], minVal, maxVal);
-                cachedCtx.fillRect(px, py, 1, 1);
+        for (let py = 0; py < h; py++) {
+            for (let px = 0; px < w; px++) {
+                const val = values[py * w + px];
+                const [r, g, b] = fitnessColor(val, minVal, maxVal);
+                const idx = (py * w + px) * 4;
+                data[idx] = r;
+                data[idx + 1] = g;
+                data[idx + 2] = b;
+                data[idx + 3] = 255;
             }
         }
+        cachedCtx.putImageData(imageData, 0, 0);
 
         landscapeCache.objective = objectiveSelect.value;
         landscapeCache.canvas = cachedCanvas;
