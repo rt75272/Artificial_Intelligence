@@ -366,6 +366,11 @@ def chatbot_demo():
     """Render the interactive chatbot demo page."""
     return render_template('chatbot.html')
 
+@app.route('/demos/particle-swarm')
+def particle_swarm_demo():
+    """Render the Particle Swarm Optimization visual demo page."""
+    return render_template('particle_swarm_demo.html')
+
 @app.route('/learn')
 def learn():
     """Render the interactive CS basics learning page."""

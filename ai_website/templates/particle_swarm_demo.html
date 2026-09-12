@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+
+{% block title %}Particle Swarm Optimization Demo - Ryan Thompson{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Particle Swarm Optimization Lab</h1>
+        <p class="page-subtitle">Watch intelligent agents search complex landscapes and converge on optimal solutions</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Swarm Intelligence</span>
+            <span class="obj-tag">Global Optimization</span>
+            <span class="obj-tag">Real-time Animation</span>
+            <span class="obj-tag">Convergence Tracking</span>
+        </div>
+    </div>
+</section>
+
+<section class="pso-section">
+    <div class="container">
+        <div class="edu-demo-panel">
+            <h3><i class="fas fa-wand-magic-sparkles"></i> Interactive PSO Playground</h3>
+            <p class="pso-intro">
+                The background shows the optimization surface, each dot is a particle, and the golden trail is the best solution discovered over time.
+            </p>
+            <div class="pso-layout">
+                <div class="pso-controls">
+                    <div class="control-group">
+                        <label for="objectiveSelect">Objective Surface</label>
+                        <select id="objectiveSelect">
+                            <option value="rastrigin">Rastrigin (many local minima)</option>
+                            <option value="ackley">Ackley (deceptive basin)</option>
+                            <option value="sphere">Sphere (smooth convex)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="particleCount">Particles: <span id="particleCountLabel">40</span></label>
+                        <input id="particleCount" type="range" min="12" max="120" value="40">
+                    </div>
+                    <div class="control-group">
+                        <label for="inertia">Inertia (w): <span id="inertiaLabel">0.72</span></label>
+                        <input id="inertia" type="range" min="0.30" max="0.95" step="0.01" value="0.72">
+                    </div>
+                    <div class="control-group">
+                        <label for="cognitive">Cognitive (c1): <span id="cognitiveLabel">1.60</span></label>
+                        <input id="cognitive" type="range" min="0.40" max="3.00" step="0.05" value="1.60">
+                    </div>
+                    <div class="control-group">
+                        <label for="social">Social (c2): <span id="socialLabel">1.70</span></label>
+                        <input id="social" type="range" min="0.40" max="3.00" step="0.05" value="1.70">
+                    </div>
+                    <div class="control-group">
+                        <label for="speedCap">Velocity Cap: <span id="speedCapLabel">0.36</span></label>
+                        <input id="speedCap" type="range" min="0.05" max="0.85" step="0.01" value="0.36">
+                    </div>
+                    <div class="buttons">
+                        <button id="stepBtn" class="btn btn-secondary"><i class="fas fa-step-forward"></i> Step</button>
+                        <button id="runBtn" class="btn btn-primary" aria-pressed="false">
+                            <i id="runBtnIcon" class="fas fa-play" aria-hidden="true"></i>
+                            <span id="runBtnLabel">Run</span>
+                        </button>
+                        <button id="resetBtn" class="btn btn-danger"><i class="fas fa-rotate-right"></i> Reset</button>
+                    </div>
+                </div>
+
+                <div class="pso-visuals">
+                    <div class="visual-card">
+                        <div class="visual-title"><i class="fas fa-mountain-sun"></i> Search Landscape</div>
+                        <canvas id="landscapeCanvas" width="860" height="500" aria-label="Particle swarm search landscape" aria-describedby="landscapeDesc landscapeSummary">PSO search landscape visualization.</canvas>
+                    </div>
+                    <div class="visual-card">
+                        <div class="visual-title"><i class="fas fa-chart-line"></i> Best Fitness Over Iterations</div>
+                        <canvas id="convergenceCanvas" width="860" height="190" aria-label="Particle swarm convergence chart" aria-describedby="convergenceDesc convergenceSummary">PSO convergence chart visualization.</canvas>
+                    </div>
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-label">Iteration</div>
+                            <div id="iterValue" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Global Best f(x,y)</div>
+                            <div id="bestValue" class="stat-value">--</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Best Position</div>
+                            <div id="bestPos" class="stat-value">(--, --)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Average Fitness</div>
+                            <div id="avgValue" class="stat-value">--</div>
+                        </div>
+                    </div>
+                    <p id="landscapeDesc" class="sr-only">The landscape canvas shows a colored objective surface where cooler and darker regions indicate lower function values, while moving particles represent candidate solutions.</p>
+                    <p id="convergenceDesc" class="sr-only">The convergence chart plots the best fitness found so far as iterations increase, helping illustrate optimization progress and stagnation.</p>
+                    <p id="landscapeSummary" class="sr-only" aria-live="polite">Landscape summary will appear here.</p>
+                    <p id="convergenceSummary" class="sr-only" aria-live="polite">Convergence summary will appear here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.pso-section { padding: 0 0 3rem; }
+.pso-intro { margin: 0 0 1rem; color: #6b7280; }
+.pso-layout { display:grid; grid-template-columns:320px 1fr; gap:20px; }
+@media (max-width: 1050px) { .pso-layout { grid-template-columns:1fr; } }
+.pso-controls { background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:14px; }
+.pso-controls .control-group { margin-bottom:12px; }
+.pso-controls label { display:block; font-weight:600; margin-bottom:5px; }
+.pso-controls select, .pso-controls input[type=range] { width:100%; }
+.pso-controls .buttons { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.pso-visuals { display:grid; gap:12px; }
+.visual-card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:10px; box-shadow:0 1px 2px rgba(0,0,0,0.05); }
+.visual-title { font-weight:700; color:#1f2937; margin-bottom:8px; }
+#landscapeCanvas, #convergenceCanvas { width:100%; height:auto; display:block; border-radius:8px; background:#0f172a; }
+.stats-row { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+@media (max-width: 900px) { .stats-row { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.stat-card { background:linear-gradient(145deg,#ffffff,#f1f5f9); border:1px solid #e2e8f0; border-radius:10px; padding:10px; }
+.stat-label { font-size:0.8rem; color:#64748b; margin-bottom:4px; }
+.stat-value { font-size:1rem; font-weight:700; color:#0f172a; }
+.sr-only {
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+</style>
+
+<script>
+(function () {
+    const landscapeCanvas = document.getElementById('landscapeCanvas');
+    const convergenceCanvas = document.getElementById('convergenceCanvas');
+    const landscapeCtx = landscapeCanvas.getContext('2d');
+    const convergenceCtx = convergenceCanvas.getContext('2d');
+
+    const objectiveSelect = document.getElementById('objectiveSelect');
+    const particleCountInput = document.getElementById('particleCount');
+    const inertiaInput = document.getElementById('inertia');
+    const cognitiveInput = document.getElementById('cognitive');
+    const socialInput = document.getElementById('social');
+    const speedCapInput = document.getElementById('speedCap');
+
+    const particleCountLabel = document.getElementById('particleCountLabel');
+    const inertiaLabel = document.getElementById('inertiaLabel');
+    const cognitiveLabel = document.getElementById('cognitiveLabel');
+    const socialLabel = document.getElementById('socialLabel');
+    const speedCapLabel = document.getElementById('speedCapLabel');
+
+    const stepBtn = document.getElementById('stepBtn');
+    const runBtn = document.getElementById('runBtn');
+    const runBtnIcon = document.getElementById('runBtnIcon');
+    const runBtnLabel = document.getElementById('runBtnLabel');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const iterValue = document.getElementById('iterValue');
+    const bestValue = document.getElementById('bestValue');
+    const bestPos = document.getElementById('bestPos');
+    const avgValue = document.getElementById('avgValue');
+    const landscapeSummary = document.getElementById('landscapeSummary');
+    const convergenceSummary = document.getElementById('convergenceSummary');
+
+    const bounds = { min: -5.12, max: 5.12 };
+    const particles = [];
+    let globalBest = null;
+    let globalBestValue = Number.POSITIVE_INFINITY;
+    let iteration = 0;
+    let history = [];
+    let trail = [];
+    let running = false;
+    let loopId = null;
+    let lastStepTimestamp = 0;
+    let landscapeCache = {
+        objective: null,
+        canvas: null
+    };
+
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const rand = (min, max) => Math.random() * (max - min) + min;
+    const worldToCanvasX = (x) => ((x - bounds.min) / (bounds.max - bounds.min)) * landscapeCanvas.width;
+    const worldToCanvasY = (y) => landscapeCanvas.height - ((y - bounds.min) / (bounds.max - bounds.min)) * landscapeCanvas.height;
+
+    function objectiveValue(x, y) {
+        const mode = objectiveSelect.value;
+        if (mode === 'sphere') {
+            return x * x + y * y;
+        }
+        if (mode === 'ackley') {
+            const a = 20;
+            const b = 0.2;
+            const c = 2 * Math.PI;
+            const sq = Math.sqrt(0.5 * (x * x + y * y));
+            const cosTerm = Math.cos(c * x) + Math.cos(c * y);
+            return -a * Math.exp(-b * sq) - Math.exp(0.5 * cosTerm) + a + Math.E;
+        }
+        return 20 + (x * x - 10 * Math.cos(2 * Math.PI * x)) + (y * y - 10 * Math.cos(2 * Math.PI * y));
+    }
+
+    function hslToRgb(h, s, l) {
+        const sat = s / 100;
+        const light = l / 100;
+        const c = (1 - Math.abs(2 * light - 1)) * sat;
+        const hp = h / 60;
+        const x = c * (1 - Math.abs((hp % 2) - 1));
+        let r = 0, g = 0, b = 0;
+        if (hp >= 0 && hp < 1) [r, g, b] = [c, x, 0];
+        else if (hp < 2) [r, g, b] = [x, c, 0];
+        else if (hp < 3) [r, g, b] = [0, c, x];
+        else if (hp < 4) [r, g, b] = [0, x, c];
+        else if (hp < 5) [r, g, b] = [x, 0, c];
+        else [r, g, b] = [c, 0, x];
+        const m = light - c / 2;
+        return [
+            Math.round((r + m) * 255),
+            Math.round((g + m) * 255),
+            Math.round((b + m) * 255)
+        ];
+    }
+
+    function fitnessColor(v, min, max) {
+        const t = clamp((v - min) / (max - min + 1e-9), 0, 1);
+        const hue = 250 - (220 * t);
+        const sat = 85;
+        const light = 18 + (50 * (1 - t));
+        return hslToRgb(hue, sat, light);
+    }
+
+    function drawLandscape() {
+        if (landscapeCache.objective === objectiveSelect.value && landscapeCache.canvas) {
+            landscapeCtx.drawImage(landscapeCache.canvas, 0, 0);
+            return;
+        }
+
+        let minVal = Number.POSITIVE_INFINITY;
+        let maxVal = Number.NEGATIVE_INFINITY;
+        const w = landscapeCanvas.width;
+        const h = landscapeCanvas.height;
+        const values = new Float32Array(w * h);
+        for (let py = 0; py < landscapeCanvas.height; py++) {
+            for (let px = 0; px < landscapeCanvas.width; px++) {
+                const x = bounds.min + (px / landscapeCanvas.width) * (bounds.max - bounds.min);
+                const y = bounds.min + ((landscapeCanvas.height - py) / landscapeCanvas.height) * (bounds.max - bounds.min);
+                const val = objectiveValue(x, y);
+                values[py * w + px] = val;
+                minVal = Math.min(minVal, val);
+                maxVal = Math.max(maxVal, val);
+            }
+        }
+
+        const cachedCanvas = document.createElement('canvas');
+        cachedCanvas.width = w;
+        cachedCanvas.height = h;
+        const cachedCtx = cachedCanvas.getContext('2d');
+        const imageData = cachedCtx.createImageData(w, h);
+        const data = imageData.data;
+
+        for (let py = 0; py < h; py++) {
+            for (let px = 0; px < w; px++) {
+                const val = values[py * w + px];
+                const [r, g, b] = fitnessColor(val, minVal, maxVal);
+                const idx = (py * w + px) * 4;
+                data[idx] = r;
+                data[idx + 1] = g;
+                data[idx + 2] = b;
+                data[idx + 3] = 255;
+            }
+        }
+        cachedCtx.putImageData(imageData, 0, 0);
+
+        landscapeCache.objective = objectiveSelect.value;
+        landscapeCache.canvas = cachedCanvas;
+        landscapeCtx.drawImage(cachedCanvas, 0, 0);
+    }
+
+    function createParticles() {
+        particles.length = 0;
+        globalBest = null;
+        globalBestValue = Number.POSITIVE_INFINITY;
+        iteration = 0;
+        history = [];
+        trail = [];
+        const count = parseInt(particleCountInput.value, 10);
+        for (let i = 0; i < count; i++) {
+            const x = rand(bounds.min, bounds.max);
+            const y = rand(bounds.min, bounds.max);
+            const fitness = objectiveValue(x, y);
+            particles.push({
+                x,
+                y,
+                vx: rand(-0.15, 0.15),
+                vy: rand(-0.15, 0.15),
+                bestX: x,
+                bestY: y,
+                bestFitness: fitness
+            });
+            if (fitness < globalBestValue) {
+                globalBestValue = fitness;
+                globalBest = { x, y };
+            }
+        }
+        if (globalBest) {
+            trail.push({ x: globalBest.x, y: globalBest.y });
+        }
+        history.push(globalBestValue);
+        updateStats();
+        drawAll();
+    }
+
+    function drawParticlesAndBest() {
+        for (const p of particles) {
+            landscapeCtx.beginPath();
+            landscapeCtx.arc(worldToCanvasX(p.x), worldToCanvasY(p.y), 4.2, 0, Math.PI * 2);
+            landscapeCtx.fillStyle = '#f8fafc';
+            landscapeCtx.fill();
+            landscapeCtx.lineWidth = 1.3;
+            landscapeCtx.strokeStyle = '#0f172a';
+            landscapeCtx.stroke();
+        }
+
+        if (trail.length > 1) {
+            landscapeCtx.beginPath();
+            landscapeCtx.moveTo(worldToCanvasX(trail[0].x), worldToCanvasY(trail[0].y));
+            for (let i = 1; i < trail.length; i++) {
+                landscapeCtx.lineTo(worldToCanvasX(trail[i].x), worldToCanvasY(trail[i].y));
+            }
+            landscapeCtx.strokeStyle = 'rgba(253, 224, 71, 0.82)';
+            landscapeCtx.lineWidth = 2;
+            landscapeCtx.stroke();
+        }
+
+        if (globalBest) {
+            const x = worldToCanvasX(globalBest.x);
+            const y = worldToCanvasY(globalBest.y);
+            landscapeCtx.beginPath();
+            landscapeCtx.arc(x, y, 9, 0, Math.PI * 2);
+            landscapeCtx.fillStyle = 'rgba(250, 204, 21, 0.22)';
+            landscapeCtx.fill();
+
+            landscapeCtx.beginPath();
+            landscapeCtx.arc(x, y, 5, 0, Math.PI * 2);
+            landscapeCtx.fillStyle = '#facc15';
+            landscapeCtx.fill();
+            landscapeCtx.lineWidth = 1.5;
+            landscapeCtx.strokeStyle = '#92400e';
+            landscapeCtx.stroke();
+        }
+    }
+
+    function drawConvergence() {
+        const w = convergenceCanvas.width;
+        const h = convergenceCanvas.height;
+        convergenceCtx.clearRect(0, 0, w, h);
+        convergenceCtx.fillStyle = '#0b1220';
+        convergenceCtx.fillRect(0, 0, w, h);
+
+        if (history.length < 2) {
+            return;
+        }
+
+        let minY = Number.POSITIVE_INFINITY;
+        let maxY = Number.NEGATIVE_INFINITY;
+        for (const val of history) {
+            if (val < minY) minY = val;
+            if (val > maxY) maxY = val;
+        }
+        const pad = 22;
+        convergenceCtx.strokeStyle = '#334155';
+        convergenceCtx.lineWidth = 1;
+        convergenceCtx.strokeRect(pad, pad, w - pad * 2, h - pad * 2);
+
+        convergenceCtx.beginPath();
+        for (let i = 0; i < history.length; i++) {
+            const tx = i / (history.length - 1);
+            const ty = (history[i] - minY) / (maxY - minY + 1e-9);
+            const x = pad + tx * (w - pad * 2);
+            const y = h - pad - ty * (h - pad * 2);
+            if (i === 0) {
+                convergenceCtx.moveTo(x, y);
+            } else {
+                convergenceCtx.lineTo(x, y);
+            }
+        }
+        convergenceCtx.strokeStyle = '#22d3ee';
+        convergenceCtx.lineWidth = 2;
+        convergenceCtx.stroke();
+    }
+
+    function drawAll() {
+        drawLandscape();
+        drawParticlesAndBest();
+        drawConvergence();
+    }
+
+    function updateStats() {
+        iterValue.textContent = `${iteration}`;
+        bestValue.textContent = Number.isFinite(globalBestValue) ? globalBestValue.toFixed(6) : '--';
+        bestPos.textContent = globalBest ? `(${globalBest.x.toFixed(3)}, ${globalBest.y.toFixed(3)})` : '(--, --)';
+        const avg = particles.reduce((sum, p) => sum + objectiveValue(p.x, p.y), 0) / Math.max(particles.length, 1);
+        avgValue.textContent = Number.isFinite(avg) ? avg.toFixed(5) : '--';
+        const shouldAnnounce = !running || iteration % 10 === 0;
+        if (shouldAnnounce) {
+            landscapeSummary.textContent = globalBest
+                ? `Landscape view at iteration ${iteration}. Best particle is at x ${globalBest.x.toFixed(3)}, y ${globalBest.y.toFixed(3)} with fitness ${globalBestValue.toFixed(6)}.`
+                : `Landscape view initialized.`;
+            convergenceSummary.textContent = `Convergence chart at iteration ${iteration}. Current global best fitness is ${Number.isFinite(globalBestValue) ? globalBestValue.toFixed(6) : '--'} and average swarm fitness is ${Number.isFinite(avg) ? avg.toFixed(5) : '--'}.`;
+        }
+    }
+
+    function psoStep() {
+        if (!globalBest || particles.length === 0) {
+            return;
+        }
+
+        const w = parseFloat(inertiaInput.value);
+        const c1 = parseFloat(cognitiveInput.value);
+        const c2 = parseFloat(socialInput.value);
+        const vmax = parseFloat(speedCapInput.value);
+
+        for (const p of particles) {
+            const r1 = Math.random();
+            const r2 = Math.random();
+            p.vx = w * p.vx + c1 * r1 * (p.bestX - p.x) + c2 * r2 * (globalBest.x - p.x);
+            p.vy = w * p.vy + c1 * r1 * (p.bestY - p.y) + c2 * r2 * (globalBest.y - p.y);
+
+            p.vx = clamp(p.vx, -vmax, vmax);
+            p.vy = clamp(p.vy, -vmax, vmax);
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < bounds.min || p.x > bounds.max) {
+                p.vx *= -0.65;
+            }
+            if (p.y < bounds.min || p.y > bounds.max) {
+                p.vy *= -0.65;
+            }
+            p.x = clamp(p.x, bounds.min, bounds.max);
+            p.y = clamp(p.y, bounds.min, bounds.max);
+
+            const fitness = objectiveValue(p.x, p.y);
+            if (fitness < p.bestFitness) {
+                p.bestFitness = fitness;
+                p.bestX = p.x;
+                p.bestY = p.y;
+            }
+            if (fitness < globalBestValue) {
+                globalBestValue = fitness;
+                globalBest = { x: p.x, y: p.y };
+                trail.push({ x: p.x, y: p.y });
+                if (trail.length > 150) {
+                    trail.shift();
+                }
+            }
+        }
+
+        iteration += 1;
+        history.push(globalBestValue);
+        if (history.length > 260) {
+            history.shift();
+        }
+        updateStats();
+        drawAll();
+    }
+
+    function runLoop(timestamp) {
+        if (!running) {
+            return;
+        }
+        if (timestamp - lastStepTimestamp >= 52) {
+            psoStep();
+            lastStepTimestamp = timestamp;
+        }
+        loopId = window.requestAnimationFrame(runLoop);
+    }
+
+    function setRunning(next) {
+        if (next === running) {
+            return;
+        }
+        running = next;
+        runBtn.setAttribute('aria-pressed', running ? 'true' : 'false');
+        runBtnIcon.className = running ? 'fas fa-pause' : 'fas fa-play';
+        runBtnLabel.textContent = running ? 'Pause' : 'Run';
+        if (running) {
+            if (loopId !== null) {
+                window.cancelAnimationFrame(loopId);
+                loopId = null;
+            }
+            lastStepTimestamp = 0;
+            loopId = window.requestAnimationFrame(runLoop);
+        } else if (loopId !== null) {
+            window.cancelAnimationFrame(loopId);
+            loopId = null;
+        }
+    }
+
+    function syncLabels() {
+        particleCountLabel.textContent = particleCountInput.value;
+        inertiaLabel.textContent = parseFloat(inertiaInput.value).toFixed(2);
+        cognitiveLabel.textContent = parseFloat(cognitiveInput.value).toFixed(2);
+        socialLabel.textContent = parseFloat(socialInput.value).toFixed(2);
+        speedCapLabel.textContent = parseFloat(speedCapInput.value).toFixed(2);
+    }
+
+    particleCountInput.addEventListener('input', () => {
+        syncLabels();
+        setRunning(false);
+        createParticles();
+    });
+    inertiaInput.addEventListener('input', syncLabels);
+    cognitiveInput.addEventListener('input', syncLabels);
+    socialInput.addEventListener('input', syncLabels);
+    speedCapInput.addEventListener('input', syncLabels);
+
+    objectiveSelect.addEventListener('change', () => {
+        setRunning(false);
+        landscapeCache.objective = null;
+        landscapeCache.canvas = null;
+        createParticles();
+    });
+
+    stepBtn.addEventListener('click', () => {
+        setRunning(false);
+        psoStep();
+    });
+
+    runBtn.addEventListener('click', () => {
+        setRunning(!running);
+    });
+
+    resetBtn.addEventListener('click', () => {
+        setRunning(false);
+        createParticles();
+    });
+
+    syncLabels();
+    createParticles();
+})();
+</script>
+{% endblock %}
