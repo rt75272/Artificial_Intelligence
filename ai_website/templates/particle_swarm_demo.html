@@ -403,10 +403,13 @@
         bestPos.textContent = globalBest ? `(${globalBest.x.toFixed(3)}, ${globalBest.y.toFixed(3)})` : '(--, --)';
         const avg = particles.reduce((sum, p) => sum + objectiveValue(p.x, p.y), 0) / Math.max(particles.length, 1);
         avgValue.textContent = Number.isFinite(avg) ? avg.toFixed(5) : '--';
-        landscapeSummary.textContent = globalBest
-            ? `Landscape view at iteration ${iteration}. Best particle is at x ${globalBest.x.toFixed(3)}, y ${globalBest.y.toFixed(3)} with fitness ${globalBestValue.toFixed(6)}.`
-            : `Landscape view initialized.`;
-        convergenceSummary.textContent = `Convergence chart at iteration ${iteration}. Current global best fitness is ${Number.isFinite(globalBestValue) ? globalBestValue.toFixed(6) : '--'} and average swarm fitness is ${Number.isFinite(avg) ? avg.toFixed(5) : '--'}.`;
+        const shouldAnnounce = !running || iteration % 10 === 0;
+        if (shouldAnnounce) {
+            landscapeSummary.textContent = globalBest
+                ? `Landscape view at iteration ${iteration}. Best particle is at x ${globalBest.x.toFixed(3)}, y ${globalBest.y.toFixed(3)} with fitness ${globalBestValue.toFixed(6)}.`
+                : `Landscape view initialized.`;
+            convergenceSummary.textContent = `Convergence chart at iteration ${iteration}. Current global best fitness is ${Number.isFinite(globalBestValue) ? globalBestValue.toFixed(6) : '--'} and average swarm fitness is ${Number.isFinite(avg) ? avg.toFixed(5) : '--'}.`;
+        }
     }
 
     function psoStep() {
