@@ -1349,15 +1349,29 @@ def predict_fab_yield():
             recommendations.append('Audit gas flow balancing and endpoint detection for etch non-uniformity.')
         if not recommendations:
             recommendations.append('Process appears healthy; continue SPC monitoring and keep current PM cadence.')
+        driver_deviation = {
+            'etch_uniformity': (100.0 - features['etch_uniformity']) / 20.0,
+            'overlay_error': (features['overlay_error'] - 0.5) / 7.5,
+            'particle_count': features['particle_count'] / 120.0,
+            'chamber_pressure': abs(features['chamber_pressure'] - 55.0) / 20.0,
+            'temperature_delta': abs(features['temperature_delta']) / 4.0,
+            'tool_age_days': (features['tool_age_days'] - 30.0) / 1470.0,
+            'vibration_index': (features['vibration_index'] - 0.1) / 2.4
+        }
+        driver_scores = {
+            name: max(deviation, 0.0) * (fab_feature_importance.get(name, 0.0) + 0.05)
+            for name, deviation in driver_deviation.items()
+        }
+        total_score = sum(driver_scores.values())
         ranked_drivers = sorted(
-            fab_feature_importance.items(),
+            driver_scores.items(),
             key=lambda item: item[1],
             reverse=True
         )[:3]
         top_drivers = [
             {
                 'name': feature_labels.get(name, name),
-                'importance_pct': round(score * 100, 1)
+                'importance_pct': round((score / total_score) * 100, 1) if total_score > 0 else 0.0
             }
             for name, score in ranked_drivers
         ]
