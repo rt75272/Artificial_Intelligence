@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Neuromorphic Brain Hardware - Ryan Thompson{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/neuromorphic_brain.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Neuromorphic Brain Hardware</h1>
+        <p class="page-subtitle">A visual, interactive simulation of brain-inspired chips that compute with electrical spikes</p>
+    </div>
+</section>
+
+<section class="neuromorphic-demo" id="neuromorphicDemo">
+    <div class="container">
+        <div class="neuro-intro">
+            <p>
+                Real neuromorphic processors take inspiration from the brain: many small neuron circuits communicate
+                through weighted synapses, sending brief spikes only when they have something to say. Choose a sensory
+                input below and watch a simplified hardware network process it.
+            </p>
+            <span class="simulation-note"><i class="fas fa-info-circle"></i> Interactive simulation — no physical hardware is connected.</span>
+        </div>
+
+        <div class="neuro-statusbar">
+            <div class="neuro-chip-label">
+                <span class="neuro-live-dot" aria-hidden="true"></span>
+                <span>NEUROMORPHIC CORE <small>EVENT-DRIVEN SIMULATION</small></span>
+            </div>
+            <div class="neuro-metrics" aria-label="Live hardware simulation metrics">
+                <div class="neuro-metric"><span class="metric-value" id="firingCount">0</span><span class="metric-label">SPIKES</span></div>
+                <div class="neuro-metric"><span class="metric-value" id="activeCount">0</span><span class="metric-label">ACTIVE NEURONS</span></div>
+                <div class="neuro-metric"><span class="metric-value" id="synapseCount">0</span><span class="metric-label">SYNAPSES</span></div>
+            </div>
+        </div>
+
+        <div class="neuro-workspace">
+            <section class="neuro-visual-panel" aria-labelledby="networkHeading">
+                <div class="neuro-panel-heading">
+                    <div>
+                        <span class="neuro-overline">SILICON NEURAL ARRAY</span>
+                        <h2 id="networkHeading">Signal path visualization</h2>
+                    </div>
+                    <span class="neuro-state" id="systemState" role="status">Idle · awaiting input</span>
+                </div>
+                <div class="neuro-canvas-wrap">
+                    <canvas id="brainCanvas" width="900" height="560" role="img" aria-label="A network of sensory, relay, association, and response neurons connected by synapses. Animated pulses show signals traveling through the simulated hardware.">
+                        The neural network visualization requires a browser with canvas support.
+                    </canvas>
+                </div>
+                <div class="neuro-legend" aria-label="Visualization legend">
+                    <span><i class="legend-dot legend-input"></i> Sensory input</span>
+                    <span><i class="legend-dot legend-neuron"></i> Neuron</span>
+                    <span><i class="legend-dot legend-spike"></i> Traveling spike</span>
+                    <span><i class="legend-line"></i> Weighted synapse</span>
+                </div>
+                <div class="neuro-layer-key" aria-hidden="true">
+                    <span>SENSORS</span><span>RELAY</span><span>ASSOCIATION</span><span>RESPONSE</span>
+                </div>
+            </section>
+
+            <aside class="neuro-control-panel" aria-label="Brain simulation controls">
+                <section class="neuro-control-card">
+                    <span class="neuro-overline">01 / INPUT</span>
+                    <h2>Stimulate a sensor</h2>
+                    <p>Choose an input source to inject spikes into the network.</p>
+                    <div class="sensor-buttons">
+                        <button class="sensor-button" type="button" data-sensor="vision">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                            <span><strong>Light</strong><small>Visual signal</small></span>
+                            <span class="sensor-key">V</span>
+                        </button>
+                        <button class="sensor-button" type="button" data-sensor="sound">
+                            <i class="fas fa-wave-square" aria-hidden="true"></i>
+                            <span><strong>Sound</strong><small>Auditory signal</small></span>
+                            <span class="sensor-key">A</span>
+                        </button>
+                        <button class="sensor-button" type="button" data-sensor="touch">
+                            <i class="fas fa-hand-pointer" aria-hidden="true"></i>
+                            <span><strong>Touch</strong><small>Tactile signal</small></span>
+                            <span class="sensor-key">T</span>
+                        </button>
+                    </div>
+                    <div class="signal-strength">
+                        <label for="signalStrength"><span>Input intensity</span><strong id="strengthValue">75%</strong></label>
+                        <input id="signalStrength" type="range" min="25" max="100" value="75">
+                        <div class="range-endpoints"><span>Weak</span><span>Strong</span></div>
+                    </div>
+                    <div class="neuro-actions">
+                        <button class="neuro-button neuro-button-primary" id="runSequence" type="button">
+                            <i class="fas fa-play" aria-hidden="true"></i> Run input sequence
+                        </button>
+                        <button class="neuro-button neuro-button-secondary" id="resetNetwork" type="button">
+                            <i class="fas fa-rotate-left" aria-hidden="true"></i> Reset
+                        </button>
+                    </div>
+                </section>
+
+                <section class="neuro-output-card" aria-live="polite">
+                    <span class="neuro-overline">02 / RESPONSE</span>
+                    <div class="response-icon" id="responseIcon"><i class="fas fa-hourglass-half" aria-hidden="true"></i></div>
+                    <p class="response-label">SIMULATED RESPONSE</p>
+                    <h2 id="responseTitle">Ready for a signal</h2>
+                    <p id="responseDescription">Choose Light, Sound, or Touch to start a spike train.</p>
+                </section>
+
+                <section class="neuro-event-card">
+                    <div class="event-heading">
+                        <div><span class="neuro-overline">03 / TELEMETRY</span><h2>Recent events</h2></div>
+                        <span class="event-live"><span></span> LIVE</span>
+                    </div>
+                    <ol id="eventLog" class="event-log" aria-label="Recent simulation events">
+                        <li class="event-empty">Waiting for the first input…</li>
+                    </ol>
+                </section>
+            </aside>
+        </div>
+
+        <div class="neuro-explainer">
+            <article>
+                <span class="explainer-number">01</span>
+                <div><h2>Neurons integrate</h2><p>Each neuron receives signals from connected neighbors. In hardware, local circuits accumulate input until a firing threshold is reached.</p></div>
+            </article>
+            <article>
+                <span class="explainer-number">02</span>
+                <div><h2>Spikes carry events</h2><p>Instead of constantly moving data, a neuron sends a brief pulse when it fires. The animation follows that pulse from layer to layer.</p></div>
+            </article>
+            <article>
+                <span class="explainer-number">03</span>
+                <div><h2>Synapses shape the path</h2><p>Connections have different strengths. These weighted links influence which downstream neurons receive the strongest signals.</p></div>
+            </article>
+        </div>
+    </div>
+</section>
+<script src="{{ url_for('static', filename='js/neuromorphic_brain.js') }}" defer></script>
+{% endblock %}
