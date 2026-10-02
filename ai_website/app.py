@@ -376,6 +376,11 @@ def neuromorphic_brain_demo():
     """Render the interactive neuromorphic hardware brain demo."""
     return render_template('neuromorphic_brain.html')
 
+@app.route('/demos/spiking-neural-network')
+def spiking_neural_network_demo():
+    """Render the interactive spiking neural network simulation."""
+    return render_template('spiking_neural_network.html')
+
 @app.route('/learn')
 def learn():
     """Render the interactive CS basics learning page."""

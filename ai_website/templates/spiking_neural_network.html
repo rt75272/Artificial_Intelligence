@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Spiking Neural Network Lab - Ryan Thompson{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/spiking_neural_network.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Spiking Neural Network Lab</h1>
+        <p class="page-subtitle">Explore how neurons integrate current, fire spikes, and communicate through synapses</p>
+        <div class="learn-objectives">
+            <span class="obj-tag">Leaky Integrate-and-Fire</span>
+            <span class="obj-tag">Membrane Potential</span>
+            <span class="obj-tag">Spike Timing</span>
+            <span class="obj-tag">Synaptic Transmission</span>
+        </div>
+    </div>
+</section>
+
+<section class="snn-demo">
+    <div class="container">
+        <div class="snn-intro">
+            <p>
+                This browser-based simulation uses a <strong>leaky integrate-and-fire (LIF)</strong> model.
+                Each neuron accumulates input current while its voltage leaks toward rest. Crossing the threshold
+                emits a spike, resets the neuron, and sends a delayed synaptic event to connected neurons.
+            </p>
+            <span><i class="fas fa-microchip" aria-hidden="true"></i> Entirely simulated in your browser — no hardware or server-side model required.</span>
+        </div>
+
+        <div class="snn-toolbar">
+            <div class="snn-model-label">
+                <span class="snn-indicator" id="runIndicator" aria-hidden="true"></span>
+                <div><strong>LIF NETWORK SIMULATOR</strong><small id="runStatus" role="status">Paused · ready to simulate</small></div>
+            </div>
+            <div class="snn-readouts" aria-label="Simulation metrics">
+                <div><strong id="simTime">0</strong><span>SIM TIME (ms)</span></div>
+                <div><strong id="spikeCount">0</strong><span>TOTAL SPIKES</span></div>
+                <div><strong id="rateReadout">0.0 Hz</strong><span>POPULATION RATE</span></div>
+            </div>
+        </div>
+
+        <div class="snn-layout">
+            <div class="snn-visuals">
+                <section class="snn-panel">
+                    <div class="snn-panel-header">
+                        <div><span class="snn-overline">NETWORK ACTIVITY</span><h2>Spikes traveling over synapses</h2></div>
+                        <span class="snn-key"><i class="key-excitatory"></i> Excitatory <i class="key-inhibitory"></i> Inhibitory</span>
+                    </div>
+                    <canvas id="snnNetwork" width="900" height="330" role="img" aria-label="Network diagram of sixteen simulated spiking neurons connected by excitatory and inhibitory synapses.">
+                        Canvas support is required to display the network.
+                    </canvas>
+                    <div class="snn-layer-labels" aria-hidden="true"><span>SENSORY</span><span>HIDDEN</span><span>OUTPUT</span></div>
+                </section>
+
+                <section class="snn-panel">
+                    <div class="snn-panel-header">
+                        <div><span class="snn-overline">SPIKE TIMING</span><h2>Raster plot</h2></div>
+                        <span class="snn-chart-note">Each mark is one neuron firing</span>
+                    </div>
+                    <canvas id="snnRaster" width="900" height="220" role="img" aria-label="Raster plot showing the firing times of each neuron.">
+                        Canvas support is required to display the raster plot.
+                    </canvas>
+                </section>
+
+                <section class="snn-panel">
+                    <div class="snn-panel-header">
+                        <div><span class="snn-overline">NEURON DYNAMICS</span><h2>Membrane voltage</h2></div>
+                        <span class="snn-chart-note"><i class="trace-swatch"></i> Neuron 8 <i class="threshold-swatch"></i> Firing threshold</span>
+                    </div>
+                    <canvas id="snnVoltage" width="900" height="220" role="img" aria-label="Voltage trace for neuron 8, including its firing threshold and reset after a spike.">
+                        Canvas support is required to display the voltage chart.
+                    </canvas>
+                </section>
+            </div>
+
+            <aside class="snn-controls" aria-label="Simulation controls">
+                <section class="snn-control-card">
+                    <span class="snn-overline">INPUT CURRENT</span>
+                    <h2>Choose a stimulus</h2>
+                    <label class="snn-field" for="stimulusPattern">Input pattern</label>
+                    <select id="stimulusPattern">
+                        <option value="steady">Steady current</option>
+                        <option value="burst">Burst pulses</option>
+                        <option value="ramp">Rising ramp</option>
+                    </select>
+                    <div class="snn-range-field">
+                        <label for="inputCurrent"><span>Input strength</span><strong id="currentValue">1.35</strong></label>
+                        <input id="inputCurrent" type="range" min="0.3" max="2.4" step="0.05" value="1.35">
+                    </div>
+                    <div class="snn-range-field">
+                        <label for="threshold"><span>Firing threshold</span><strong id="thresholdValue">1.00</strong></label>
+                        <input id="threshold" type="range" min="0.55" max="1.5" step="0.05" value="1">
+                    </div>
+                    <div class="snn-range-field">
+                        <label for="membraneTau"><span>Membrane time constant</span><strong id="tauValue">18 ms</strong></label>
+                        <input id="membraneTau" type="range" min="5" max="40" step="1" value="18">
+                        <small>Higher values make voltage leak away more slowly.</small>
+                    </div>
+                    <div class="snn-range-field">
+                        <label for="inhibition"><span>Inhibitory strength</span><strong id="inhibitionValue">0.65</strong></label>
+                        <input id="inhibition" type="range" min="0" max="1.2" step="0.05" value="0.65">
+                    </div>
+                    <div class="snn-control-actions">
+                        <button class="snn-button snn-button-run" id="toggleRun" type="button"><i class="fas fa-play" aria-hidden="true"></i> Run</button>
+                        <button class="snn-button" id="stepSimulation" type="button"><i class="fas fa-forward-step" aria-hidden="true"></i> Step 10 ms</button>
+                        <button class="snn-button snn-button-reset" id="resetSimulation" type="button"><i class="fas fa-rotate-left" aria-hidden="true"></i> Reset</button>
+                    </div>
+                </section>
+
+                <section class="snn-control-card snn-equation">
+                    <span class="snn-overline">THE NEURON MODEL</span>
+                    <h2>Integrate → fire → reset</h2>
+                    <div class="snn-formula">τ dV/dt = −(V − V<sub>rest</sub>) + I<sub>input</sub> + I<sub>syn</sub></div>
+                    <ol>
+                        <li><strong>Integrate:</strong> Incoming currents raise or lower membrane voltage.</li>
+                        <li><strong>Leak:</strong> Voltage drifts back toward resting potential over time.</li>
+                        <li><strong>Fire:</strong> At threshold, emit a spike and reset; a brief refractory period follows.</li>
+                        <li><strong>Transmit:</strong> Connected neurons receive delayed excitatory or inhibitory current.</li>
+                    </ol>
+                </section>
+
+                <section class="snn-control-card snn-event-card">
+                    <div class="snn-panel-header"><div><span class="snn-overline">EVENT STREAM</span><h2>Latest spikes</h2></div></div>
+                    <ol id="snnEvents" aria-live="polite"><li class="snn-empty">Run the network to see firing events.</li></ol>
+                </section>
+            </aside>
+        </div>
+    </div>
+</section>
+<script src="{{ url_for('static', filename='js/spiking_neural_network.js') }}" defer></script>
+{% endblock %}

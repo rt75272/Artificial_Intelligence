@@ -1,0 +1,136 @@
+.snn-demo {
+    --snn-ink: #1b2938;
+    --snn-muted: #6b7b89;
+    --snn-border: #dce5eb;
+    --snn-panel: #fff;
+    --snn-teal: #0f9f97;
+    --snn-blue: #4384ed;
+    --snn-orange: #f0a24b;
+    padding: 1.7rem 0 4rem;
+}
+
+.snn-intro {
+    max-width: 900px;
+    margin: 0 auto 1.4rem;
+    text-align: center;
+}
+
+.snn-intro p { color: #536473; font-size: 0.98rem; line-height: 1.7; }
+.snn-intro > span { display: inline-block; margin-top: 0.45rem; color: #71808d; font-size: 0.78rem; }
+.snn-intro > span i { color: var(--snn-teal); }
+
+.snn-toolbar,
+.snn-panel,
+.snn-control-card {
+    background: var(--snn-panel);
+    border: 1px solid var(--snn-border);
+    box-shadow: 0 8px 24px rgba(35, 57, 74, 0.055);
+}
+
+.snn-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem;
+    padding: 0.9rem 1.15rem;
+    border-radius: 12px 12px 0 0;
+}
+
+.snn-model-label { display: flex; align-items: center; gap: 0.7rem; }
+.snn-indicator { width: 10px; height: 10px; flex: 0 0 auto; background: #a8b5bd; border-radius: 50%; }
+.snn-indicator.is-running { background: #1cbd91; box-shadow: 0 0 0 5px rgba(28, 189, 145, 0.13); }
+.snn-model-label strong { display: block; color: var(--snn-ink); font-size: 0.72rem; letter-spacing: 0.09em; }
+.snn-model-label small { display: block; margin-top: 0.2rem; color: var(--snn-muted); font-size: 0.68rem; }
+
+.snn-readouts { display: flex; gap: 1.7rem; }
+.snn-readouts > div { display: grid; gap: 0.2rem; }
+.snn-readouts strong { color: #147d7a; font-size: 0.96rem; font-variant-numeric: tabular-nums; }
+.snn-readouts span { color: var(--snn-muted); font-size: 0.55rem; font-weight: 750; letter-spacing: 0.07em; }
+
+.snn-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f1f5f7;
+    border: 1px solid var(--snn-border);
+    border-top: 0;
+    border-radius: 0 0 12px 12px;
+}
+
+.snn-visuals,
+.snn-controls { display: grid; gap: 0.85rem; min-width: 0; }
+.snn-panel,
+.snn-control-card { min-width: 0; padding: 0.9rem 1rem; border-radius: 9px; }
+.snn-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.snn-overline { color: #138d88; font-size: 0.59rem; font-weight: 800; letter-spacing: 0.12em; }
+.snn-panel h2,
+.snn-control-card h2 { margin-top: 0.15rem; color: var(--snn-ink); font-size: 0.96rem; }
+.snn-key,
+.snn-chart-note { display: flex; align-items: center; gap: 0.35rem; color: var(--snn-muted); font-size: 0.61rem; }
+.key-excitatory,
+.key-inhibitory,
+.trace-swatch,
+.threshold-swatch { display: inline-block; width: 13px; border-top: 2px solid; }
+.key-excitatory { border-color: #13a695; }
+.key-inhibitory { margin-left: 0.4rem; border-color: #e17c77; }
+.trace-swatch { border-color: #4384ed; }
+.threshold-swatch { border-top: 2px dashed #e17c77; }
+
+.snn-panel canvas { display: block; width: 100%; height: auto; margin-top: 0.6rem; }
+.snn-layer-labels { display: grid; grid-template-columns: 1fr 2fr 1fr; margin: -0.1rem 0 0; color: #82919c; font-size: 0.55rem; font-weight: 800; letter-spacing: 0.09em; text-align: center; }
+.snn-layer-labels span:nth-child(2) { grid-column: 2; }
+.snn-layer-labels span:nth-child(3) { grid-column: 3; }
+
+.snn-control-card h2 { margin-bottom: 0.7rem; }
+.snn-field { display: block; margin: 0.75rem 0 0.35rem; color: #4b5c69; font-size: 0.69rem; font-weight: 700; }
+#stimulusPattern { width: 100%; padding: 0.55rem 0.6rem; color: var(--snn-ink); background: white; border: 1px solid var(--snn-border); border-radius: 6px; font: inherit; font-size: 0.72rem; }
+
+.snn-range-field { margin-top: 0.85rem; }
+.snn-range-field label { display: flex; justify-content: space-between; gap: 0.3rem; color: #4b5c69; font-size: 0.67rem; }
+.snn-range-field label strong { color: #147d7a; font-variant-numeric: tabular-nums; }
+.snn-range-field input { width: 100%; margin: 0.4rem 0 0; accent-color: var(--snn-teal); }
+.snn-range-field small { display: block; color: var(--snn-muted); font-size: 0.59rem; }
+
+.snn-control-actions { display: grid; grid-template-columns: 1fr 1.1fr; gap: 0.4rem; margin-top: 1rem; }
+.snn-button { min-height: 35px; padding: 0.45rem 0.5rem; color: #40515e; background: #f4f7f8; border: 1px solid #dce5eb; border-radius: 6px; font: inherit; font-size: 0.65rem; font-weight: 700; cursor: pointer; }
+.snn-button:hover { filter: brightness(0.97); }
+.snn-button:focus-visible,
+#stimulusPattern:focus-visible,
+.snn-range-field input:focus-visible { outline: 2px solid var(--snn-teal); outline-offset: 2px; }
+.snn-button-run { color: white; background: var(--snn-teal); border-color: var(--snn-teal); }
+.snn-button-reset { grid-column: 1 / -1; }
+
+.snn-formula { margin: 0.65rem 0; padding: 0.55rem 0.45rem; color: #116e6c; background: #e9f7f5; border-radius: 6px; font-size: 0.73rem; text-align: center; }
+.snn-equation ol { display: grid; gap: 0.42rem; margin: 0; padding-left: 1.2rem; color: #5f6f7c; font-size: 0.66rem; line-height: 1.45; }
+.snn-equation li::marker { color: var(--snn-teal); font-weight: 800; }
+.snn-equation li strong { color: #30424f; }
+
+.snn-event-card .snn-panel-header { margin-bottom: 0.5rem; }
+#snnEvents { display: grid; gap: 0.4rem; max-height: 130px; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+#snnEvents li { display: flex; gap: 0.45rem; color: #526473; font-size: 0.64rem; line-height: 1.4; }
+#snnEvents time { flex: 0 0 auto; color: #138d88; font-variant-numeric: tabular-nums; }
+#snnEvents .snn-empty { color: #81909b; font-style: italic; }
+
+@media (max-width: 900px) {
+    .snn-layout { grid-template-columns: minmax(0, 1fr); }
+    .snn-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+    .snn-control-card:first-child { grid-row: span 2; }
+}
+
+@media (max-width: 620px) {
+    .snn-toolbar { align-items: flex-start; flex-direction: column; }
+    .snn-readouts { justify-content: space-between; width: 100%; gap: 0.5rem; }
+    .snn-readouts span { font-size: 0.48rem; }
+    .snn-layout { padding: 0.55rem; }
+    .snn-panel,
+    .snn-control-card { padding: 0.7rem; }
+    .snn-panel-header { align-items: flex-start; flex-direction: column; }
+    .snn-controls { grid-template-columns: 1fr; }
+    .snn-control-card:first-child { grid-row: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .snn-indicator { box-shadow: none; }
+}
