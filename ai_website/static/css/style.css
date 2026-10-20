@@ -747,6 +747,47 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
 }
 
+.about-links {
+    padding: 2rem 0;
+}
+
+.about-links .section-title {
+    margin-bottom: 1.5rem;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--bg-primary);
+    box-shadow: var(--shadow);
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.social-links a:hover {
+    transform: translateY(-3px);
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-lg);
+}
+
+.social-links a:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 3px;
+}
+
 /* Demos Page */
 .demos-content {
     padding: 6rem 0;
