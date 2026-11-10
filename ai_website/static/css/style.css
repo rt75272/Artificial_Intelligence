@@ -510,6 +510,80 @@ h1, h2, h3, h4, h5, h6 {
     background: #d83d00;
 }
 
+.cycling-coaching {
+    max-width: 1100px;
+    margin: 0 auto 4rem;
+}
+
+.cycling-coaching-heading {
+    max-width: 720px;
+    margin: 0 auto 2rem;
+    text-align: center;
+}
+
+.cycling-coaching-heading h2 {
+    color: var(--text-primary);
+    font-size: 2rem;
+    margin: 0.45rem 0 0.75rem;
+}
+
+.cycling-coaching-heading > p:last-child {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.cycling-coaching-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.cycling-coaching-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: var(--bg-primary);
+    border: 1px solid rgba(15, 118, 110, 0.16);
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+}
+
+.cycling-coaching-card--featured {
+    border: 2px solid #0f766e;
+}
+
+.cycling-coaching-card h3 {
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    margin: 0.5rem 0;
+}
+
+.cycling-coaching-price {
+    color: #0f766e;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0.35rem 0 0.75rem;
+}
+
+.cycling-coaching-price span {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.cycling-coaching-card > p:not(.cycling-card-label):not(.cycling-coaching-price) {
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+}
+
+.cycling-coaching-card .btn {
+    justify-content: center;
+    margin-top: auto;
+    width: 100%;
+}
+
 .cycling-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1114,6 +1188,10 @@ canvas {
     }
 
     .cycling-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cycling-coaching-grid {
         grid-template-columns: 1fr;
     }
 
