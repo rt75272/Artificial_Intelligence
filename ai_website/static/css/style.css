@@ -3418,3 +3418,23 @@ html[data-theme] img { filter: none; }
     .theme-switcher { margin: 0.5rem 0 0; }
     .theme-menu { position: static; box-shadow: none; }
 }
+
+/* Theme-aware navigation */
+:root { --nav-bg: rgba(250, 252, 248, 0.92); --nav-bg-solid: #fafcf8; }
+html[data-theme="dark"] { --nav-bg: rgba(16, 20, 17, 0.92); --nav-bg-solid: #101411; }
+html[data-theme="midnight"] { --nav-bg: rgba(13, 16, 32, 0.92); --nav-bg-solid: #0d1020; }
+html[data-theme="ocean"] { --nav-bg: rgba(238, 247, 251, 0.92); --nav-bg-solid: #eef7fb; }
+html[data-theme="sunset"] { --nav-bg: rgba(255, 250, 245, 0.92); --nav-bg-solid: #fffaf5; }
+html[data-theme="contrast"] { --nav-bg: #000000; --nav-bg-solid: #000000; }
+
+.navbar { background: var(--nav-bg); border-bottom: 1px solid var(--line); }
+.nav-link { color: var(--ink); opacity: 0.85; }
+.nav-link:hover, .nav-link.active { color: var(--ink); opacity: 1; background: var(--nav-hover); }
+.nav-logo a, .nav-logo-name { color: var(--ink); }
+.nav-logo-img { border-color: var(--surface); }
+.hamburger-line { background: var(--ink); }
+.nav-toggle { background: var(--surface); border: 1px solid var(--line); }
+html[data-theme="contrast"] .nav-link.active { outline: 2px solid var(--lime); }
+@media (max-width: 768px) {
+    .nav-menu { background: var(--nav-bg-solid); border-color: var(--line); }
+}
