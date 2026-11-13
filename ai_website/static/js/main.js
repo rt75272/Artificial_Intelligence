@@ -413,3 +413,30 @@ document.addEventListener('DOMContentLoaded', () => {
 // Export utilities to global scope for use in other scripts.
 window.AIPortfolio = AIPortfolio;
 window.AIDemo = AIDemo;
+// Theme switcher.
+(function () {
+    const root = document.documentElement;
+    const box = document.querySelector('.theme-switcher');
+    if (!box) return;
+    const toggle = box.querySelector('.theme-toggle');
+    const options = box.querySelectorAll('.theme-option');
+    const apply = (theme) => {
+        if (theme === 'light') root.removeAttribute('data-theme');
+        else root.setAttribute('data-theme', theme);
+        options.forEach((o) => o.setAttribute('aria-checked', String(o.dataset.themeValue === theme)));
+    };
+    apply(root.getAttribute('data-theme') || 'light');
+    const setOpen = (open) => {
+        box.classList.toggle('open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+    };
+    toggle.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!box.classList.contains('open')); });
+    options.forEach((o) => o.addEventListener('click', () => {
+        const theme = o.dataset.themeValue;
+        apply(theme);
+        try { localStorage.setItem('site-theme', theme); } catch (e) {}
+        setOpen(false);
+    }));
+    document.addEventListener('click', (e) => { if (!box.contains(e.target)) setOpen(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+})();
