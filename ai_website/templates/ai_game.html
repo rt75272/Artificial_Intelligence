@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Train the Signal Scout - Ryan Thompson{% endblock %}
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai_game.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Train the Signal Scout</h1>
+        <p class="page-subtitle">Teach a tiny AI, then challenge it to spot signals it has never seen.</p>
+    </div>
+</section>
+
+<section class="scout-game" id="scout-game">
+    <div class="container">
+        <div class="scout-intro">
+            <div>
+                <span class="scout-eyebrow">A hands-on machine learning game</span>
+                <h2>Can your scout learn the pattern?</h2>
+                <p>Read the mission rule, label six training signals, and train your scout. Then you and the scout each classify three new signals. Complete all three missions to compare scores!</p>
+            </div>
+            <div class="scout-intro-icon" aria-hidden="true"><i class="fas fa-robot"></i></div>
+        </div>
+
+        <div class="scout-dashboard" aria-label="Game progress">
+            <div><span>Mission</span><strong id="mission-count">1 / 3</strong></div>
+            <div><span>Stage</span><strong id="stage-label">Training data</strong></div>
+            <div><span>Your test score</span><strong id="player-score">0 / 0</strong></div>
+            <div><span>Scout test score</span><strong id="scout-score">0 / 0</strong></div>
+        </div>
+
+        <div class="scout-layout">
+            <section class="scout-panel" aria-labelledby="mission-title">
+                <span class="scout-eyebrow" id="mission-number">Mission 01</span>
+                <h2 id="mission-title"></h2>
+                <p class="scout-rule" id="mission-rule"></p>
+                <div class="scout-progress"><span id="round-progress"></span><span id="phase-hint"></span></div>
+                <div class="signal-card" id="signal-card">
+                    <div class="signal-title"><i class="fas fa-satellite-dish" aria-hidden="true"></i> Incoming signal</div>
+                    <div class="signal-feature">
+                        <div><span>Warmth</span><strong id="warmth-value"></strong></div>
+                        <div class="signal-track" aria-hidden="true"><span id="warmth-bar"></span></div>
+                    </div>
+                    <div class="signal-feature">
+                        <div><span>Brightness</span><strong id="brightness-value"></strong></div>
+                        <div class="signal-track" aria-hidden="true"><span id="brightness-bar"></span></div>
+                    </div>
+                </div>
+                <p class="scout-question" id="question">Is this signal a match?</p>
+                <div class="scout-actions" id="answer-actions">
+                    <button class="scout-button scout-yes" type="button" data-answer="1"><i class="fas fa-check" aria-hidden="true"></i> Match</button>
+                    <button class="scout-button scout-no" type="button" data-answer="-1"><i class="fas fa-xmark" aria-hidden="true"></i> Not a match</button>
+                </div>
+                <div class="scout-feedback" id="feedback" role="status" aria-live="polite">Start by labeling the first signal using the rule above.</div>
+                <button class="scout-button scout-next" id="continue-button" type="button" hidden>Next signal <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+                <button class="scout-button scout-next" id="train-button" type="button" hidden><i class="fas fa-bolt" aria-hidden="true"></i> Train the scout</button>
+                <button class="scout-button scout-next" id="next-mission-button" type="button" hidden>Next mission <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+                <button class="scout-reset" id="reset-button" type="button"><i class="fas fa-rotate-left" aria-hidden="true"></i> Restart game</button>
+            </section>
+
+            <aside class="scout-panel scout-learning" aria-labelledby="learning-title">
+                <span class="scout-eyebrow">Inside the AI</span>
+                <h2 id="learning-title">How the scout learns</h2>
+                <p id="learning-text">A <strong>training example</strong> is a signal paired with the right answer. Your labels are checked before the scout learns from them.</p>
+                <div class="scout-model">
+                    <h3>Scout's model</h3>
+                    <p id="model-status">Not trained yet</p>
+                    <dl>
+                        <div><dt>Warmth weight</dt><dd id="weight-warmth">—</dd></div>
+                        <div><dt>Brightness weight</dt><dd id="weight-brightness">—</dd></div>
+                        <div><dt>Bias</dt><dd id="weight-bias">—</dd></div>
+                    </dl>
+                    <p class="scout-small">The scout multiplies each feature (scaled from 0 to 1) by its weight, adds the bias, and predicts “match” when the total is zero or higher.</p>
+                </div>
+                <div class="scout-tip"><i class="fas fa-lightbulb" aria-hidden="true"></i> <span>Training and test signals are separate. A model needs to work on new examples, not just remember its training data.</span></div>
+            </aside>
+        </div>
+        <noscript><p class="scout-noscript">This game needs JavaScript enabled to play.</p></noscript>
+    </div>
+</section>
+<script src="{{ url_for('static', filename='js/ai_game.js') }}" defer></script>
+{% endblock %}

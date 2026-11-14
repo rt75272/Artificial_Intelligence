@@ -1,0 +1,276 @@
+.scout-game {
+    padding: 3rem 0 5rem;
+}
+
+.scout-intro, .scout-dashboard, .scout-panel {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+}
+
+.scout-intro {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.scout-intro p, .scout-learning p {
+    color: var(--text-secondary);
+}
+
+.scout-intro p {
+    max-width: 720px;
+    margin-top: .5rem;
+}
+
+.scout-eyebrow {
+    color: var(--primary-color);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.scout-intro-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 76px;
+    height: 76px;
+    border-radius: 22px;
+    background: var(--gradient);
+    color: white;
+    font-size: 2rem;
+}
+
+.scout-dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+    padding: 1.2rem 1.5rem;
+}
+
+.scout-dashboard span, .scout-dashboard strong {
+    display: block;
+}
+
+.scout-dashboard span {
+    color: var(--text-secondary);
+    font-size: .8rem;
+}
+
+.scout-dashboard strong {
+    color: var(--text-primary);
+}
+
+.scout-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.scout-panel {
+    padding: 2rem;
+}
+
+.scout-rule {
+    margin: .75rem 0 1.5rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.scout-progress, .signal-feature > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.scout-progress {
+    margin-bottom: .75rem;
+    color: var(--text-secondary);
+    font-size: .85rem;
+}
+
+.signal-card {
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--bg-secondary);
+}
+
+.signal-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.signal-feature + .signal-feature {
+    margin-top: 1rem;
+}
+
+.signal-feature strong {
+    color: var(--text-primary);
+}
+
+.signal-track {
+    height: 10px;
+    margin-top: .35rem;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--border-color);
+}
+
+.signal-track span {
+    display: block;
+    height: 100%;
+    background: var(--gradient);
+    border-radius: inherit;
+}
+
+.scout-question {
+    margin: 1.25rem 0 .75rem;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.scout-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.scout-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    min-height: 46px;
+    padding: .65rem 1.1rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.scout-yes, .scout-next {
+    background: var(--primary-color);
+    color: var(--bg-primary);
+}
+
+.scout-no {
+    background: var(--bg-primary);
+    color: var(--primary-color);
+}
+
+.scout-button:hover {
+    filter: brightness(.9);
+}
+
+.scout-button:focus-visible, .scout-reset:focus-visible {
+    outline: 3px solid var(--secondary-color);
+    outline-offset: 3px;
+}
+
+.scout-feedback {
+    min-height: 3rem;
+    margin: 1rem 0;
+    color: var(--text-primary);
+}
+
+.scout-reset {
+    display: block;
+    margin-top: 1.5rem;
+    border: 0;
+    background: none;
+    color: var(--primary-color);
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.scout-learning > p {
+    margin: .75rem 0 1.5rem;
+}
+
+.scout-model, .scout-tip {
+    padding: 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--bg-secondary);
+}
+
+.scout-model h3 {
+    font-size: 1rem;
+}
+
+.scout-model dl {
+    margin: .75rem 0;
+}
+
+.scout-model dl div {
+    display: flex;
+    justify-content: space-between;
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.scout-model dd {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.scout-small {
+    font-size: .85rem;
+}
+
+.scout-tip {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1rem;
+    color: var(--text-primary);
+    font-size: .9rem;
+}
+
+.scout-tip i {
+    color: var(--primary-color);
+    margin-top: .25rem;
+}
+
+.scout-game [hidden] {
+    display: none;
+}
+
+.scout-noscript {
+    margin-top: 1rem;
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .scout-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .scout-dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .scout-intro, .scout-panel {
+        padding: 1.25rem;
+    }
+
+    .scout-intro-icon {
+        display: none;
+    }
+
+    .scout-progress {
+        flex-direction: column;
+        gap: 0;
+    }
+}

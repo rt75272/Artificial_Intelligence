@@ -371,6 +371,11 @@ def particle_swarm_demo():
     """Render the Particle Swarm Optimization visual demo page."""
     return render_template('particle_swarm_demo.html')
 
+@app.route('/demos/ai-game')
+def ai_game_demo():
+    """Render the interactive classifier game."""
+    return render_template('ai_game.html')
+
 @app.route('/demos/neuromorphic-brain')
 def neuromorphic_brain_demo():
     """Render the interactive neuromorphic hardware brain demo."""

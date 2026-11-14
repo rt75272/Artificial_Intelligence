@@ -7,6 +7,7 @@ A modern, responsive Flask-based personal portfolio website showcasing Ryan Thom
 - **Professional Home Page**: Personal landing page with AI expertise overview and animated hero section
 - **Comprehensive About Page**: Information about Ryan's educational background, mission, and approach to AI
 - **AI Demos Section**: Placeholder for future interactive AI project demonstrations
+- **Train the Signal Scout**: A browser-based game where players label examples, train a perceptron, and compare predictions on held-out signals across three missions
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices with modern CSS Grid and Flexbox
 - **Smooth Animations**: Intersection Observer-based animations and smooth scrolling navigation
 - **SEO Optimized**: Proper meta tags, semantic HTML, and accessibility considerations
@@ -146,6 +147,7 @@ The website uses CSS custom properties for easy theming:
 - **`/`** - Home page with hero section and AI expertise overview
 - **`/about`** - About page with personal background, education, and mission
 - **`/demos`** - AI demos page (currently placeholder with planned features)
+- **`/demos/ai-game`** - Train the Signal Scout interactive classifier game
 - **`/404`** - Custom error page for missing routes
 
 ## � GPU Training Status
